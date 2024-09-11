@@ -11,13 +11,18 @@ public class Interfaz extends javax.swing.JFrame {
      * Creates new form NewJFrame
      */
     public Interfaz() {
+        
         initComponents();
+
+        this.setLocationRelativeTo(null);
+         //setExtendedState(MAXIMIZED_BOTH);
         
-        this.setExtendedState(JFrame.MAXIMIZED_BOTH);
+         pintarImagenBoton(this.jButton1, "src/GUI/ace_of_diamonds.png");
+         pintarImagenBoton(this.jButton2, "src/GUI/2_of_diamonds.png");
+         pintarImagenBoton(this.jButton3, "src/GUI/3_of_diamonds.png");
+         pintarImagenBoton(this.jButton4, "src/GUI/4_of_diamonds.png");
+        //this.pintarImagenLabel(this.jLabel1, "src/GUI/Inicio.png");
         
-        this.setLocationRelativeTo(this);
-        
-        this.pintarImagen(this.jLabel2, "src/GUI/queen_of_hearts2.png");
     }
 
     /**
@@ -29,28 +34,77 @@ public class Interfaz extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        Boton1 = new javax.swing.JPanel();
+        jButton1 = new javax.swing.JButton();
+        Boton2 = new javax.swing.JPanel();
+        jButton2 = new javax.swing.JButton();
+        Boton3 = new javax.swing.JPanel();
+        jButton3 = new javax.swing.JButton();
+        Boton4 = new javax.swing.JPanel();
+        jButton4 = new javax.swing.JButton();
+        jPanel1 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/GUI/queen_of_hearts2.png"))); // NOI18N
-        jLabel2.setText("jLabel1");
+        Boton1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        Boton1.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 120, 180));
+
+        Boton2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        Boton2.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 120, 180));
+
+        Boton3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        Boton3.add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 120, 180));
+
+        Boton4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        Boton4.add(jButton4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 120, 180));
+
+        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 48)); // NOI18N
+        jLabel1.setText("Práctica");
+        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 0, 170, -1));
+
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 36)); // NOI18N
+        jLabel2.setText("1");
+        jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 70, 20, 40));
+
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 36)); // NOI18N
+        jLabel3.setText("El valor de una mano");
+        jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 130, 340, -1));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(16, 16, 16)
-                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(1006, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(147, 147, 147)
+                .addComponent(Boton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(190, 190, 190)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(Boton2, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(Boton3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(218, 218, 218)
+                .addComponent(Boton4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(124, 124, 124))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(10, 10, 10)
-                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(476, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(26, 26, 26)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 219, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 101, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(Boton4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(Boton3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(Boton2, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(Boton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(134, 134, 134))
         );
 
         pack();
@@ -92,13 +146,33 @@ public class Interfaz extends javax.swing.JFrame {
         });
     }
 
-    private void pintarImagen(JLabel lb1, String ruta){
+    private void pintarImagenLabel(JLabel lb, String ruta){
         this.imagen = new ImageIcon(ruta);
-        this.icono = new ImageIcon(this.imagen.getImage().getScaledInstance(lb1.getWidth(), lb1.getHeight(), Image.SCALE_SMOOTH));
-        lb1.setIcon(this.icono);
+        this.icono = new ImageIcon(this.imagen.getImage().getScaledInstance(lb.getWidth(), lb.getHeight(), Image.SCALE_SMOOTH));
+        lb.setIcon(this.icono);
         this.repaint();
     }
+    
+    private void pintarImagenBoton(JButton button, String ruta) {
+    ImageIcon imagen = new ImageIcon(ruta);
+    Image imagenEscalada = imagen.getImage().getScaledInstance(button.getWidth(), button.getHeight(), Image.SCALE_SMOOTH);
+    ImageIcon icono = new ImageIcon(imagenEscalada);
+    button.setIcon(icono);
+    button.repaint();
+}
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel Boton1;
+    private javax.swing.JPanel Boton2;
+    private javax.swing.JPanel Boton3;
+    private javax.swing.JPanel Boton4;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton4;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JPanel jPanel1;
     // End of variables declaration//GEN-END:variables
 }
