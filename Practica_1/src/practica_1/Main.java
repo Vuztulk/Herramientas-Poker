@@ -12,7 +12,7 @@ public class Main {
         String apartado = args[0];
         String inputFile = args[1];
         String outputFile = args[2];
-
+a
         try {
             List<String> manos = leerArchivo(inputFile);
             List<String> resultados = new ArrayList<>();
