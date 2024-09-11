@@ -1,1 +1,13 @@
-Resultado para la mano: 1s
+Mejor mano: Pareja de As
+Draw: Flush Draw
+
+Mejor mano: Carta alta: J
+Draw: Straight Open-Ended
+
+Mejor mano: Carta alta: 6
+Draw: Straight Open-Ended
+
+Mejor mano: Pareja de Ks
+
+Mejor mano: Carta alta: 9
+
