@@ -94,7 +94,7 @@ public class Interfaz extends javax.swing.JFrame {
 
     private void pintarImagen(JLabel lb1, String ruta){
         this.imagen = new ImageIcon(ruta);
-        this.icono = new ImageIcon(this.imagen.getImage().getScaledInstance(lb1.getWidth(),lb1.getHeight(), Image.SCALE_SMOOTH));
+        this.icono = new ImageIcon(this.imagen.getImage().getScaledInstance(lb1.getWidth(), lb1.getHeight(), Image.SCALE_SMOOTH));
         lb1.setIcon(this.icono);
         this.repaint();
     }
