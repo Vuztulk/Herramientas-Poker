@@ -1,3 +1,5 @@
+package practica_1;
+
 import java.io.*;
 import java.util.*;
 
@@ -12,9 +14,10 @@ public class Main {
         String apartado = args[0];
         String inputFile = args[1];
         String outputFile = args[2];
-4
+
         try {
             List<String> manos = leerArchivo(inputFile);
+            System.out.print(manos);
             List<String> resultados = new ArrayList<>();
 
             switch (apartado) {
