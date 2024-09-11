@@ -39,9 +39,9 @@ public class Main {
         }
     }
 
-    private static List<String> leerArchivo(String nombreArchivo) throws IOException {
+    private static List<String> leerArchivo(String file) throws IOException {
         List<String> lineas = new ArrayList<>();
-        try (BufferedReader br = new BufferedReader(new FileReader(nombreArchivo))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String linea;
             while ((linea = br.readLine()) != null) {
                 lineas.add(linea);
