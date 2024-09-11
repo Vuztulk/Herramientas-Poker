@@ -3,7 +3,7 @@ package Vista;
 import java.io.*;
 import java.util.List;
 
-public class GUI {
+public class View {
 
     public List<String> leerArchivo(String nombreArchivo) throws IOException {
         List<String> lineas;
