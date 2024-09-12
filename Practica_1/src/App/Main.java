@@ -18,7 +18,7 @@ public class Main {
     	Model model = new Model();
     	View vista = new View();
     	Controller control = new Controller(model, vista);
-    	control.procesarArchivo("1","entrada1.txt", "salida1.txt");
+    	control.procesarOrden(args[0], args[1], args[2] );
     	
     }
 }

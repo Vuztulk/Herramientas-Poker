@@ -12,7 +12,7 @@ import java.io.File;
 
 public class GUI extends JFrame {
 
-    private Controller controller;
+    /*private Controller controller;
     private JTextArea outputArea;
     private JComboBox<String> comboBoxApartados;
     private JTextField fileInputField;
@@ -122,5 +122,5 @@ public class GUI extends JFrame {
 
         // Mostrar el contenido del archivo de salida en el área de texto
         outputArea.setText("Apartado " + numeroApartado + " ejecutado.\nRevisa el archivo de salida.");
-    }
+    }*/
 }

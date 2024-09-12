@@ -1,13 +1,7 @@
-Mejor mano: Pareja de As
-Draw: Flush Draw
+AhAc;3;QhJhTh
+- Best hand: Pareja de As with AhAcQhJhTh
+- Draw: Flush Draw
 
-Mejor mano: Carta alta: J
-Draw: Straight Open-Ended
-
-Mejor mano: Carta alta: 6
-Draw: Straight Open-Ended
-
-Mejor mano: Pareja de Ks
-
-Mejor mano: Carta alta: 9
+AhAc;5;As2s3h4dJd
+- Best hand: Carta alta: A with AhAcAs2s3h4dJd
 

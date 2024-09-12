@@ -1,13 +1,6 @@
-Mejor mano: Pareja de As
-Draw: Flush Draw
+J2: Carta alta: K
+J3: Carta alta: K
+J1: Pareja de As
+J4: Pareja de Ks
 
-Mejor mano: Carta alta: J
-Draw: Straight Open-Ended
-
-Mejor mano: Carta alta: 6
-Draw: Straight Open-Ended
-
-Mejor mano: Pareja de Ks
-
-Mejor mano: Carta alta: 9
 
