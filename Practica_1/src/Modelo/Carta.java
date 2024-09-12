@@ -17,7 +17,11 @@ public class Carta {
     public char getPalo() {
         return palo;
     }
-
+    
+    public String toString() {
+        return getNombreValor(valor) + "" + palo;
+    }
+    
     private int parseValor(char valor) {
         switch (valor) {
             case 'A': return 14;
@@ -29,4 +33,13 @@ public class Carta {
         }
     }
     
+    private String getNombreValor(int valor) {
+        switch (valor) {
+            case 11: return "J";
+            case 12: return "Q";
+            case 13: return "K";
+            case 14: return "A";
+            default: return String.valueOf(valor);
+        }
+    }
 }

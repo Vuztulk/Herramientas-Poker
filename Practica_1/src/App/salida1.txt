@@ -1,18 +1,18 @@
 AhAcQhJhTh
-- Best hand: Pareja de As
+- Best hand: Pareja de As: [Ah, Ac]
 - Draw: Flush Draw
 
 7h8h9dTdJd
-- Best hand: Escalera de J a 7
+- Best hand: Escalera de J a 7: [Jd, 10d, 9d, 8h, 7h]
 - Draw: Straight Open-Ended
 
 2h3d4c5s6s
-- Best hand: Escalera de 6 a 2
+- Best hand: Escalera de 6 a 2: [6s, 5s, 4c, 3d, 2h]
 - Draw: Straight Open-Ended
 
 KhKdQdJcTc
-- Best hand: Pareja de Ks
+- Best hand: Pareja de Ks: [Kh, Kd]
 
 5h5c5d7h9s
-- Best hand: Trío de 5s
+- Best hand: Trío de 5s: [5h, 5c, 5d]
 

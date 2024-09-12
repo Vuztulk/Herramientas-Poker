@@ -18,7 +18,7 @@ public class Model {
 	public String evaluarMejorMano(List<Carta> cartas) {
 		cartas.sort(Comparator.comparingInt(Carta::getValor).reversed());
 
-		int[] valores = new int[15]; // Para contar los valores de las cartas (1-14)
+		int[] valores = new int[15];
 		for (Carta carta : cartas) {
 			valores[carta.getValor()]++;
 		}
@@ -26,13 +26,28 @@ public class Model {
 		for (int i = 14; i >= 5; i--) {
 			if (valores[i] > 0 && valores[i - 1] > 0 && valores[i - 2] > 0 && valores[i - 3] > 0
 					&& valores[i - 4] > 0) {
-				return "Escalera de " + getNombreValor(i) + " a " + getNombreValor(i - 4);
+				List<Carta> escalera = new ArrayList<>();
+				for (int j = 0; j < 5; j++) {
+					for (Carta carta : cartas) {
+						if (carta.getValor() == i - j) {
+							escalera.add(carta);
+							break;
+						}
+					}
+				}
+				return "Escalera de " + getNombreValor(i) + " a " + getNombreValor(i - 4) + ": " + escalera;
 			}
 		}
 
 		for (int i = 14; i >= 2; i--) {
 			if (valores[i] == 4) {
-				return "Póker de " + getNombreValor(i) + "s";
+				List<Carta> poker = new ArrayList<>();
+				for (Carta carta : cartas) {
+					if (carta.getValor() == i) {
+						poker.add(carta);
+					}
+				}
+				return "Póker de " + getNombreValor(i) + "s: " + poker;
 			}
 		}
 
@@ -40,10 +55,22 @@ public class Model {
 			if (valores[i] == 3) {
 				for (int j = 14; j >= 2; j--) {
 					if (valores[j] == 2) {
-						return "Full de " + getNombreValor(i) + "s con " + getNombreValor(j) + "s";
+						List<Carta> full = new ArrayList<>();
+						for (Carta carta : cartas) {
+							if (carta.getValor() == i || carta.getValor() == j) {
+								full.add(carta);
+							}
+						}
+						return "Full de " + getNombreValor(i) + "s con " + getNombreValor(j) + "s: " + full;
 					}
 				}
-				return "Trío de " + getNombreValor(i) + "s";
+				List<Carta> trio = new ArrayList<>();
+				for (Carta carta : cartas) {
+					if (carta.getValor() == i) {
+						trio.add(carta);
+					}
+				}
+				return "Trío de " + getNombreValor(i) + "s: " + trio;
 			}
 		}
 
@@ -53,16 +80,29 @@ public class Model {
 				if (primeraPareja == 0) {
 					primeraPareja = i;
 				} else {
-					return "Doble pareja de " + getNombreValor(primeraPareja) + "s y " + getNombreValor(i) + "s";
+					List<Carta> doblePareja = new ArrayList<>();
+					for (Carta carta : cartas) {
+						if (carta.getValor() == primeraPareja || carta.getValor() == i) {
+							doblePareja.add(carta);
+						}
+					}
+					return "Doble pareja de " + getNombreValor(primeraPareja) + "s y " + getNombreValor(i) + "s: "
+							+ doblePareja;
 				}
 			}
 		}
 
 		if (primeraPareja != 0) {
-			return "Pareja de " + getNombreValor(primeraPareja) + "s";
+			List<Carta> pareja = new ArrayList<>();
+			for (Carta carta : cartas) {
+				if (carta.getValor() == primeraPareja) {
+					pareja.add(carta);
+				}
+			}
+			return "Pareja de " + getNombreValor(primeraPareja) + "s: " + pareja;
 		}
 
-		return "Carta alta: " + getNombreValor(cartas.get(0).getValor());
+		return "Carta alta: " + getNombreValor(cartas.get(0).getValor()) + ": " + cartas.get(0);
 	}
 
 	// Detectar posibles draws (flush, gutshot, open-ended) para el apartado 1
