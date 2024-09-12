@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="src" path="Practica_1/src"/>
+	<classpathentry kind="src" path="Practica_2/src"/>
+	<classpathentry kind="src" path="Practica_3/src"/>
+	<classpathentry kind="lib" path="Practica_1/dist/lib/AbsoluteLayout.jar"/>
+	<classpathentry kind="lib" path="Practica_1/dist/Practica_1.jar"/>
+	<classpathentry kind="output" path="Practica_1/build/classes"/>
+</classpath>
