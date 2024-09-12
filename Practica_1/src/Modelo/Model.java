@@ -105,11 +105,10 @@ public class Model {
 		return "Carta alta: " + getNombreValor(cartas.get(0).getValor()) + ": " + cartas.get(0);
 	}
 
-	// Detectar posibles draws (flush, gutshot, open-ended) para el apartado 1
 	public List<String> detectarDraws(List<Carta> cartas) {
 		List<String> draws = new ArrayList<>();
 		if (tieneFlushDraw(cartas)) {
-			draws.add("Flush Draw");
+			draws.add("Flush");
 		}
 		if (tieneGutshot(cartas)) {
 			draws.add("Gutshot");
@@ -170,7 +169,6 @@ public class Model {
 		return resultados;
 	}
 
-	// Verificar si hay un flush draw
 	private boolean tieneFlushDraw(List<Carta> cartas) {
 		Map<Character, Long> paloConteo = new HashMap<>();
 		for (Carta carta : cartas) {
@@ -179,34 +177,41 @@ public class Model {
 		return paloConteo.containsValue(4L);
 	}
 
-	// Verificar si hay un gutshot
 	private boolean tieneGutshot(List<Carta> cartas) {
 		List<Integer> valores = new ArrayList<>();
 		for (Carta carta : cartas) {
 			valores.add(carta.getValor());
 		}
-		valores.sort(Comparator.reverseOrder());
+		valores.sort(Comparator.naturalOrder());
 
-		// Logica para gutshot (escalera con un hueco)
-		return valores.get(0) - valores.get(1) == 2 && valores.get(1) - valores.get(2) == 1
-				&& valores.get(2) - valores.get(3) == 1;
+		for (int i = 0; i < valores.size() - 4; i++) {
+			int gap = valores.get(i + 4) - valores.get(i);
+			if (gap == 4) {
+				if (valores.get(i + 1) - valores.get(i) != 1 || valores.get(i + 2) - valores.get(i + 1) != 1
+						|| valores.get(i + 3) - valores.get(i + 2) != 1
+						|| valores.get(i + 4) - valores.get(i + 3) != 1) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
-	// Verificar si hay un open-ended
 	private boolean tieneOpenEnded(List<Carta> cartas) {
 		List<Integer> valores = new ArrayList<>();
 		for (Carta carta : cartas) {
 			valores.add(carta.getValor());
 		}
-		valores.sort(Comparator.reverseOrder());
+		valores.sort(Comparator.naturalOrder());
 
-		// Lógica para escalera open-ended
-		for (int i = 0; i < valores.size() - 1; i++) {
-			if (valores.get(i) - valores.get(i + 1) != 1) {
-				return false;
+		// Verificar todas las combinaciones posibles para un open-ended straight draw
+		for (int i = 0; i < valores.size() - 3; i++) {
+			if (valores.get(i + 3) - valores.get(i) == 3 && valores.get(i + 1) - valores.get(i) == 1
+					&& valores.get(i + 2) - valores.get(i + 1) == 1) {
+				return true;
 			}
 		}
-		return true;
+		return false;
 	}
 
 	// Obtener el nombre del valor de la carta
