@@ -9,7 +9,6 @@ package practica_2;
  * @author luisb
  */
 public class Main {
-2
     /**
      * @param args the command line arguments
      */
