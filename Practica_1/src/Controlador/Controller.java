@@ -48,7 +48,9 @@ public class Controller {
 	private List<String> procesarApartado1(List<String> manos) {
 
 		List<String> resultados = new ArrayList<>();
+		
 		for (String mano : manos) {
+			
 			List<Carta> cartas = modelo.parsearCartas(mano);
 			String mejorMano = modelo.evaluarMejorMano(cartas);
 			List<String> draws = modelo.detectarDraws(cartas);
@@ -72,21 +74,21 @@ public class Controller {
 		for (String mano : manos) {
 
 			String[] partes = mano.split(";");
+			
 			List<Carta> cartasPropias = modelo.parsearCartas(partes[0]);
-
 			int numCartasComunes = Integer.parseInt(partes[1]);
 			List<Carta> cartasComunes = modelo.parsearCartas(partes[2]);
-
-			String mejorMano = modelo.evaluarMejorManoConComunes(cartasPropias, cartasComunes);
-
+			
+			List<Carta> mejorManoCartas = modelo.evaluarMejorManoConComunes(cartasPropias, cartasComunes);
+			
+			String mejorMano = modelo.evaluarMejorMano(mejorManoCartas);
+			
 			StringBuilder resultado = new StringBuilder();
 			resultado.append(partes[0]).append(";").append(partes[1]).append(";").append(partes[2]).append("\n")
-					.append("- Best hand: ").append(mejorMano).append(" with ").append(partes[0]).append(partes[2])
-					.append("\n");
+					.append("- Best hand: ").append(mejorManoCartas).append(" with ").append(partes[0]).append(partes[2]).append("\n");
 
-			// Si hay menos de 5 cartas comunes calcular y mostrar los draws
 			if (numCartasComunes < 5) {
-				List<String> draws = modelo.detectarDrawsConComunes(cartasPropias, cartasComunes);
+				List<String> draws = modelo.detectarDraws(mejorManoCartas);
 				for (String draw : draws) {
 					resultado.append("- Draw: ").append(draw).append("\n");
 				}

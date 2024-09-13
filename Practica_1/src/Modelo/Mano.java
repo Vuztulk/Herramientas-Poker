@@ -63,7 +63,7 @@ public class Mano {
 		for (int i = 14; i >= 2; i--) {
 			if (valores[i] == 4) {
 				mejoresCartas = UtilidadesMano.obtenerCartasPorValor(cartas, i, 4);
-				return "Póker de " + UtilidadesCarta.getNombreValor(i) + " " + mejoresCartas;
+				return "Poker de " + UtilidadesCarta.getNombreValor(i) + " " + mejoresCartas;
 			}
 		}
 
@@ -80,7 +80,7 @@ public class Mano {
 		for (int i = 14; i >= 2; i--) {
 			if (valores[i] == 3) {
 				mejoresCartas = UtilidadesMano.obtenerCartasPorValor(cartas, i, 3);
-				return "Trío de " + UtilidadesCarta.getNombreValor(i) + " " + mejoresCartas;
+				return "Trio de " + UtilidadesCarta.getNombreValor(i) + " " + mejoresCartas;
 			}
 		}
 

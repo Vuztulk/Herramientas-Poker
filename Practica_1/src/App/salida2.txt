@@ -1,7 +1,6 @@
 AhAc;3;QhJhTh
-- Best hand: Pareja de As with AhAcQhJhTh
-- Draw: Flush Draw
+- Best hand: [Ah, Ac, Qh] with AhAcQhJhTh
 
 AhAc;5;As2s3h4dJd
-- Best hand: Carta alta: A with AhAcAs2s3h4dJd
+- Best hand: [Ah, Ac, As, 2s, 3h] with AhAcAs2s3h4dJd
 

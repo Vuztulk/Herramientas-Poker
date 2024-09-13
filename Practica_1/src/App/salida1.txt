@@ -14,7 +14,7 @@ KhKdQdJcTc
 - Draw: Straight Open-Ended
 
 5h5c5d7h9s
-- Best hand: Trío de 5 [5h, 5c, 5d]
+- Best hand: Trio de 5 [5h, 5c, 5d]
 
 5h5h5h5h5h
 - Best hand: Color [5h, 5h, 5h, 5h, 5h]
@@ -26,6 +26,13 @@ KhKdQdJcTc
 - Best hand: Carta mas alta [Tc]
 - Draw: Flush Draw
 
-AhKcQh
-- Best hand: Carta mas alta [Ah]
+AhKcQh2h4h6h8hTc2h3h4h5h6h
+- Best hand: Escalera de color [2 a 6]
+- Draw: Straight Gutshot
+- Draw: Straight Open-Ended
+
+AhAcQhJhTh
+- Best hand: Pareja de A [Ah, Ac]
+- Draw: Flush Draw
+- Draw: Straight Gutshot
 
