@@ -48,17 +48,15 @@ public class Controller {
 	private List<String> procesarApartado1(List<String> manos) {
 
 		List<String> resultados = new ArrayList<>();
-		
+
 		for (String mano : manos) {
-			
+
 			List<Carta> cartas = modelo.parsearCartas(mano);
-			String mejorMano = modelo.evaluarMejorMano(cartas);
-			List<String> draws = modelo.detectarDraws(cartas);
 
 			StringBuilder resultado = new StringBuilder(mano).append("\n");
-			resultado.append("- Best hand: ").append(mejorMano).append("\n");
+			resultado.append("- Best hand: ").append(modelo.evaluarMejorMano(cartas)).append("\n");
 
-			for (String draw : draws) {
+			for (String draw : modelo.detectarDraws(cartas)) {
 				resultado.append("- Draw: ").append(draw).append("\n");
 			}
 
@@ -72,22 +70,15 @@ public class Controller {
 		List<String> resultados = new ArrayList<>();
 
 		for (String mano : manos) {
-
 			String[] partes = mano.split(";");
-			
-			List<Carta> cartasPropias = modelo.parsearCartas(partes[0]);
-			int numCartasComunes = Integer.parseInt(partes[1]);
-			List<Carta> cartasComunes = modelo.parsearCartas(partes[2]);
-			
-			List<Carta> mejorManoCartas = modelo.evaluarMejorManoConComunes(cartasPropias, cartasComunes);
-			
-			String mejorMano = modelo.evaluarMejorMano(mejorManoCartas);
-			
-			StringBuilder resultado = new StringBuilder();
-			resultado.append(partes[0]).append(";").append(partes[1]).append(";").append(partes[2]).append("\n")
-					.append("- Best hand: ").append(mejorManoCartas).append(" with ").append(partes[0]).append(partes[2]).append("\n");
 
-			if (numCartasComunes < 5) {
+			List<Carta> mejorManoCartas = modelo.evaluarMejorManoConComunes(modelo.parsearCartas(partes[0]), modelo.parsearCartas(partes[2]));
+			String mejorMano = modelo.evaluarMejorMano(mejorManoCartas);
+
+			String resultadoBase = String.join(";", partes[0], partes[1], partes[2]) + "\n";
+			StringBuilder resultado = new StringBuilder(resultadoBase).append("- Best hand: ").append(mejorMano).append(" with ").append(partes[0]).append(partes[2]).append("\n");
+
+			if (Integer.parseInt(partes[1]) < 5) {//Si hay menos de 5 cartas comunes se miran los draws
 				List<String> draws = modelo.detectarDraws(mejorManoCartas);
 				for (String draw : draws) {
 					resultado.append("- Draw: ").append(draw).append("\n");

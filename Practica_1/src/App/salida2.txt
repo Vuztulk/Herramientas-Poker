@@ -1,6 +1,8 @@
 AhAc;3;QhJhTh
-- Best hand: [Ah, Ac, Qh] with AhAcQhJhTh
+- Best hand: Pareja de A [Ah, Ac] with AhAcQhJhTh
+- Draw: Flush Draw
+- Draw: Straight Gutshot
 
 AhAc;5;As2s3h4dJd
-- Best hand: [Ah, Ac, As, 2s, 3h] with AhAcAs2s3h4dJd
+- Best hand: Trio de A [Ah, Ac, As] with AhAcAs2s3h4dJd
 
