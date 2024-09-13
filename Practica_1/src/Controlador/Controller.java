@@ -26,7 +26,7 @@ public class Controller {
 				resultados = procesarApartado1(manos);
 				break;
 			case "2":
-				resultados = procesarApartado2(manos);
+				//resultados = procesarApartado2(manos);
 				break;
 			case "3":
 				//resultados = procesarApartado3(manos);
@@ -60,11 +60,10 @@ public class Controller {
 			
 			resultados.add(resultado.toString());
 		}
-		
 		return resultados;
 	}
 
-	private List<String> procesarApartado2(List<String> manos) {
+	/*private List<String> procesarApartado2(List<String> manos) {
 		List<String> resultados = new ArrayList<>();
 		for (String mano : manos) {
 			// Dividimos las partes del string: cartas propias y comunes

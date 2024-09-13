@@ -1,24 +1,28 @@
 AhAcQhJhTh
-- Best hand: Pareja de As con: [Ah, Ac]
+- Best hand: Pareja de A [Ah, Ac]
 - Draw: Flush Draw
 - Draw: Straight Gutshot
 
 7h8h9dTdJd
-- Best hand: Escalera de J a 7
+- Best hand: Escalera de 7 a J
 
 2h3d4c5s6s
-- Best hand: Escalera de 6 a 2
+- Best hand: Escalera de 2 a 6
 
 KhKdQdJcTc
-- Best hand: Pareja de K con: [Kh, Kd]
+- Best hand: Pareja de K [Kh, Kd]
 - Draw: Straight Open-Ended
 
 5h5c5d7h9s
-- Best hand: Trío de 5 con: [5h, 5c, 5d]
+- Best hand: Trío de 5 [5h, 5c, 5d]
 
 5h5h5h5h5h
-- Best hand: Color con: [5h, 5h, 5h, 5h, 5h]
+- Best hand: Color [5h, 5h, 5h, 5h, 5h]
 
 2h3h4h5h6h
-- Best hand: Escalera de color de 6 a 2
+- Best hand: Escalera de color de 2 a 6
+
+2h4h6h8hTc
+- Best hand: Carta alta: 10
+- Draw: Flush Draw
 

@@ -33,7 +33,7 @@ public class Model {
 				for (int i = 14; i >= 5; i--) {
 					if (esEscalera(valoresDelPalo, i)) {
 						mejoresCartas = obtenerCartasPorValor(cartasDelMismoPalo, i, 5);
-						return "Escalera de color de " + getNombreValor(i) + " a " + getNombreValor(i - 4);
+						return "Escalera de color de " + UtilidadesCarta.getNombreValor(i - 4) + " a " + UtilidadesCarta.getNombreValor(i);
 					}
 				}
 			}
@@ -44,14 +44,14 @@ public class Model {
 			if (conteoPalos.get(palo) >= 5) {
 				mejoresCartas = filtrarCartasPorPalo(cartas, palo);
 				mejoresCartas.sort(Comparator.comparingInt(Carta::getValor).reversed());
-				return "Color con: " + mejoresCartas.subList(0, 5);
+				return "Color " + mejoresCartas.subList(0, 5);
 			}
 		}
 		// Escalera
 		for (int i = 14; i >= 5; i--) {
 			if (esEscalera(valores, i)) {
 				mejoresCartas = obtenerCartasPorValor(cartas, i, 5);
-				return "Escalera de " + getNombreValor(i) + " a " + getNombreValor(i - 4);
+				return "Escalera de " + UtilidadesCarta.getNombreValor(i - 4) + " a " + UtilidadesCarta.getNombreValor(i);
 			}
 		}
 
@@ -59,7 +59,7 @@ public class Model {
 		for (int i = 14; i >= 2; i--) {
 			if (valores[i] == 4) {
 				mejoresCartas = obtenerCartasPorValor(cartas, i, 4);
-				return "Póker de " + getNombreValor(i) + " con: " + mejoresCartas;
+				return "Póker de " + UtilidadesCarta.getNombreValor(i) + " " + mejoresCartas;
 			}
 		}
 
@@ -69,14 +69,14 @@ public class Model {
 			int pareja = obtenerValorConRepeticiones(valores, 2);
 			mejoresCartas = obtenerCartasPorValor(cartas, trio, 3);
 			mejoresCartas.addAll(obtenerCartasPorValor(cartas, pareja, 2));
-			return "Full de " + getNombreValor(trio) + " con " + getNombreValor(pareja) + ": " + mejoresCartas;
+			return "Full de " + UtilidadesCarta.getNombreValor(trio) + " " + UtilidadesCarta.getNombreValor(pareja) + ": " + mejoresCartas;
 		}
 
 		// Trio
 		for (int i = 14; i >= 2; i--) {
 			if (valores[i] == 3) {
 				mejoresCartas = obtenerCartasPorValor(cartas, i, 3);
-				return "Trío de " + getNombreValor(i) + " con: " + mejoresCartas;
+				return "Trío de " + UtilidadesCarta.getNombreValor(i) + " " + mejoresCartas;
 			}
 		}
 
@@ -84,16 +84,15 @@ public class Model {
 		for (int i = 14; i >= 2; i--) {
 			if (valores[i] == 2) {
 				mejoresCartas = obtenerCartasPorValor(cartas, i, 2);
-				return "Pareja de " + getNombreValor(i) + " con: " + mejoresCartas;
+				return "Pareja de " + UtilidadesCarta.getNombreValor(i) + " " + mejoresCartas;
 			}
 		}
 
 		// Carta mas alta
-		mejoresCartas = obtenerCartasPorValor(cartas, cartas.get(0).getValor(), 1);
-		return "Carta alta: " + getNombreValor(cartas.get(0).getValor()) + " con: " + mejoresCartas;
+		return "Carta alta: " + (UtilidadesCarta.obtenerValorMaximo(cartas));
 	}
 
-
+	// Full
 	private boolean esFull(int[] valores) {
 		boolean hayTrio = false;
 		boolean hayPareja = false;
@@ -151,15 +150,6 @@ public class Model {
 		return -1;
 	}
 
-	private String getNombreValor(int valor) {
-		return switch (valor) {
-		case 14 -> "As";
-		case 13 -> "K";
-		case 12 -> "Q";
-		case 11 -> "J";
-		default -> String.valueOf(valor);
-		};
-	}
 
 	public List<String> detectarDraws(List<Carta> cartas) {
 
