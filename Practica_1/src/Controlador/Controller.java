@@ -26,13 +26,13 @@ public class Controller {
 				resultados = procesarApartado1(manos);
 				break;
 			case "2":
-				resultados = procesarApartado2(manos);
+				//resultados = procesarApartado2(manos);
 				break;
 			case "3":
-				resultados = procesarApartado3(manos);
+				//resultados = procesarApartado3(manos);
 				break;
 			case "4":
-				resultados = procesarApartado4(manos);
+				//resultados = procesarApartado4(manos);
 				break;
 			default:
 
@@ -60,7 +60,7 @@ public class Controller {
 		return resultados;
 	}
 
-	private List<String> procesarApartado2(List<String> manos) {
+	/*private List<String> procesarApartado2(List<String> manos) {
 		List<String> resultados = new ArrayList<>();
 		for (String mano : manos) {
 			// Dividimos las partes del string: cartas propias y comunes
@@ -117,6 +117,6 @@ public class Controller {
 	private List<String> procesarApartado4(List<String> manos) {
 		// TODO Auto-generated method stub
 		return null;
-	}
+	}*/
 
 }

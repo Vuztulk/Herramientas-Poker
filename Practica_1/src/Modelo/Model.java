@@ -4,169 +4,145 @@ import java.util.*;
 
 public class Model {
 
-	// Parsear las cartas desde una cadena de caracteres
+	// Función para convertir una mano de String a objetos Carta
 	public List<Carta> parsearCartas(String mano) {
 		List<Carta> cartas = new ArrayList<>();
 		for (int i = 0; i < mano.length(); i += 2) {
-			char valor = mano.charAt(i);
-			char palo = mano.charAt(i + 1);
-			cartas.add(new Carta(valor, palo));
+			cartas.add(new Carta(mano.charAt(i), mano.charAt(i + 1)));
 		}
 		return cartas;
 	}
 
+	// Función para evaluar la mejor mano de poker
 	public String evaluarMejorMano(List<Carta> cartas) {
-		cartas.sort(Comparator.comparingInt(Carta::getValor).reversed());
+		int[] valores = new int[15]; // Array para contar la aparición de valores de 2 a 14
+		List<Carta> mejoresCartas = new ArrayList<>();
 
-		int[] valores = new int[15];
+		// Llenar el array con la cantidad de cada valor
 		for (Carta carta : cartas) {
 			valores[carta.getValor()]++;
 		}
 
+		// Verificar escalera
 		for (int i = 14; i >= 5; i--) {
-			if (valores[i] > 0 && valores[i - 1] > 0 && valores[i - 2] > 0 && valores[i - 3] > 0
-					&& valores[i - 4] > 0) {
-				List<Carta> escalera = new ArrayList<>();
-				for (int j = 0; j < 5; j++) {
-					for (Carta carta : cartas) {
-						if (carta.getValor() == i - j) {
-							escalera.add(carta);
-							break;
-						}
-					}
-				}
-				return "Escalera de " + getNombreValor(i) + " a " + getNombreValor(i - 4) + ": " + escalera;
+			if (esEscalera(valores, i)) {
+				mejoresCartas = obtenerCartasPorValor(cartas, i, 5);
+				return "Escalera de " + getNombreValor(i) + " a " + getNombreValor(i - 4);
 			}
 		}
 
+		// Verificar póker
 		for (int i = 14; i >= 2; i--) {
 			if (valores[i] == 4) {
-				List<Carta> poker = new ArrayList<>();
-				for (Carta carta : cartas) {
-					if (carta.getValor() == i) {
-						poker.add(carta);
-					}
-				}
-				return "Póker de " + getNombreValor(i) + "s: " + poker;
+				mejoresCartas = obtenerCartasPorValor(cartas, i, 4);
+				return "Póker de " + getNombreValor(i) + " con: " + mejoresCartas;
 			}
 		}
 
+		// Verificar full
+		if (esFull(valores)) {
+			int trio = obtenerValorConRepeticiones(valores, 3);
+			int pareja = obtenerValorConRepeticiones(valores, 2);
+			mejoresCartas = obtenerCartasPorValor(cartas, trio, 3);
+			mejoresCartas.addAll(obtenerCartasPorValor(cartas, pareja, 2));
+			return "Full de " + getNombreValor(trio) + " con " + getNombreValor(pareja) + ": " + mejoresCartas;
+		}
+
+		// Verificar trío
 		for (int i = 14; i >= 2; i--) {
 			if (valores[i] == 3) {
-				for (int j = 14; j >= 2; j--) {
-					if (valores[j] == 2) {
-						List<Carta> full = new ArrayList<>();
-						for (Carta carta : cartas) {
-							if (carta.getValor() == i || carta.getValor() == j) {
-								full.add(carta);
-							}
-						}
-						return "Full de " + getNombreValor(i) + "s con " + getNombreValor(j) + "s: " + full;
-					}
-				}
-				List<Carta> trio = new ArrayList<>();
-				for (Carta carta : cartas) {
-					if (carta.getValor() == i) {
-						trio.add(carta);
-					}
-				}
-				return "Trío de " + getNombreValor(i) + "s: " + trio;
+				mejoresCartas = obtenerCartasPorValor(cartas, i, 3);
+				return "Trío de " + getNombreValor(i) + " con: " + mejoresCartas;
 			}
 		}
 
-		int primeraPareja = 0;
+		// Verificar pareja
 		for (int i = 14; i >= 2; i--) {
 			if (valores[i] == 2) {
-				if (primeraPareja == 0) {
-					primeraPareja = i;
-				} else {
-					List<Carta> doblePareja = new ArrayList<>();
-					for (Carta carta : cartas) {
-						if (carta.getValor() == primeraPareja || carta.getValor() == i) {
-							doblePareja.add(carta);
-						}
-					}
-					return "Doble pareja de " + getNombreValor(primeraPareja) + "s y " + getNombreValor(i) + "s: "
-							+ doblePareja;
-				}
+				mejoresCartas = obtenerCartasPorValor(cartas, i, 2);
+				return "Pareja de " + getNombreValor(i) + " con: " + mejoresCartas;
 			}
 		}
 
-		if (primeraPareja != 0) {
-			List<Carta> pareja = new ArrayList<>();
-			for (Carta carta : cartas) {
-				if (carta.getValor() == primeraPareja) {
-					pareja.add(carta);
-				}
-			}
-			return "Pareja de " + getNombreValor(primeraPareja) + "s: " + pareja;
-		}
-
-		return "Carta alta: " + getNombreValor(cartas.get(0).getValor()) + ": " + cartas.get(0);
+		// Si no hay combinaciones, retornar la carta más alta
+		mejoresCartas = obtenerCartasPorValor(cartas, cartas.get(0).getValor(), 1);
+		return "Carta alta: " + getNombreValor(cartas.get(0).getValor()) + " con: " + mejoresCartas;
 	}
 
+	// Función para verificar si hay un full (trío + pareja)
+	private boolean esFull(int[] valores) {
+		boolean hayTrio = false;
+		boolean hayPareja = false;
+
+		// Verifica si hay un trío
+		for (int valor : valores) {
+			if (valor == 3) {
+				hayTrio = true;
+				break;
+			}
+		}
+
+		// Verifica si hay una pareja
+		for (int valor : valores) {
+			if (valor == 2) {
+				hayPareja = true;
+				break;
+			}
+		}
+
+		// Hay full si existe al menos un trío y una pareja
+		return hayTrio && hayPareja;
+	}
+
+	// Función auxiliar para verificar si hay escalera
+	private boolean esEscalera(int[] valores, int maxValor) {
+		for (int i = 0; i < 5; i++) {
+			if (valores[maxValor - i] == 0)
+				return false;
+		}
+		return true;
+	}
+
+	// Funciones auxiliares para obtener cartas por valor
+	private List<Carta> obtenerCartasPorValor(List<Carta> cartas, int valor, int cantidad) {
+		List<Carta> cartasSeleccionadas = new ArrayList<>();
+		for (Carta carta : cartas) {
+			if (carta.getValor() == valor && cartasSeleccionadas.size() < cantidad) {
+				cartasSeleccionadas.add(carta);
+			}
+		}
+		return cartasSeleccionadas;
+	}
+
+	private int obtenerValorConRepeticiones(int[] valores, int repeticiones) {
+		for (int i = 14; i >= 2; i--) {
+			if (valores[i] == repeticiones)
+				return i;
+		}
+		return -1; // No debería pasar
+	}
+
+	// Función para obtener el nombre de la carta (valor)
+	private String getNombreValor(int valor) {
+		return switch (valor) {
+		case 14 -> "As";
+		case 13 -> "K";
+		case 12 -> "Q";
+		case 11 -> "J";
+		default -> String.valueOf(valor);
+		};
+	}
+
+	// Detectar draws
 	public List<String> detectarDraws(List<Carta> cartas) {
 		List<String> draws = new ArrayList<>();
-		if (tieneFlushDraw(cartas)) {
-			draws.add("Flush");
-		}
-		if (tieneGutshot(cartas)) {
-			draws.add("Gutshot");
-		}
-		if (tieneOpenEnded(cartas)) {
+		if (tieneFlushDraw(cartas))
+			draws.add("Flush Draw");
+		if (tieneGutshot(cartas))
+			draws.add("Straight Gutshot");
+		if (tieneOpenEnded(cartas))
 			draws.add("Straight Open-Ended");
-		}
 		return draws;
-	}
-
-	// Evaluar la mejor mano con cartas comunes para el apartado 2
-	public String evaluarMejorManoConComunes(List<Carta> cartasPropias, List<Carta> cartasComunes) {
-		// Combina las cartas propias con las comunes
-		List<Carta> todasCartas = new ArrayList<>(cartasPropias);
-		todasCartas.addAll(cartasComunes);
-
-		// Ordena las cartas por valor descendente
-		todasCartas.sort(Comparator.comparingInt(Carta::getValor).reversed());
-
-		// Identificar la mejor mano posible combinando las cartas propias y comunes
-		return evaluarMejorMano(todasCartas); // Sólo devuelve la mejor mano
-	}
-
-	// Detectar draws con cartas comunes para el apartado 2
-	public List<String> detectarDrawsConComunes(List<Carta> cartasPropias, List<Carta> cartasComunes) {
-		List<Carta> todasCartas = new ArrayList<>(cartasPropias);
-		todasCartas.addAll(cartasComunes);
-		return detectarDraws(todasCartas); // Reutiliza la función de detectarDraws
-	}
-
-	// Ordenar jugadores por mejor mano para el apartado 3
-	public List<String> ordenarJugadoresPorMejorMano(List<List<Carta>> cartasJugadores, List<Carta> cartasComunes) {
-		List<String> resultados = new ArrayList<>();
-		Map<Integer, String> ranking = new HashMap<>();
-
-		for (int i = 0; i < cartasJugadores.size(); i++) {
-			List<Carta> todasCartas = new ArrayList<>(cartasJugadores.get(i));
-			todasCartas.addAll(cartasComunes);
-			String mejorMano = evaluarMejorMano(todasCartas);
-			ranking.put(i + 1, mejorMano);
-		}
-
-		List<Integer> indices = new ArrayList<>(ranking.keySet());
-		for (int i = 0; i < indices.size() - 1; i++) {
-			for (int j = i + 1; j < indices.size(); j++) {
-				if (ranking.get(indices.get(i)).compareTo(ranking.get(indices.get(j))) > 0) {
-					int temp = indices.get(i);
-					indices.set(i, indices.get(j));
-					indices.set(j, temp);
-				}
-			}
-		}
-
-		for (int index : indices) {
-			resultados.add("J" + index + ": " + ranking.get(index));
-		}
-
-		return resultados;
 	}
 
 	private boolean tieneFlushDraw(List<Carta> cartas) {
@@ -185,13 +161,8 @@ public class Model {
 		valores.sort(Comparator.naturalOrder());
 
 		for (int i = 0; i < valores.size() - 4; i++) {
-			int gap = valores.get(i + 4) - valores.get(i);
-			if (gap == 4) {
-				if (valores.get(i + 1) - valores.get(i) != 1 || valores.get(i + 2) - valores.get(i + 1) != 1
-						|| valores.get(i + 3) - valores.get(i + 2) != 1
-						|| valores.get(i + 4) - valores.get(i + 3) != 1) {
-					return true;
-				}
+			if (valores.get(i + 4) - valores.get(i) == 4 && valores.get(i + 3) - valores.get(i + 1) != 2) {
+				return true;
 			}
 		}
 		return false;
@@ -204,31 +175,15 @@ public class Model {
 		}
 		valores.sort(Comparator.naturalOrder());
 
-		// Verificar todas las combinaciones posibles para un open-ended straight draw
 		for (int i = 0; i < valores.size() - 3; i++) {
-			if (valores.get(i + 3) - valores.get(i) == 3 && valores.get(i + 1) - valores.get(i) == 1
-					&& valores.get(i + 2) - valores.get(i + 1) == 1) {
+			int diferencia = valores.get(i + 3) - valores.get(i);
+
+			// Verificar que la secuencia no esté en los extremos
+			if (diferencia == 3 && valores.get(i) > 2 && valores.get(i + 3) < 14) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	// Obtener el nombre del valor de la carta
-	private String getNombreValor(int valor) {
-		switch (valor) {
-		case 14:
-			return "A";
-		case 13:
-			return "K";
-		case 12:
-			return "Q";
-		case 11:
-			return "J";
-		case 10:
-			return "T";
-		default:
-			return String.valueOf(valor);
-		}
-	}
 }
