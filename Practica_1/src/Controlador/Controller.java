@@ -21,22 +21,24 @@ public class Controller {
 		try {
 			List<String> manos = vista.leerArchivo(archivoEntrada);
 			List<String> resultados = new ArrayList<>();
+
 			switch (apartado) {
 			case "1":
 				resultados = procesarApartado1(manos);
 				break;
 			case "2":
-				//resultados = procesarApartado2(manos);
+				resultados = procesarApartado2(manos);
 				break;
 			case "3":
-				//resultados = procesarApartado3(manos);
+				// resultados = procesarApartado3(manos);
 				break;
 			case "4":
-				//resultados = procesarApartado4(manos);
+				// resultados = procesarApartado4(manos);
 				break;
 			default:
-
+				break;
 			}
+
 			vista.escribirArchivo(archivoSalida, resultados);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -44,7 +46,7 @@ public class Controller {
 	}
 
 	private List<String> procesarApartado1(List<String> manos) {
-		
+
 		List<String> resultados = new ArrayList<>();
 		for (String mano : manos) {
 			List<Carta> cartas = modelo.parsearCartas(mano);
@@ -53,35 +55,36 @@ public class Controller {
 
 			StringBuilder resultado = new StringBuilder(mano).append("\n");
 			resultado.append("- Best hand: ").append(mejorMano).append("\n");
-			
+
 			for (String draw : draws) {
 				resultado.append("- Draw: ").append(draw).append("\n");
 			}
-			
+
 			resultados.add(resultado.toString());
 		}
 		return resultados;
+
 	}
 
-	/*private List<String> procesarApartado2(List<String> manos) {
+	private List<String> procesarApartado2(List<String> manos) {
 		List<String> resultados = new ArrayList<>();
-		for (String mano : manos) {
-			// Dividimos las partes del string: cartas propias y comunes
-			String[] partes = mano.split(";");
-			List<Carta> cartasPropias = modelo.parsearCartas(partes[0]); // Cartas del jugador
-			int numCartasComunes = Integer.parseInt(partes[1]); // Número de cartas comunes
-			List<Carta> cartasComunes = modelo.parsearCartas(partes[2]); // Cartas comunes
 
-			// Evaluar la mejor mano combinando cartas propias y comunes
+		for (String mano : manos) {
+
+			String[] partes = mano.split(";");
+			List<Carta> cartasPropias = modelo.parsearCartas(partes[0]);
+
+			int numCartasComunes = Integer.parseInt(partes[1]);
+			List<Carta> cartasComunes = modelo.parsearCartas(partes[2]);
+
 			String mejorMano = modelo.evaluarMejorManoConComunes(cartasPropias, cartasComunes);
 
-			// Crear el formato de salida para la mejor mano
 			StringBuilder resultado = new StringBuilder();
 			resultado.append(partes[0]).append(";").append(partes[1]).append(";").append(partes[2]).append("\n")
 					.append("- Best hand: ").append(mejorMano).append(" with ").append(partes[0]).append(partes[2])
-					.append("\n"); // Añade las cartas usadas
+					.append("\n");
 
-			// Si hay menos de 5 cartas comunes, calcular y mostrar los draws
+			// Si hay menos de 5 cartas comunes calcular y mostrar los draws
 			if (numCartasComunes < 5) {
 				List<String> draws = modelo.detectarDrawsConComunes(cartasPropias, cartasComunes);
 				for (String draw : draws) {
@@ -89,13 +92,13 @@ public class Controller {
 				}
 			}
 
-			// Añadir el resultado a la lista
 			resultados.add(resultado.toString());
 		}
+
 		return resultados;
 	}
 
-	/*private List<String> procesarApartado3(List<String> manos) {
+	private List<String> procesarApartado3(List<String> manos) {
 		List<String> resultados = new ArrayList<>();
 		for (String mano : manos) {
 			String[] partes = mano.split(";");
@@ -118,8 +121,7 @@ public class Controller {
 	}
 
 	private List<String> procesarApartado4(List<String> manos) {
-		// TODO Auto-generated method stub
 		return null;
-	}*/
+	}
 
 }

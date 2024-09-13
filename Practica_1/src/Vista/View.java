@@ -21,11 +21,4 @@ public class View {
             }
         }
     }
-
-    public void mostrarResultados(String mejorMano, List<String> draws) {
-        System.out.println("Mejor mano: " + mejorMano);
-        for (String draw : draws) {
-            System.out.println("Draw: " + draw);
-        }
-    }
 }

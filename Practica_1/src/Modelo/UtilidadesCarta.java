@@ -1,11 +1,13 @@
 package Modelo;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class UtilidadesCarta {
 
     public static String getNombreValor(int valor) {
         switch (valor) {
+        	case 10: return "T";
             case 11: return "J";
             case 12: return "Q";
             case 13: return "K";
@@ -37,4 +39,13 @@ public class UtilidadesCarta {
         }
         return -1;
     }
+    
+    public static List<Carta> parsearCartas(String mano) {
+        List<Carta> cartas = new ArrayList<>();
+        for (int i = 0; i < mano.length(); i += 2) {
+            cartas.add(new Carta(mano.charAt(i), mano.charAt(i + 1)));
+        }
+        return cartas;
+    }
+    
 }
