@@ -4,7 +4,6 @@ import java.util.*;
 
 public class Model {
 
-	// Función para convertir una mano de String a objetos Carta
 	public List<Carta> parsearCartas(String mano) {
 		List<Carta> cartas = new ArrayList<>();
 		for (int i = 0; i < mano.length(); i += 2) {
@@ -13,17 +12,42 @@ public class Model {
 		return cartas;
 	}
 
-	// Función para evaluar la mejor mano de poker
 	public String evaluarMejorMano(List<Carta> cartas) {
-		int[] valores = new int[15]; // Array para contar la aparición de valores de 2 a 14
+		int[] valores = new int[15];
 		List<Carta> mejoresCartas = new ArrayList<>();
+		Map<Character, Long> conteoPalos = new HashMap<>();
 
-		// Llenar el array con la cantidad de cada valor
 		for (Carta carta : cartas) {
 			valores[carta.getValor()]++;
+			conteoPalos.put(carta.getPalo(), conteoPalos.getOrDefault(carta.getPalo(), 0L) + 1);
 		}
 
-		// Verificar escalera
+		// Escalera de color
+		for (Character palo : conteoPalos.keySet()) {
+			if (conteoPalos.get(palo) >= 5) {
+				List<Carta> cartasDelMismoPalo = filtrarCartasPorPalo(cartas, palo);
+				int[] valoresDelPalo = new int[15];
+				for (Carta carta : cartasDelMismoPalo) {
+					valoresDelPalo[carta.getValor()]++;
+				}
+				for (int i = 14; i >= 5; i--) {
+					if (esEscalera(valoresDelPalo, i)) {
+						mejoresCartas = obtenerCartasPorValor(cartasDelMismoPalo, i, 5);
+						return "Escalera de color de " + getNombreValor(i) + " a " + getNombreValor(i - 4);
+					}
+				}
+			}
+		}
+
+		// Color
+		for (Character palo : conteoPalos.keySet()) {
+			if (conteoPalos.get(palo) >= 5) {
+				mejoresCartas = filtrarCartasPorPalo(cartas, palo);
+				mejoresCartas.sort(Comparator.comparingInt(Carta::getValor).reversed());
+				return "Color con: " + mejoresCartas.subList(0, 5);
+			}
+		}
+		// Escalera
 		for (int i = 14; i >= 5; i--) {
 			if (esEscalera(valores, i)) {
 				mejoresCartas = obtenerCartasPorValor(cartas, i, 5);
@@ -31,7 +55,7 @@ public class Model {
 			}
 		}
 
-		// Verificar póker
+		// Poker
 		for (int i = 14; i >= 2; i--) {
 			if (valores[i] == 4) {
 				mejoresCartas = obtenerCartasPorValor(cartas, i, 4);
@@ -39,7 +63,7 @@ public class Model {
 			}
 		}
 
-		// Verificar full
+		// Full
 		if (esFull(valores)) {
 			int trio = obtenerValorConRepeticiones(valores, 3);
 			int pareja = obtenerValorConRepeticiones(valores, 2);
@@ -48,7 +72,7 @@ public class Model {
 			return "Full de " + getNombreValor(trio) + " con " + getNombreValor(pareja) + ": " + mejoresCartas;
 		}
 
-		// Verificar trío
+		// Trio
 		for (int i = 14; i >= 2; i--) {
 			if (valores[i] == 3) {
 				mejoresCartas = obtenerCartasPorValor(cartas, i, 3);
@@ -56,7 +80,7 @@ public class Model {
 			}
 		}
 
-		// Verificar pareja
+		// Pareja
 		for (int i = 14; i >= 2; i--) {
 			if (valores[i] == 2) {
 				mejoresCartas = obtenerCartasPorValor(cartas, i, 2);
@@ -64,17 +88,16 @@ public class Model {
 			}
 		}
 
-		// Si no hay combinaciones, retornar la carta más alta
+		// Carta mas alta
 		mejoresCartas = obtenerCartasPorValor(cartas, cartas.get(0).getValor(), 1);
 		return "Carta alta: " + getNombreValor(cartas.get(0).getValor()) + " con: " + mejoresCartas;
 	}
 
-	// Función para verificar si hay un full (trío + pareja)
+
 	private boolean esFull(int[] valores) {
 		boolean hayTrio = false;
 		boolean hayPareja = false;
 
-		// Verifica si hay un trío
 		for (int valor : valores) {
 			if (valor == 3) {
 				hayTrio = true;
@@ -82,7 +105,6 @@ public class Model {
 			}
 		}
 
-		// Verifica si hay una pareja
 		for (int valor : valores) {
 			if (valor == 2) {
 				hayPareja = true;
@@ -90,11 +112,9 @@ public class Model {
 			}
 		}
 
-		// Hay full si existe al menos un trío y una pareja
 		return hayTrio && hayPareja;
 	}
 
-	// Función auxiliar para verificar si hay escalera
 	private boolean esEscalera(int[] valores, int maxValor) {
 		for (int i = 0; i < 5; i++) {
 			if (valores[maxValor - i] == 0)
@@ -103,7 +123,6 @@ public class Model {
 		return true;
 	}
 
-	// Funciones auxiliares para obtener cartas por valor
 	private List<Carta> obtenerCartasPorValor(List<Carta> cartas, int valor, int cantidad) {
 		List<Carta> cartasSeleccionadas = new ArrayList<>();
 		for (Carta carta : cartas) {
@@ -114,15 +133,24 @@ public class Model {
 		return cartasSeleccionadas;
 	}
 
+	private List<Carta> filtrarCartasPorPalo(List<Carta> cartas, char palo) {
+		List<Carta> filtradas = new ArrayList<>();
+		for (Carta carta : cartas) {
+			if (carta.getPalo() == palo) {
+				filtradas.add(carta);
+			}
+		}
+		return filtradas;
+	}
+
 	private int obtenerValorConRepeticiones(int[] valores, int repeticiones) {
 		for (int i = 14; i >= 2; i--) {
 			if (valores[i] == repeticiones)
 				return i;
 		}
-		return -1; // No debería pasar
+		return -1;
 	}
 
-	// Función para obtener el nombre de la carta (valor)
 	private String getNombreValor(int valor) {
 		return switch (valor) {
 		case 14 -> "As";
@@ -133,8 +161,8 @@ public class Model {
 		};
 	}
 
-	// Detectar draws
 	public List<String> detectarDraws(List<Carta> cartas) {
+
 		List<String> draws = new ArrayList<>();
 		if (tieneFlushDraw(cartas))
 			draws.add("Flush Draw");
@@ -142,6 +170,7 @@ public class Model {
 			draws.add("Straight Gutshot");
 		if (tieneOpenEnded(cartas))
 			draws.add("Straight Open-Ended");
+
 		return draws;
 	}
 
@@ -175,11 +204,19 @@ public class Model {
 		}
 		valores.sort(Comparator.naturalOrder());
 
+		int[] valoresArray = new int[15];
+		for (int valor : valores) {
+			valoresArray[valor]++;
+		}
+
+		if (esEscalera(valoresArray, valores.get(valores.size() - 1))) {
+			return false;
+		}
+
 		for (int i = 0; i < valores.size() - 3; i++) {
 			int diferencia = valores.get(i + 3) - valores.get(i);
 
-			// Verificar que la secuencia no esté en los extremos
-			if (diferencia == 3 && valores.get(i) > 2 && valores.get(i + 3) < 14) {
+			if (diferencia == 3 && valores.get(i) > 2 && valores.get(i + 3) < 14) { // Verificar que no este en los extremos
 				return true;
 			}
 		}
