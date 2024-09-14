@@ -57,19 +57,20 @@ public class Model {
 	public List<String> ordenarJugadoresPorMejorMano(List<List<Carta>> cartasJugadores, List<Carta> cartasComunes) {
 		
 		List<Jugador> jugadores = new ArrayList<>();
-
+		
 		for (int i = 0; i < cartasJugadores.size(); i++) {
 			List<Carta> cartasJugador = cartasJugadores.get(i);
-			Mano manoJugador = new Mano(cartasJugador);
+			Mano manoJugador = new Mano(evaluarMejorManoConComunes(cartasJugador,cartasComunes));
 			Jugador jugador = new Jugador("J" + (i + 1), manoJugador);
 			jugadores.add(jugador);
+			
 		}
-
+		
 		jugadores.sort((j1, j2) -> Integer.compare(j2.getMano().getValor(), j1.getMano().getValor()));
 
 		List<String> resultados = new ArrayList<>();
 		for (Jugador jugador : jugadores) {
-			resultados.add(jugador.getIdentificador() + " - Best hand: " + jugador.getMano().getDescripcionMano());
+			resultados.add(jugador.getIdentificador() + ": "+ jugador.getMano().getDescripcionMano());
 		}
 
 		return resultados;

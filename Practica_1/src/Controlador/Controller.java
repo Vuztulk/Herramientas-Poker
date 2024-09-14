@@ -77,8 +77,7 @@ public class Controller {
 			String mejorMano = modelo.evaluarMejorMano(mejorManoCartas);
 
 			String resultadoBase = String.join(";", partes[0], partes[1], partes[2]) + "\n";
-			StringBuilder resultado = new StringBuilder(resultadoBase).append("- Best hand: ").append(mejorMano)
-					.append(" with ").append(partes[0]).append(partes[2]).append("\n");
+			StringBuilder resultado = new StringBuilder(resultadoBase).append("- Best hand: ").append(mejorMano).append(" with ").append(partes[0]).append(partes[2]).append("\n");
 
 			if (Integer.parseInt(partes[1]) < 5) {// Si hay menos de 5 cartas comunes se miran los draws
 				List<String> draws = modelo.detectarDraws(mejorManoCartas);
@@ -94,30 +93,35 @@ public class Controller {
 	}
 
 	private List<String> procesarApartado3(List<String> manos) {
-		
-		List<String> resultados = new ArrayList<>();
+	    List<String> resultados = new ArrayList<>();
 
-		for (String mano : manos) {
-			String[] partes = mano.split(";");
-			int numJugadores = Integer.parseInt(partes[0]);
+	    for (String mano : manos) {
+	        String[] partes = mano.split(";");
+	        int numJugadores = Integer.parseInt(partes[0]);
 
-			List<List<Carta>> cartasJugadores = new ArrayList<>();
-			for (int i = 1; i <= numJugadores; i++) {
-				List<Carta> cartasJugador = modelo.parsearCartas(partes[i]);
-				cartasJugadores.add(cartasJugador);
-			}
+	        List<List<Carta>> cartasJugadores = new ArrayList<>();
+	        for (int i = 1; i <= numJugadores; i++) {
+	            List<Carta> cartasJugador = modelo.parsearCartas(partes[i]);
+	            cartasJugador.remove(0); // Borrar el nombre del jugador
+	            cartasJugadores.add(cartasJugador);
+	        }
 
-			List<Carta> cartasComunes = modelo.parsearCartas(partes[numJugadores + 1]);
+	        List<Carta> cartasComunes = modelo.parsearCartas(partes[numJugadores + 1]);
 
-			List<String> resultadoMano = modelo.ordenarJugadoresPorMejorMano(cartasJugadores, cartasComunes);
-			resultadoMano.add("");
+	        String resultadoBase = String.join(";", partes[0], partes[1], partes[numJugadores + 1]) + "\n";
+	        StringBuilder resultado = new StringBuilder(resultadoBase);
 
-			resultados.addAll(resultadoMano);
-		}
+	        List<String> resultadoMano = modelo.ordenarJugadoresPorMejorMano(cartasJugadores, cartasComunes);
+	        for (String jugadorResultado : resultadoMano) {
+	            resultado.append(jugadorResultado).append("\n");
+	        }
 
-		return resultados;
-		
+	        resultados.add(resultado.toString());
+	    }
+
+	    return resultados;
 	}
+
 
 	private List<String> procesarApartado4(List<String> manos) {
 		return null;
