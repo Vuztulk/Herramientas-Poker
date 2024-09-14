@@ -1,6 +1,5 @@
-J2: Carta alta: K
-J3: Carta alta: K
-J1: Pareja de As
-J4: Pareja de Ks
-
+J2 - Best hand: Trio de J [J2, Js, Jh]
+J1 - Best hand: Pareja de A [Ah, Ac]
+J4 - Best hand: Carta más alta [Kc]
+J3 - Best hand: Carta más alta [J3]
 
