@@ -1,3 +1,6 @@
 AhAc8s5h;4;2h2d2c2s
 - Best hand: Full de 2 y A: [2h, 2d, 2c] [Ah, Ac]
 
+AhAc8s5h;4;2h2d2cAh
+- Best hand: Full de A y 2: [Ah, Ac, Ah] [2h, 2d]
+

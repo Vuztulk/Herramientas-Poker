@@ -208,15 +208,17 @@ public class UtilidadesMano {
 		}
 		return -1;
 	}
-
+	
+/////////////////////////////////////////////////////////////////////////////////////////
+//////https://www.wextensible.com/temas/combinatoria/combinaciones-repeticion.html///////
+/////////////////////////////////////////////////////////////////////////////////////////
 	public static List<List<Carta>> generarCombinaciones(List<Carta> cartas, int n) {
 		List<List<Carta>> combinaciones = new ArrayList<>();
 		generarCombinacionesRecursivo(cartas, n, 0, new ArrayList<>(), combinaciones);
 		return combinaciones;
 	}
 
-	private static void generarCombinacionesRecursivo(List<Carta> cartas, int n, int indice, List<Carta> actual,
-			List<List<Carta>> combinaciones) {
+	private static void generarCombinacionesRecursivo(List<Carta> cartas, int n, int indice, List<Carta> actual, List<List<Carta>> combinaciones) {
 		if (actual.size() == n) {
 			combinaciones.add(new ArrayList<>(actual));
 			return;
