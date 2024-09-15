@@ -62,5 +62,12 @@ public class Mano {
 			return 0;
 		}
 	}
-
+	
+	public String obtenerCartasComoString() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < cartas.size(); i++) {
+            sb.append(cartas.get(i).toString());
+        }
+        return sb.toString();
+    }
 }

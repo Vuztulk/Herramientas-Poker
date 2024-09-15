@@ -48,4 +48,12 @@ public class UtilidadesCarta {
         return cartas;
     }
     
+    public static String convertirListaCartasAString(List<Carta> cartas) {
+        StringBuilder sb = new StringBuilder();
+        for (Carta carta : cartas) {
+            sb.append(carta.toString());
+        }
+        return sb.toString();
+    }
+    
 }

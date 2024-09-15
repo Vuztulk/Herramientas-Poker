@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import Modelo.Model;
 import Vista.View;
-import Modelo.Carta;
 
 public class Controller {
 
@@ -19,21 +18,21 @@ public class Controller {
 
 	public void procesarOrden(String apartado, String archivoEntrada, String archivoSalida) {
 		try {
-			List<String> manos = vista.leerArchivo(archivoEntrada);
+			List<String> input = vista.leerArchivo(archivoEntrada);
 			List<String> resultados = new ArrayList<>();
 
 			switch (apartado) {
 			case "1":
-				resultados = procesarApartado1(manos);
+				resultados = procesarApartado1(input);
 				break;
 			case "2":
-				resultados = procesarApartado2(manos);
+				resultados = procesarApartado2(input);
 				break;
 			case "3":
-				resultados = procesarApartado3(manos);
+				resultados = procesarApartado3(input);
 				break;
 			case "4":
-				// resultados = procesarApartado4(manos);
+				resultados = procesarApartado4(input);
 				break;
 			default:
 				break;
@@ -45,18 +44,18 @@ public class Controller {
 		}
 	}
 
-	private List<String> procesarApartado1(List<String> manos) {
+	private List<String> procesarApartado1(List<String> input) {
 
 		List<String> resultados = new ArrayList<>();
 
-		for (String mano : manos) {
-
-			List<Carta> cartas = modelo.parsearCartas(mano);
+		for (String mano : input) {
 
 			StringBuilder resultado = new StringBuilder(mano).append("\n");
-			resultado.append("- Best hand: ").append(modelo.evaluarMejorMano(cartas)).append("\n");
+			String mejorMano = modelo.evaluarMejorMano(mano);
 
-			for (String draw : modelo.detectarDraws(cartas)) {
+			resultado.append("- Best hand: ").append(modelo.getDescripcionMano(mejorMano)).append("\n");
+
+			for (String draw : modelo.detectarDraws(mejorMano)) {
 				resultado.append("- Draw: ").append(draw).append("\n");
 			}
 
@@ -66,21 +65,21 @@ public class Controller {
 
 	}
 
-	private List<String> procesarApartado2(List<String> manos) {
+	private List<String> procesarApartado2(List<String> input) {
 		List<String> resultados = new ArrayList<>();
 
-		for (String mano : manos) {
+		for (String mano : input) {
 			String[] partes = mano.split(";");
 
-			List<Carta> mejorManoCartas = modelo.evaluarMejorManoConComunes(modelo.parsearCartas(partes[0]),
-					modelo.parsearCartas(partes[2]));
-			String mejorMano = modelo.evaluarMejorMano(mejorManoCartas);
+			String mejorMano = modelo.evaluarMejorManoConComunes(partes[0], partes[2]);// Le pasamos las cartas propiasy las comunes
 
 			String resultadoBase = String.join(";", partes[0], partes[1], partes[2]) + "\n";
-			StringBuilder resultado = new StringBuilder(resultadoBase).append("- Best hand: ").append(mejorMano).append(" with ").append(partes[0]).append(partes[2]).append("\n");
+			StringBuilder resultado = new StringBuilder(resultadoBase).append("- Best hand: ")
+					.append(modelo.getDescripcionMano(mejorMano)).append(" with ").append(partes[0]).append(partes[2])
+					.append("\n");
 
 			if (Integer.parseInt(partes[1]) < 5) {// Si hay menos de 5 cartas comunes se miran los draws
-				List<String> draws = modelo.detectarDraws(mejorManoCartas);
+				List<String> draws = modelo.detectarDraws(mejorMano);
 				for (String draw : draws) {
 					resultado.append("- Draw: ").append(draw).append("\n");
 				}
@@ -92,39 +91,59 @@ public class Controller {
 		return resultados;
 	}
 
-	private List<String> procesarApartado3(List<String> manos) {
-	    List<String> resultados = new ArrayList<>();
+	private List<String> procesarApartado3(List<String> input) {
+		List<String> resultados = new ArrayList<>();
 
-	    for (String mano : manos) {
-	        String[] partes = mano.split(";");
-	        int numJugadores = Integer.parseInt(partes[0]);
+		for (String mano : input) {
 
-	        List<List<Carta>> cartasJugadores = new ArrayList<>();
-	        for (int i = 1; i <= numJugadores; i++) {
-	            List<Carta> cartasJugador = modelo.parsearCartas(partes[i]);
-	            cartasJugador.remove(0); // Borrar el nombre del jugador
-	            cartasJugadores.add(cartasJugador);
-	        }
+			String[] partes = mano.split(";");
+			int numJugadores = Integer.parseInt(partes[0]);
+			String cartasComunes = partes[numJugadores + 1];
+			List<String> manosJugadores = new ArrayList<>();
 
-	        List<Carta> cartasComunes = modelo.parsearCartas(partes[numJugadores + 1]);
+			for (int i = 1; i <= numJugadores; i++) {// Añadimos las cartas de los jugadores a manosJugadores para pasarselo a la funcion de ordenar
 
-	        String resultadoBase = String.join(";", partes[0], partes[1], partes[numJugadores + 1]) + "\n";
-	        StringBuilder resultado = new StringBuilder(resultadoBase);
+				String cartasJugador = partes[i].substring(2);
+				StringBuilder manoJugador = new StringBuilder();
 
-	        List<String> resultadoMano = modelo.ordenarJugadoresPorMejorMano(cartasJugadores, cartasComunes);
-	        for (String jugadorResultado : resultadoMano) {
-	            resultado.append(jugadorResultado).append("\n");
-	        }
+				for (int j = 0; j < cartasJugador.length(); j += 2) {
+					manoJugador.append(cartasJugador.substring(j, j + 2)).append("");
+				}
+				manosJugadores.add(manoJugador.toString().trim());
 
-	        resultados.add(resultado.toString());
-	    }
+			}
 
-	    return resultados;
+			String resultadoBase = String.join(";", partes[0], partes[1], cartasComunes) + "\n";
+			StringBuilder resultado = new StringBuilder(resultadoBase);
+
+			List<String> resultadoMano = modelo.ordenarJugadoresPorMejorMano(manosJugadores, cartasComunes);
+			for (String jugadorResultado : resultadoMano) {
+				resultado.append(jugadorResultado).append("\n");
+			}
+
+			resultados.add(resultado.toString());
+		}
+
+		return resultados;
 	}
 
+	private List<String> procesarApartado4(List<String> input) {
 
-	private List<String> procesarApartado4(List<String> manos) {
-		return null;
+		List<String> resultados = new ArrayList<>();
+
+		for (String mano : input) {
+			String[] partes = mano.split(";");
+
+
+			String mejorMano = modelo.evaluarMejorManoOmaha(partes[0], partes[2]);
+
+			String resultadoBase = String.join(";", partes[0], partes[1], partes[2]) + "\n";
+			StringBuilder resultado = new StringBuilder(resultadoBase).append("- Best hand: ").append(modelo.getDescripcionMano(mejorMano)).append("\n");
+
+			resultados.add(resultado.toString());
+		}
+
+		return resultados;
 	}
 
 }
