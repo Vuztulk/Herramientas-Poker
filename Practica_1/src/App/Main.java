@@ -1,24 +1,28 @@
 package App;
 
 import javax.swing.SwingUtilities;
-import GUI.GUI;
-import GUI.Interfaz;
+import GUI.MainFrame;
 import Controlador.Controller;
 import Modelo.Model;
 import Vista.View;
 
 public class Main {
     public static void main(String[] args) {
-        /*SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new Interfaz().setVisible(true);
-            }
-        });*/
-    	Model model = new Model();
-    	View vista = new View();
-    	Controller control = new Controller(model, vista);
-    	control.procesarOrden(args[0], args[1], args[2] );
     	
+    	/*try {
+    	    javax.swing.UIManager.setLookAndFeel(javax.swing.UIManager.getSystemLookAndFeelClassName());
+    	} catch (Exception e) {
+    	    e.printStackTrace();
+    	}
+
+        SwingUtilities.invokeLater(() -> {
+            Model model = new Model();
+            View vista = new View();
+            Controller control = new Controller(model, vista);
+            
+            MainFrame mainFrame = new MainFrame(control);
+            mainFrame.setVisible(true);
+        });*/
+        
     }
 }

@@ -1,38 +1,28 @@
 package GUI;
 
 import Controlador.Controller;
-import Modelo.Model;
 import Vista.View;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
-public class GUI extends JFrame {
+public class MenuArchivos extends JPanel {
 
-    /*private Controller controller;
+    private Controller controller;
     private JTextArea outputArea;
     private JComboBox<String> comboBoxApartados;
     private JTextField fileInputField;
     private JTextField fileOutputField;
 
-    public GUI() {
-        setTitle("Poker Hand Evaluator");
-        setSize(500, 400);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+    public MenuArchivos(Controller controller) {
+        this.controller = controller;
+
         setLayout(new BorderLayout());
 
-        // Modelo, vista y controlador
-        Model model = new Model();
-        View view = new View();
-        controller = new Controller(model, view);
-
-        // Panel superior (selección de archivo y apartado)
         JPanel topPanel = new JPanel(new GridLayout(3, 1));
 
-        // Selección de archivo de entrada
         JPanel fileInputPanel = new JPanel();
         fileInputField = new JTextField(20);
         JButton browseInputButton = new JButton("Seleccionar archivo de entrada");
@@ -46,7 +36,6 @@ public class GUI extends JFrame {
         fileInputPanel.add(browseInputButton);
         topPanel.add(fileInputPanel);
 
-        // Selección de archivo de salida
         JPanel fileOutputPanel = new JPanel();
         fileOutputField = new JTextField(20);
         JButton browseOutputButton = new JButton("Seleccionar archivo de salida");
@@ -60,7 +49,6 @@ public class GUI extends JFrame {
         fileOutputPanel.add(browseOutputButton);
         topPanel.add(fileOutputPanel);
 
-        // Selección de apartado
         JPanel comboBoxPanel = new JPanel();
         comboBoxApartados = new JComboBox<>(new String[] {"Apartado 1", "Apartado 2", "Apartado 3"});
         comboBoxPanel.add(new JLabel("Selecciona un apartado:"));
@@ -69,12 +57,10 @@ public class GUI extends JFrame {
 
         add(topPanel, BorderLayout.NORTH);
 
-        // Área de resultados
         outputArea = new JTextArea();
         outputArea.setEditable(false);
         add(new JScrollPane(outputArea), BorderLayout.CENTER);
 
-        // Botón para ejecutar el apartado seleccionado
         JPanel bottomPanel = new JPanel();
         JButton ejecutarButton = new JButton("Ejecutar");
         ejecutarButton.addActionListener(new ActionListener() {
@@ -117,10 +103,8 @@ public class GUI extends JFrame {
 
         int numeroApartado = comboBoxApartados.getSelectedIndex() + 1;
 
-        // Ejecutar el apartado correspondiente
-        controller.procesarArchivo(String.valueOf(numeroApartado), archivoEntrada, archivoSalida);
+        controller.procesarOrden(String.valueOf(numeroApartado), archivoEntrada, archivoSalida);
 
-        // Mostrar el contenido del archivo de salida en el área de texto
         outputArea.setText("Apartado " + numeroApartado + " ejecutado.\nRevisa el archivo de salida.");
-    }*/
+    }
 }
