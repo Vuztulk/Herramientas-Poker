@@ -14,11 +14,19 @@ import javax.swing.JButton;
 import java.awt.CardLayout;
 import javax.swing.JLayeredPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JSpinner;
+import javax.swing.JPasswordField;
+import java.awt.Color;
+import java.awt.FlowLayout;
+import javax.swing.JProgressBar;
+import java.awt.Button;
+import javax.swing.JMenuBar;
 
 public class MainFrame extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-	private JPanel contentPane;
+	private CardLayout cardLayout;
+    private Controller controller;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -38,21 +46,26 @@ public class MainFrame extends JFrame {
 		});
 	}
 
-	public MainFrame(Controller controller) {
-		
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
-		setBounds(100, 100, 1371, 804);
-		contentPane = new JPanel();
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+    public MainFrame(Controller controller) {
+        this.controller = controller;
 
-		setContentPane(contentPane);
-		contentPane.setLayout(new CardLayout(0, 0));
-		
-		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		contentPane.add(tabbedPane, "name_5452761031600");
-		
-		JButton btnNewButton = new JButton("New button");
-		tabbedPane.addTab("New tab", null, btnNewButton, null);
-	}
+        setTitle("Evaluacion de manos de Poker");
+        setSize(1400, 800);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+        
+        cardLayout = new CardLayout();
+        getContentPane().setLayout(cardLayout);
+
+        MenuPrincipal menuPrincipal = new MenuPrincipal(controller);
+        MenuArchivos guiPanel = new MenuArchivos(controller);
+        getContentPane().add(menuPrincipal, "MenuPrincipal");
+        getContentPane().add(guiPanel, "Archivos");
+
+        mostrarPantalla("MenuPrincipal");
+    }
+
+    public void mostrarPantalla(String nombrePanel) {
+        cardLayout.show(getContentPane(), nombrePanel);
+    }
 }
