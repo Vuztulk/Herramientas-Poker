@@ -28,7 +28,11 @@ public class Model {
 	public String evaluarMejorManoConComunes(String cartasPropias, String cartasComunes) {
 		return evaluarMejorManoGenerica(cartasPropias, cartasComunes, 3, 5);
 	}
-
+	
+	public String evaluarMejorManoOmaha(String cartasPropias, String cartasComunes) {
+		return evaluarMejorManoGenerica(cartasPropias, cartasComunes, 2, 3);
+	}
+	
 	public List<String> ordenarJugadoresPorMejorMano(List<String> manosJugadores, String cartasComunes) {
 		List<Jugador> jugadores = new ArrayList<>();
 
@@ -48,10 +52,6 @@ public class Model {
 		}
 
 		return resultados;
-	}
-
-	public String evaluarMejorManoOmaha(String cartasPropias, String cartasComunes) {
-		return evaluarMejorManoGenerica(cartasPropias, cartasComunes, 2, 3);
 	}
 
 	private String evaluarMejorManoGenerica(String cartasPropias, String cartasComunes, int minCombinacionPropia, int maxCombinacionComunes) {

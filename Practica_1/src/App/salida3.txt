@@ -1,11 +1,11 @@
 4;J1AhAc;5dKs6cTh9h
-J3: Escalera [6 - T]
+J3: Escalera [T - A]
 J1: Pareja de A [Ah, Ac]
 J2: Pareja de J [Js, Jh]
 J4: Pareja de K [Kc, Ks]
 
 3;J1AhAc;5dKs6cTh9h
-J3: Escalera [6 - T]
+J3: Escalera [T - A]
 J1: Pareja de A [Ah, Ac]
 J2: Pareja de J [Js, Jh]
 

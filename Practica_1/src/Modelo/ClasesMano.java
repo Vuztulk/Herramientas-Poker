@@ -1,5 +1,5 @@
 package Modelo;
 
-public enum TipoMano {
+public enum ClasesMano {
     ESCALERA_COLOR, COLOR, ESCALERA, POKER, FULL, TRIO, PAREJA, CARTA_MAS_ALTA
 }

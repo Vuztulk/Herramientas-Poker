@@ -4,23 +4,17 @@ import java.util.List;
 
 public class Mano {
 	private List<Carta> cartas;
-	private TipoMano tipoMano;
-	private String descripcionMano;
+	private MejorMano mejorMano;
 	private int valor;
 
 	public Mano(List<Carta> cartas) {
 		this.cartas = cartas;
-		this.tipoMano = UtilidadesMano.evaluarTipoMano(cartas);
-		this.descripcionMano = UtilidadesMano.obtenerDescripcionMano(cartas);
+		this.mejorMano = new MejorMano(cartas);
 		this.valor = evaluarValorMano();
 	}
 
-	public TipoMano getTipoMano() {
-		return tipoMano;
-	}
-
 	public String getDescripcionMano() {
-		return descripcionMano;
+		return mejorMano.getDescripcionMano();
 	}
 
 	public int getValor() {
@@ -40,7 +34,7 @@ public class Mano {
 		return suma;
 	}
     private int calcularValorMano() {//Usamos valores grandes para evitar que la suma de cartas se puedan colar en otro rango que no es el suyo
-        switch (tipoMano) {
+        switch (mejorMano.getTipoMano()) {
             case ESCALERA_COLOR: return 9000;
             case COLOR: return 6000;
             case ESCALERA: return 5000;
