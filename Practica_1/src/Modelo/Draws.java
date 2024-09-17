@@ -4,6 +4,9 @@ import java.util.*;
 
 public class Draws {
 
+	public Draws () {
+		
+	}
     public List<String> detectarDraws(List<Carta> cartas) {
         List<String> draws = new ArrayList<>();
         if (tieneFlushDraw(cartas))

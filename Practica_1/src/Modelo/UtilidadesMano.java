@@ -7,11 +7,11 @@ public class UtilidadesMano {
 	public static TipoMano evaluarTipoMano(List<Carta> cartas) {
 		
 		int[] valores = new int[15];
-		Map<Character, Long> conteoPalos = new HashMap<>();
+		Map<Character, Integer> conteoPalos = new HashMap<>();
 		
 		for (Carta carta : cartas) {
 			valores[carta.getValor()]++;
-			conteoPalos.put(carta.getPalo(), conteoPalos.getOrDefault(carta.getPalo(), 0L) + 1);
+			conteoPalos.put(carta.getPalo(), conteoPalos.getOrDefault(carta.getPalo(), 0) + 1);
 		}
 
 		for (Character palo : conteoPalos.keySet()) {
@@ -68,14 +68,14 @@ public class UtilidadesMano {
 
 	public static String obtenerDescripcionMano(List<Carta> cartas) {
 		int[] valores = new int[15];
-		Map<Character, Long> conteoPalos = new HashMap<>();
+		Map<Character, Integer> conteoPalos = new HashMap<>();
 		int max = UtilidadesCarta.obtenerValorMaximo(cartas);
 		int posMax = -1;
 		int j = 0;
 
 		for (Carta carta : cartas) {
 			valores[carta.getValor()]++;
-			conteoPalos.put(carta.getPalo(), conteoPalos.getOrDefault(carta.getPalo(), 0L) + 1);
+			conteoPalos.put(carta.getPalo(), conteoPalos.getOrDefault(carta.getPalo(), 0) + 1);
 
 			if (cartas.get(j).getValor() == max) {
 				posMax = j;

@@ -32,6 +32,7 @@ public class MainFrame extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
+					javax.swing.UIManager.setLookAndFeel(javax.swing.UIManager.getSystemLookAndFeelClassName());
 					Model model = new Model();
 		            View vista = new View();
 		            Controller control = new Controller(model, vista);
