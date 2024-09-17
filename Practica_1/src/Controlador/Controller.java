@@ -51,7 +51,7 @@ public class Controller {
 			StringBuilder resultado = new StringBuilder(mano).append("\n");
 			String mejorMano = modelo.evaluarMejorMano(mano);
 			resultado.append("- Best hand: ").append(modelo.getDescripcionMano(mejorMano)).append("\n");
-			agregarDrawsAlResultado(resultado, modelo.detectarDraws(mejorMano));
+			agregarDraws(resultado, modelo.detectarDraws(mejorMano));
 			resultados.add(resultado.toString());
 		}
 		return resultados;
@@ -69,7 +69,7 @@ public class Controller {
 					.append(partes[0]).append(partes[2]).append("\n");
 
 			if (Integer.parseInt(partes[1]) < 5) { // Si hay menos de 5 cartas comunes se miran los draws
-				agregarDrawsAlResultado(resultado, modelo.detectarDraws(mejorMano));
+				agregarDraws(resultado, modelo.detectarDraws(mejorMano));
 			}
 
 			resultados.add(resultado.toString());
@@ -117,7 +117,7 @@ public class Controller {
 		return resultados;
 	}
 
-	private void agregarDrawsAlResultado(StringBuilder resultado, List<String> draws) {
+	private void agregarDraws(StringBuilder resultado, List<String> draws) {
 		for (String draw : draws) {
 			resultado.append("- Draw: ").append(draw).append("\n");
 		}

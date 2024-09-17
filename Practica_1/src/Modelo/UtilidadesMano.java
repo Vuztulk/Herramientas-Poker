@@ -4,193 +4,271 @@ import java.util.*;
 
 public class UtilidadesMano {
 
-	public static TipoMano evaluarTipoMano(List<Carta> cartas) {
-		
-		int[] valores = new int[15];
-		Map<Character, Integer> conteoPalos = new HashMap<>();
-		
-		for (Carta carta : cartas) {
-			valores[carta.getValor()]++;
-			conteoPalos.put(carta.getPalo(), conteoPalos.getOrDefault(carta.getPalo(), 0) + 1);
-		}
+    public static TipoMano evaluarTipoMano(List<Carta> cartas) {
+        int[] valores = contarValores(cartas);
+        Map<Character, Integer> conteoPalos = contarPalos(cartas);
 
-		for (Character palo : conteoPalos.keySet()) {
-			if (conteoPalos.get(palo) >= 5) {
-				List<Carta> cartasDelMismoPalo = filtrarCartasPorPalo(cartas, palo);
-				int[] valoresDelPalo = new int[15];
-				for (Carta carta : cartasDelMismoPalo) {
-					valoresDelPalo[carta.getValor()]++;
-				}
-				for (int i = 14; i >= 5; i--) {
-					if (esEscalera(valoresDelPalo, i)) {
-						return TipoMano.ESCALERA_COLOR;
-					}
-				}
-			}
-		}
+        if (esEscaleraColor(cartas, conteoPalos)) {
+            return TipoMano.ESCALERA_COLOR;
+        }
 
-		for (Character palo : conteoPalos.keySet()) {
-			if (conteoPalos.get(palo) >= 5) {
-				return TipoMano.COLOR;
-			}
-		}
+        if (esPoker(valores)) {
+            return TipoMano.POKER;
+        }
 
-		for (int i = 14; i >= 5; i--) {
-			if (esEscalera(valores, i)) {
-				return TipoMano.ESCALERA;
-			}
-		}
+        if (esFull(valores)) {
+            return TipoMano.FULL;
+        }
 
-		for (int i = 14; i >= 2; i--) {
-			if (valores[i] == 4) {
-				return TipoMano.POKER;
-			}
-		}
+        if (esColor(conteoPalos)) {
+            return TipoMano.COLOR;
+        }
 
-		if (esFull(valores)) {
-			return TipoMano.FULL;
-		}
+        if (esEscalera(valores)) {
+            return TipoMano.ESCALERA;
+        }
 
-		for (int i = 14; i >= 2; i--) {
-			if (valores[i] == 3) {
-				return TipoMano.TRIO;
-			}
-		}
+        if (esTrio(valores)) {
+            return TipoMano.TRIO;
+        }
 
-		for (int i = 14; i >= 2; i--) {
-			if (valores[i] == 2) {
-				return TipoMano.PAREJA;
-			}
-		}
+        if (esPareja(valores)) {
+            return TipoMano.PAREJA;
+        }
 
-		return TipoMano.CARTA_MAS_ALTA;
-	}
+        return TipoMano.CARTA_MAS_ALTA;
+    }
 
-	public static String obtenerDescripcionMano(List<Carta> cartas) {
-		int[] valores = new int[15];
-		Map<Character, Integer> conteoPalos = new HashMap<>();
-		int max = UtilidadesCarta.obtenerValorMaximo(cartas);
-		int posMax = -1;
-		int j = 0;
+    public static String obtenerDescripcionMano(List<Carta> cartas) {
+        int[] valores = contarValores(cartas);
+        Map<Character, Integer> conteoPalos = contarPalos(cartas);
+        int max = UtilidadesCarta.obtenerValorMaximo(cartas);
+        int posMax = obtenerPosicionCartaMasAlta(cartas, max);
 
-		for (Carta carta : cartas) {
-			valores[carta.getValor()]++;
-			conteoPalos.put(carta.getPalo(), conteoPalos.getOrDefault(carta.getPalo(), 0) + 1);
+        if (esEscaleraColor(cartas, conteoPalos)) {
+            return obtenerDescripcionEscaleraColor(cartas, conteoPalos);
+        }
 
-			if (cartas.get(j).getValor() == max) {
-				posMax = j;
-			}
-			j++;
-		}
+        if (esColor(conteoPalos)) {
+            return obtenerDescripcionColor(cartas, conteoPalos);
+        }
 
-		// Escalera de color
-		for (Character palo : conteoPalos.keySet()) {
-			if (conteoPalos.get(palo) >= 5) {
-				List<Carta> cartasDelMismoPalo = filtrarCartasPorPalo(cartas, palo);
-				int[] valoresDelPalo = new int[15];
-				for (Carta carta : cartasDelMismoPalo) {
-					valoresDelPalo[carta.getValor()]++;
-				}
-				for (int i = 14; i >= 5; i--) {
-					if (esEscalera(valoresDelPalo, i)) {
-						return "Escalera de color [" + UtilidadesCarta.getNombreValor(i - 4) + " - "+ UtilidadesCarta.getNombreValor(i) + "]";
-					}
-				}
-			}
-		}
+        if (esEscalera(valores)) {
+            return obtenerDescripcionEscalera(valores);
+        }
 
-		// Color
-		for (Character palo : conteoPalos.keySet()) {
-			if (conteoPalos.get(palo) >= 5) {
-				List<Carta> cartasDelMismoPalo = filtrarCartasPorPalo(cartas, palo);
-				cartasDelMismoPalo.sort(Comparator.comparingInt(Carta::getValor).reversed());
-				return "Color " + cartasDelMismoPalo.subList(0, 5);
-			}
-		}
+        if (esPoker(valores)) {
+            return obtenerDescripcionPoker(cartas, valores);
+        }
 
-		// Escalera
-		for (int i = 14; i >= 5; i--) {
-			if (esEscalera(valores, i)) {
-				return "Escalera [" + UtilidadesCarta.getNombreValor(i - 4) + " - " + UtilidadesCarta.getNombreValor(i)+ "]";
-			}
-		}
+        if (esFull(valores)) {
+            return obtenerDescripcionFull(cartas, valores);
+        }
 
-		// Poker
-		for (int i = 14; i >= 2; i--) {
-			if (valores[i] == 4) {
-				List<Carta> cartasPorValor = obtenerCartasPorValor(cartas, i, 4);
-				return "Poker de " + UtilidadesCarta.getNombreValor(i) + " " + cartasPorValor;
-			}
-		}
+        if (esTrio(valores)) {
+            return obtenerDescripcionTrio(cartas, valores);
+        }
 
-		// Full
-		if (esFull(valores)) {
-			int trio = obtenerValorConRepeticiones(valores, 3);
-			int pareja = obtenerValorConRepeticiones(valores, 2);
-			List<Carta> cartasTrio = obtenerCartasPorValor(cartas, trio, 3);
-			List<Carta> cartasPareja = obtenerCartasPorValor(cartas, pareja, 2);
-			return "Full de " + UtilidadesCarta.getNombreValor(trio) + " y " + UtilidadesCarta.getNombreValor(pareja)+ ": " + cartasTrio + " " + cartasPareja;
-		}
+        if (esPareja(valores)) {
+            return obtenerDescripcionPareja(cartas, valores);
+        }
 
-		// Trio
-		for (int i = 14; i >= 2; i--) {
-			if (valores[i] == 3) {
-				List<Carta> cartasPorValor = obtenerCartasPorValor(cartas, i, 3);
-				return "Trio de " + UtilidadesCarta.getNombreValor(i) + " " + cartasPorValor;
-			}
-		}
+        return "Carta más alta [" + UtilidadesCarta.getNombreValor(max) + cartas.get(posMax).getPalo() + "]";
+    }
+    
+    private static boolean esEscaleraColor(List<Carta> cartas, Map<Character, Integer> conteoPalos) {
+        for (Character palo : conteoPalos.keySet()) {
+            if (conteoPalos.get(palo) >= 5) {
+                List<Carta> cartasDelMismoPalo = filtrarCartasPorPalo(cartas, palo);
+                int[] valoresDelPalo = contarValores(cartasDelMismoPalo);
+                if (tieneEscalera(valoresDelPalo)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
-		// Pareja
-		for (int i = 14; i >= 2; i--) {
-			if (valores[i] == 2) {
-				List<Carta> cartasPorValor = obtenerCartasPorValor(cartas, i, 2);
-				return "Pareja de " + UtilidadesCarta.getNombreValor(i) + " " + cartasPorValor;
-			}
-		}
+    private static boolean esPoker(int[] valores) {
+        return contieneNDeUnValor(valores, 4);
+    }
 
-		// Carta más alta
-		return "Carta más alta [" + UtilidadesCarta.getNombreValor(max) + cartas.get(posMax).getPalo() + "]";
-	}
+    private static boolean esFull(int[] valores) {
+        boolean hayTrio = contieneNDeUnValor(valores, 3);
+        boolean hayPareja = contieneNDeUnValor(valores, 2);
+        return hayTrio && hayPareja;
+    }
 
-	public static boolean esEscalera(int[] valores, int maxValor) {
-		for (int i = 0; i < 5; i++) {
-			if (valores[maxValor - i] == 0)
-				return false;
-		}
-		return true;
-	}
+    private static boolean esColor(Map<Character, Integer> conteoPalos) {
+        for (Character palo : conteoPalos.keySet()) {
+            if (conteoPalos.get(palo) >= 5) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-	public static List<Carta> filtrarCartasPorPalo(List<Carta> cartas, char palo) {
-		List<Carta> cartasFiltradas = new ArrayList<>();
-		for (Carta carta : cartas) {
-			if (carta.getPalo() == palo) {
-				cartasFiltradas.add(carta);
-			}
-		}
-		return cartasFiltradas;
-	}
+    private static boolean esEscalera(int[] valores) {
+        return tieneEscalera(valores);
+    }
 
-	public static boolean esFull(int[] valores) {
-		boolean hayTrio = false;
-		boolean hayPareja = false;
+    private static boolean esTrio(int[] valores) {
+        return contieneNDeUnValor(valores, 3);
+    }
 
-		for (int valor : valores) {
-			if (valor == 3) {
-				hayTrio = true;
-				break;
-			}
-		}
+    private static boolean esPareja(int[] valores) {
+        return contieneNDeUnValor(valores, 2);
+    }
 
-		for (int valor : valores) {
-			if (valor == 2) {
-				hayPareja = true;
-				break;
-			}
-		}
+    private static int[] contarValores(List<Carta> cartas) {
+        int[] valores = new int[15];
+        for (Carta carta : cartas) {
+            valores[carta.getValor()]++;
+        }
+        return valores;
+    }
 
-		return hayTrio && hayPareja;
-	}
+    private static Map<Character, Integer> contarPalos(List<Carta> cartas) {
+        Map<Character, Integer> conteoPalos = new HashMap<>();
+        for (Carta carta : cartas) {
+            char palo = carta.getPalo();
+            conteoPalos.put(palo, conteoPalos.getOrDefault(palo, 0) + 1);
+        }
+        return conteoPalos;
+    }
 
+    private static boolean tieneEscalera(int[] valores) {
+        for (int i = 14; i >= 5; i--) {
+            boolean escalera = true;
+            for (int j = 0; j < 5; j++) {
+                if (valores[i - j] == 0) {
+                    escalera = false;
+                    break;
+                }
+            }
+            if (escalera) return true;
+        }
+        return false;
+    }
+
+    private static List<Carta> filtrarCartasPorPalo(List<Carta> cartas, char palo) {
+        List<Carta> cartasFiltradas = new ArrayList<>();
+        for (Carta carta : cartas) {
+            if (carta.getPalo() == palo) {
+                cartasFiltradas.add(carta);
+            }
+        }
+        return cartasFiltradas;
+    }
+
+    private static boolean contieneNDeUnValor(int[] valores, int n) {
+        for (int valor : valores) {
+            if (valor == n) return true;
+        }
+        return false;
+    }
+
+
+    private static int obtenerPosicionCartaMasAlta(List<Carta> cartas, int max) {
+        int posMax = -1;
+        for (int j = 0; j < cartas.size(); j++) {
+            if (cartas.get(j).getValor() == max) {
+                posMax = j;
+            }
+        }
+        return posMax;
+    }
+
+    private static String obtenerDescripcionEscaleraColor(List<Carta> cartas, Map<Character, Integer> conteoPalos) {
+        for (Character palo : conteoPalos.keySet()) {
+            if (conteoPalos.get(palo) >= 5) {
+                List<Carta> cartasDelMismoPalo = filtrarCartasPorPalo(cartas, palo);
+                int[] valoresDelPalo = contarValores(cartasDelMismoPalo);
+                for (int i = 14; i >= 5; i--) {
+                    if (tieneEscalera(valoresDelPalo, i)) {
+                        return "Escalera de color [" + UtilidadesCarta.getNombreValor(i - 4) + " - " + UtilidadesCarta.getNombreValor(i) + "]";
+                    }
+                }
+            }
+        }
+        return "";
+    }
+
+    private static String obtenerDescripcionColor(List<Carta> cartas, Map<Character, Integer> conteoPalos) {
+        for (Character palo : conteoPalos.keySet()) {
+            if (conteoPalos.get(palo) >= 5) {
+                List<Carta> cartasDelMismoPalo = filtrarCartasPorPalo(cartas, palo);
+                cartasDelMismoPalo.sort(Comparator.comparingInt(Carta::getValor).reversed());
+                return "Color " + cartasDelMismoPalo.subList(0, 5);
+            }
+        }
+        return "";
+    }
+
+    private static String obtenerDescripcionEscalera(int[] valores) {
+        for (int i = 14; i >= 5; i--) {
+            if (tieneEscalera(valores, i)) {
+                return "Escalera [" + UtilidadesCarta.getNombreValor(i - 4) + " - " + UtilidadesCarta.getNombreValor(i) + "]";
+            }
+        }
+        return "";
+    }
+
+    private static String obtenerDescripcionPoker(List<Carta> cartas, int[] valores) {
+        for (int i = 14; i >= 2; i--) {
+            if (valores[i] == 4) {
+                List<Carta> cartasPorValor = obtenerCartasPorValor(cartas, i, 4);
+                return "Poker de " + UtilidadesCarta.getNombreValor(i) + " " + cartasPorValor;
+            }
+        }
+        return "";
+    }
+
+    private static String obtenerDescripcionFull(List<Carta> cartas, int[] valores) {
+        if (esFull(valores)) {
+            int trio = obtenerValorConRepeticiones(valores, 3);
+            int pareja = obtenerValorConRepeticiones(valores, 2);
+            List<Carta> cartasTrio = obtenerCartasPorValor(cartas, trio, 3);
+            List<Carta> cartasPareja = obtenerCartasPorValor(cartas, pareja, 2);
+            return "Full de " + UtilidadesCarta.getNombreValor(trio) + " y " + UtilidadesCarta.getNombreValor(pareja) + ": " + cartasTrio + " " + cartasPareja;
+        }
+        return "";
+    }
+
+    private static String obtenerDescripcionTrio(List<Carta> cartas, int[] valores) {
+        for (int i = 14; i >= 2; i--) {
+            if (valores[i] == 3) {
+                List<Carta> cartasPorValor = obtenerCartasPorValor(cartas, i, 3);
+                return "Trio de " + UtilidadesCarta.getNombreValor(i) + " " + cartasPorValor;
+            }
+        }
+        return "";
+    }
+
+    private static String obtenerDescripcionPareja(List<Carta> cartas, int[] valores) {
+        for (int i = 14; i >= 2; i--) {
+            if (valores[i] == 2) {
+                List<Carta> cartasPorValor = obtenerCartasPorValor(cartas, i, 2);
+                return "Pareja de " + UtilidadesCarta.getNombreValor(i) + " " + cartasPorValor;
+            }
+        }
+        return "";
+    }
+
+	public static boolean tieneEscalera(int[] valores, int maxValor) {
+        for (int i = maxValor; i >= 5; i--) {
+            boolean escalera = true;
+            for (int j = 0; j < 5; j++) {
+                if (valores[i - j] == 0) {
+                    escalera = false;
+                    break;
+                }
+            }
+            if (escalera) return true;
+        }
+        return false;
+    }
+    
 	public static List<Carta> obtenerCartasPorValor(List<Carta> cartas, int valor, int cantidad) {
 		List<Carta> cartasSeleccionadas = new ArrayList<>();
 		for (Carta carta : cartas) {

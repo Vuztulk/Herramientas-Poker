@@ -1,7 +1,6 @@
 package Modelo;
 
 public class Carta {
-    
     private final int valor;
     private final char palo;
 
@@ -17,8 +16,8 @@ public class Carta {
     public char getPalo() {
         return palo;
     }
-    
+
     public String toString() {
-        return UtilidadesCarta.getNombreValor(valor) + "" + palo;
+        return UtilidadesCarta.getNombreValor(valor) + palo;
     }
 }
