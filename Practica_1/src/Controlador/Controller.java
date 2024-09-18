@@ -138,4 +138,8 @@ public class Controller {
 
 		return manosJugadores;
 	}
+	
+    public void leerYProcesarArchivo(String rutaArchivo) throws IOException {
+        List<String> contenidoArchivo = vista.leerArchivo(rutaArchivo);
+    }
 }

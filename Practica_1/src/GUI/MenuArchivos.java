@@ -1,7 +1,6 @@
 package GUI;
 
 import Controlador.Controller;
-import Vista.View;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -10,101 +9,72 @@ import java.io.File;
 
 public class MenuArchivos extends JPanel {
 
-    private Controller controller;
-    private JTextArea outputArea;
-    private JComboBox<String> comboBoxApartados;
-    private JTextField fileInputField;
-    private JTextField fileOutputField;
+	private static final long serialVersionUID = 1L;
+	private Controller controller;
+	private JTextField fileInputField;
+	private File archivoEntrada;
 
-    public MenuArchivos(Controller controller) {
-        this.controller = controller;
+	public MenuArchivos(Controller controller) {
+		this.controller = controller;
 
-        setLayout(new BorderLayout());
+		JPanel topPanel = new JPanel(new GridLayout(3, 1));
+		topPanel.setBounds(0, 53, 733, 93);
 
-        JPanel topPanel = new JPanel(new GridLayout(3, 1));
+		JPanel fileInputPanel = new JPanel();
+		fileInputField = new JTextField(20);
+		fileInputField.setBounds(193, 6, 166, 19);
+		JButton browseInputButton = new JButton("Seleccionar archivo de entrada");
+		browseInputButton.setBounds(364, 5, 175, 21);
+		browseInputButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				seleccionarArchivoEntrada();
+			}
+		});
+		fileInputPanel.setLayout(null);
+		fileInputPanel.add(fileInputField);
+		fileInputPanel.add(browseInputButton);
+		topPanel.add(fileInputPanel);
 
-        JPanel fileInputPanel = new JPanel();
-        fileInputField = new JTextField(20);
-        JButton browseInputButton = new JButton("Seleccionar archivo de entrada");
-        browseInputButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                seleccionarArchivoEntrada();
-            }
-        });
-        fileInputPanel.add(fileInputField);
-        fileInputPanel.add(browseInputButton);
-        topPanel.add(fileInputPanel);
+		setLayout(null);
 
-        JPanel fileOutputPanel = new JPanel();
-        fileOutputField = new JTextField(20);
-        JButton browseOutputButton = new JButton("Seleccionar archivo de salida");
-        browseOutputButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                seleccionarArchivoSalida();
-            }
-        });
-        fileOutputPanel.add(fileOutputField);
-        fileOutputPanel.add(browseOutputButton);
-        topPanel.add(fileOutputPanel);
+		add(topPanel);
 
-        JPanel comboBoxPanel = new JPanel();
-        comboBoxApartados = new JComboBox<>(new String[] {"Apartado 1", "Apartado 2", "Apartado 3"});
-        comboBoxPanel.add(new JLabel("Selecciona un apartado:"));
-        comboBoxPanel.add(comboBoxApartados);
-        topPanel.add(comboBoxPanel);
+		JButton leerArchivoButton = new JButton("Leer Archivo");
+		leerArchivoButton.setBounds(292, 156, 169, 31);
+		leerArchivoButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				leerArchivoEntrada();
+			}
+		});
+		add(leerArchivoButton);
+	}
 
-        add(topPanel, BorderLayout.NORTH);
+	private void seleccionarArchivoEntrada() {
+		try {
+			JFileChooser fileChooser = new JFileChooser();
+			int returnValue = fileChooser.showOpenDialog(this);
+			if (returnValue == JFileChooser.APPROVE_OPTION) {
+				archivoEntrada = fileChooser.getSelectedFile();
+				fileInputField.setText(archivoEntrada.getAbsolutePath());
+			}
+		} catch (Exception e) {
 
-        outputArea = new JTextArea();
-        outputArea.setEditable(false);
-        add(new JScrollPane(outputArea), BorderLayout.CENTER);
+		}
+	}
 
-        JPanel bottomPanel = new JPanel();
-        JButton ejecutarButton = new JButton("Ejecutar");
-        ejecutarButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                ejecutarApartado();
-            }
-        });
-        bottomPanel.add(ejecutarButton);
-        add(bottomPanel, BorderLayout.SOUTH);
-    }
-
-    private void seleccionarArchivoEntrada() {
-        JFileChooser fileChooser = new JFileChooser();
-        int returnValue = fileChooser.showOpenDialog(this);
-        if (returnValue == JFileChooser.APPROVE_OPTION) {
-            File selectedFile = fileChooser.getSelectedFile();
-            fileInputField.setText(selectedFile.getAbsolutePath());
-        }
-    }
-
-    private void seleccionarArchivoSalida() {
-        JFileChooser fileChooser = new JFileChooser();
-        int returnValue = fileChooser.showSaveDialog(this);
-        if (returnValue == JFileChooser.APPROVE_OPTION) {
-            File selectedFile = fileChooser.getSelectedFile();
-            fileOutputField.setText(selectedFile.getAbsolutePath());
-        }
-    }
-
-    private void ejecutarApartado() {
-        String archivoEntrada = fileInputField.getText();
-        String archivoSalida = fileOutputField.getText();
-        String apartadoSeleccionado = (String) comboBoxApartados.getSelectedItem();
-
-        if (archivoEntrada.isEmpty() || archivoSalida.isEmpty()) {
-            outputArea.setText("Por favor, selecciona los archivos de entrada y salida.");
-            return;
-        }
-
-        int numeroApartado = comboBoxApartados.getSelectedIndex() + 1;
-
-        controller.procesarOrden(String.valueOf(numeroApartado), archivoEntrada, archivoSalida);
-
-        outputArea.setText("Apartado " + numeroApartado + " ejecutado.\nRevisa el archivo de salida.");
-    }
+	private void leerArchivoEntrada() {
+		if (archivoEntrada != null) {
+			try {
+				controller.leerYProcesarArchivo(archivoEntrada.getAbsolutePath());
+				JOptionPane.showMessageDialog(this, "Archivo leido correctamente.");
+			} catch (Exception e) {
+				e.printStackTrace();
+				JOptionPane.showMessageDialog(this, "Error al leer el archivo.");
+			}
+		} else {
+			JOptionPane.showMessageDialog(this, "Seleccione un archivo de entrada primero.");
+		}
+	}
 }
