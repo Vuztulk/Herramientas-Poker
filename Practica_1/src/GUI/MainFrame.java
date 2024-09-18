@@ -47,6 +47,8 @@ public class MainFrame extends JFrame {
 		});
 	}
 
+	
+	
     public MainFrame(Controller controller) {
         this.controller = controller;
 
