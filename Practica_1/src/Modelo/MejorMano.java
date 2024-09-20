@@ -24,7 +24,7 @@ public class MejorMano {
         return this.descripcionMano;
     }
     
-    public List<Carta> getCartasMano() {
+    public List<Carta> getCartasMejorMano() {
         return this.cartasMano;
     }
 

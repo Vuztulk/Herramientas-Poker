@@ -16,11 +16,11 @@ public class Model {
 	public String evaluarMejorMano(String mano) {
 		return new Mano(parsearCartas(mano)).obtenerCartasComoString();
 	}
-
-	public String evaluarMejorManoString(String mano) {
-		return new Mano(parsearCartas(mano)).obtenerCartasComoString();
-	}
 	
+	public String getCartasMejorMano(String mano) {
+		return new Mano(parsearCartas(mano)).obtenerMejorManoComoString();
+	}
+
 	public String getDescripcionMano(String mano) {
 		return new Mano(parsearCartas(mano)).getDescripcionMano();
 	}

@@ -20,7 +20,7 @@ public class Mano {
 	public int getValor() {
 		return valor;
 	}
-
+	
 	public int evaluarValorMano() {
 		return calcularSumaCartas() + calcularValorMano();
 	}
@@ -54,4 +54,14 @@ public class Mano {
         }
         return sb.toString();
     }
+	
+	public String obtenerMejorManoComoString() {
+	    List<Carta> cartasMejorMano = mejorMano.getCartasMejorMano();
+	    StringBuilder sb = new StringBuilder();
+	    for (Carta carta : cartasMejorMano) {
+	        sb.append(carta.toString());
+	    }
+	    return sb.toString();
+	}
+
 }

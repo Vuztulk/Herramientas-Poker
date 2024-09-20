@@ -148,9 +148,21 @@ public class Controller {
     	List<String> resultados = new ArrayList<>();
 
 		for (String mano : input) {
-			String mejorMano = modelo.evaluarMejorManoString(mano);
+			String mejorMano = modelo.getCartasMejorMano(mano);
 			resultados.add(mejorMano);
 		}
+		return resultados;
+    }
+    
+    public List<String> obtenerManoComunesRaw(List<String> input){
+    	List<String> resultados = new ArrayList<>();
+
+		for (String mano : input) {
+			String[] partes = mano.split(";");
+			String mejorMano = modelo.evaluarMejorManoConComunes(partes[0], partes[2]);
+			resultados.add(mejorMano);
+		}
+
 		return resultados;
     }
 }

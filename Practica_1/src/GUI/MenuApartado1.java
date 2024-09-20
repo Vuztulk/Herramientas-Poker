@@ -27,17 +27,17 @@ public class MenuApartado1 extends JPanel {
 	    List<String> resultados = controller.obtenerManoRaw(manos); 
 	    
 	    for (int m = 0; m < manos.size(); m++) {
-	        String mano = manos.get(m);
-	        String resultado = resultados.get(m);
+	        String mano = resultados.get(m);
+	        String boardInicial = manos.get(m);
 	        
 	        JPanel manoPanel = new JPanel();
 	        manoPanel.setLayout(new BorderLayout());
-	        
 	        manoPanel.setBorder(new EmptyBorder(0, 0, 80, 0));
 	        
-	        JLabel resultadoLabel = new JLabel(resultado);
-	        resultadoLabel.setHorizontalAlignment(SwingConstants.CENTER);
-	        manoPanel.add(resultadoLabel, BorderLayout.NORTH);
+	        JLabel boardLabel = new JLabel("Board inicial: " + boardInicial);
+	        boardLabel.setHorizontalAlignment(SwingConstants.CENTER);
+	        boardLabel.setFont(new Font("Arial", Font.BOLD, 20));
+	        manoPanel.add(boardLabel, BorderLayout.NORTH);
 	        
 	        JPanel cartasPanel = new JPanel();
 	        cartasPanel.setLayout(new FlowLayout());
