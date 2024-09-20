@@ -44,7 +44,7 @@ public class Controller {
 		}
 	}
 
-	private List<String> procesarApartado1(List<String> input) {
+	public List<String> procesarApartado1(List<String> input) {
 		List<String> resultados = new ArrayList<>();
 
 		for (String mano : input) {
@@ -87,8 +87,7 @@ public class Controller {
 			String cartasComunes = partes[numJugadores + 1];
 			List<String> manosJugadores = extraerManosJugadores(partes, numJugadores);
 
-			StringBuilder resultado = new StringBuilder(String.join(";", partes[0], partes[1], cartasComunes))
-					.append("\n");
+			StringBuilder resultado = new StringBuilder(String.join(";", partes[0], partes[1], cartasComunes)).append("\n");
 
 			List<String> resultadoMano = modelo.ordenarJugadoresPorMejorMano(manosJugadores, cartasComunes);
 			for (String jugadorResultado : resultadoMano) {
@@ -138,8 +137,20 @@ public class Controller {
 
 		return manosJugadores;
 	}
-	
-    public void leerYProcesarArchivo(String rutaArchivo) throws IOException {
-        List<String> contenidoArchivo = vista.leerArchivo(rutaArchivo);
+	//////////////////////////////////////
+	////METODOS PARA USARLOS EN LA GUI////
+	//////////////////////////////////////
+    public List<String> leerYProcesarArchivo(String rutaArchivo) throws IOException {
+        return vista.leerArchivo(rutaArchivo);
+    }
+    
+    public List<String> obtenerManoRaw(List<String> input){
+    	List<String> resultados = new ArrayList<>();
+
+		for (String mano : input) {
+			String mejorMano = modelo.evaluarMejorManoString(mano);
+			resultados.add(mejorMano);
+		}
+		return resultados;
     }
 }

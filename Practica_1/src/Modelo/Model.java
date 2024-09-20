@@ -17,6 +17,10 @@ public class Model {
 		return new Mano(parsearCartas(mano)).obtenerCartasComoString();
 	}
 
+	public String evaluarMejorManoString(String mano) {
+		return new Mano(parsearCartas(mano)).obtenerCartasComoString();
+	}
+	
 	public String getDescripcionMano(String mano) {
 		return new Mano(parsearCartas(mano)).getDescripcionMano();
 	}

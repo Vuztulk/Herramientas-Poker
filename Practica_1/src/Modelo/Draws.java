@@ -55,7 +55,7 @@ public class Draws {
 			valoresArray[valor]++;
 		}
 
-		if (UtilidadesMano.tieneEscalera(valoresArray, valores.get(valores.size() - 1))) {
+		if (UtilidadesMano.tieneEscalera(valoresArray, valores.get(valores.size() - 1)) != -1) {
 			return false;
 		}
 

@@ -3,7 +3,8 @@ package Modelo;
 import java.util.*;
 
 public class UtilidadesMano {
-	public static boolean tieneEscalera(int[] valores, int maxValor) {
+	
+	public static int tieneEscalera(int[] valores, int maxValor) {
         for (int i = maxValor; i >= 5; i--) {
             boolean escalera = true;
             for (int j = 0; j < 5; j++) {
@@ -12,9 +13,9 @@ public class UtilidadesMano {
                     break;
                 }
             }
-            if (escalera) return true;
+            if (escalera) return i;
         }
-        return false;
+        return -1;
     }
     
     public static List<Carta> obtenerCartasPorValor(List<Carta> cartas, int valor, int cantidad) {

@@ -1,80 +1,122 @@
 package GUI;
 
-import Controlador.Controller;
 import javax.swing.*;
+import Controlador.Controller;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.List;
 
 public class MenuArchivos extends JPanel {
 
-	private static final long serialVersionUID = 1L;
-	private Controller controller;
-	private JTextField fileInputField;
-	private File archivoEntrada;
+    private static final long serialVersionUID = 1L;
+    private Controller controller;
+    private File archivoEntrada;
+    private JTextField textField;
+    private JDialog dialog;
+    private List<String> contenidoArchivo;
+    private JComboBox<String> apartadoSelector;
+    private int apartadoSeleccionado = 1;
+    
+    public MenuArchivos(Controller controller) {
+        this.controller = controller;
+        setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
 
-	public MenuArchivos(Controller controller) {
-		this.controller = controller;
+        String[] apartados = {"Apartado 1", "Apartado 2", "Apartado 3", "Apartado 4"};
+        apartadoSelector = new JComboBox<>(apartados);
+        apartadoSelector.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                actualizarApartadoSeleccionado();
+            }
+        });
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.gridwidth = 3;
+        add(apartadoSelector, gbc);
+        
+        JButton leerArchivoButton = new JButton("Leer Archivo");
+        leerArchivoButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                leerArchivoEntrada();
+            }
+        });
+        gbc.gridx = 1;
+        gbc.gridy = 2;
+        gbc.gridwidth = 2;
+        add(leerArchivoButton, gbc);
+        
+        textField = new JTextField(20);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        add(textField, gbc);
 
-		JPanel topPanel = new JPanel(new GridLayout(3, 1));
-		topPanel.setBounds(0, 53, 733, 93);
+        JButton browseInputButton = new JButton("Seleccionar archivo de entrada");
+        browseInputButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                seleccionarArchivo();
+            }
+        });
+        gbc.gridx = 2;
+        gbc.gridy = 0;
+        gbc.gridwidth = 1;
+        add(browseInputButton, gbc);
+    }
 
-		JPanel fileInputPanel = new JPanel();
-		fileInputField = new JTextField(20);
-		fileInputField.setBounds(193, 6, 166, 19);
-		JButton browseInputButton = new JButton("Seleccionar archivo de entrada");
-		browseInputButton.setBounds(364, 5, 175, 21);
-		browseInputButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				seleccionarArchivoEntrada();
-			}
-		});
-		fileInputPanel.setLayout(null);
-		fileInputPanel.add(fileInputField);
-		fileInputPanel.add(browseInputButton);
-		topPanel.add(fileInputPanel);
+    public void setDialog(JDialog dialog) {
+        this.dialog = dialog;
+    }
 
-		setLayout(null);
+    private void leerArchivoEntrada() {
+        if (archivoEntrada != null) {
+            try {
+                this.contenidoArchivo = controller.leerYProcesarArchivo(archivoEntrada.getAbsolutePath());
+                JOptionPane.showMessageDialog(this, "Archivo leído correctamente.");
 
-		add(topPanel);
+                if (dialog != null) {
+                    dialog.dispose();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Error al leer el archivo.");
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Seleccione un archivo de entrada primero.");
+        }
+    }
 
-		JButton leerArchivoButton = new JButton("Leer Archivo");
-		leerArchivoButton.setBounds(292, 156, 169, 31);
-		leerArchivoButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				leerArchivoEntrada();
-			}
-		});
-		add(leerArchivoButton);
-	}
+    private void seleccionarArchivo() {
+        JFileChooser fileChooser = new JFileChooser();
+        int returnValue = fileChooser.showOpenDialog(this);
+        if (returnValue == JFileChooser.APPROVE_OPTION) {
+            archivoEntrada = fileChooser.getSelectedFile();
+            textField.setText(archivoEntrada.getAbsolutePath());
+        }
+    }
 
-	private void seleccionarArchivoEntrada() {
-		try {
-			JFileChooser fileChooser = new JFileChooser();
-			int returnValue = fileChooser.showOpenDialog(this);
-			if (returnValue == JFileChooser.APPROVE_OPTION) {
-				archivoEntrada = fileChooser.getSelectedFile();
-				fileInputField.setText(archivoEntrada.getAbsolutePath());
-			}
-		} catch (Exception e) {
+    private void actualizarApartadoSeleccionado() {
+        String seleccionado = (String) apartadoSelector.getSelectedItem();
+        if (seleccionado != null) {
+            String[] partes = seleccionado.split(" ");
+            if (partes.length > 1) {
+                try {
+                    apartadoSeleccionado = Integer.parseInt(partes[1]);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                    apartadoSeleccionado = 1;
+                }
+            }
+        }
+    }
 
-		}
-	}
+    public List<String> getInfoArchivo() {
+        return contenidoArchivo;
+    }
 
-	private void leerArchivoEntrada() {
-		if (archivoEntrada != null) {
-			try {
-				controller.leerYProcesarArchivo(archivoEntrada.getAbsolutePath());
-				JOptionPane.showMessageDialog(this, "Archivo leido correctamente.");
-			} catch (Exception e) {
-				e.printStackTrace();
-				JOptionPane.showMessageDialog(this, "Error al leer el archivo.");
-			}
-		} else {
-			JOptionPane.showMessageDialog(this, "Seleccione un archivo de entrada primero.");
-		}
-	}
+    public int getApartado() {
+        return apartadoSeleccionado;
+    }
 }
