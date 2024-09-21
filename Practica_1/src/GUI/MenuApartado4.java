@@ -24,7 +24,7 @@ public class MenuApartado4 extends JPanel {
 	    JPanel resultadosPanel = new JPanel();
 	    resultadosPanel.setLayout(new GridLayout(manos.size(), 1));
 
-	    List<String> resultados = controller.obtenerManoOmagaRaw(manos); 
+	    List<String> resultados = controller.obtenerManoOmahaRaw(manos); 
 	    
 	    for (int m = 0; m < manos.size(); m++) {
 	        String mano = resultados.get(m);

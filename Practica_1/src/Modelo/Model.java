@@ -5,132 +5,100 @@ import java.util.List;
 
 public class Model {
 
-	public Model() {
+    public Model() {}
 
-	}
+    public List<Carta> parsearCartas(String mano) {
+        return UtilidadesCarta.parsearCartas(mano);
+    }
 
-	public List<Carta> parsearCartas(String mano) {
-		return UtilidadesCarta.parsearCartas(mano);
-	}
+    public String evaluarMejorMano(String mano) {
+        return new Mano(parsearCartas(mano)).obtenerCartasComoString();
+    }
+    
+    public String getCartasMejorMano(String mano) {
+        return new Mano(parsearCartas(mano)).obtenerMejorManoComoString();
+    }
 
-	public String evaluarMejorMano(String mano) {
-		return new Mano(parsearCartas(mano)).obtenerCartasComoString();
-	}
-	
-	public String getCartasMejorMano(String mano) {
-		return new Mano(parsearCartas(mano)).obtenerMejorManoComoString();
-	}
+    public String getDescripcionMano(String mano) {
+        return new Mano(parsearCartas(mano)).getDescripcionMano();
+    }
 
-	public String getDescripcionMano(String mano) {
-		return new Mano(parsearCartas(mano)).getDescripcionMano();
-	}
+    public List<String> detectarDraws(String mano) {
+        return new Draws().detectarDraws(parsearCartas(mano));
+    }
 
-	public List<String> detectarDraws(String mano) {
-		return new Draws().detectarDraws(parsearCartas(mano));
-	}
+    public String evaluarMejorManoConComunes(String cartasPropias, String cartasComunes) {
+        return evaluarMejorManoGenerica(cartasPropias, cartasComunes, 2, 5);
+    }
 
-	public String evaluarMejorManoConComunes(String cartasPropias, String cartasComunes) {
-		return evaluarMejorManoGenerica(cartasPropias, cartasComunes, 3, 5);
-	}
-	
-	public List<String> ordenarJugadoresPorMejorMano(List<String> manosJugadores, String cartasComunes) {
-		List<Jugador> jugadores = new ArrayList<>();
+    public List<String> ordenarJugadoresPorMejorMano(List<String> manosJugadores, String cartasComunes) {
+        return ordenarJugadores(manosJugadores, cartasComunes, false);
+    }
 
-		for (int i = 0; i < manosJugadores.size(); i++) {
-			String mejorManoCartas = evaluarMejorManoConComunes(manosJugadores.get(i), cartasComunes);
-			Mano manoJugador = new Mano(UtilidadesCarta.parsearCartas(mejorManoCartas));
+    public List<String> ordJugRaw(List<String> manosJugadores, String cartasComunes) {
+        return ordenarJugadores(manosJugadores, cartasComunes, true);
+    }
 
-			Jugador jugador = new Jugador("J" + (i + 1), manoJugador);
-			jugadores.add(jugador);
-		}
+    private List<String> ordenarJugadores(List<String> manosJugadores, String cartasComunes, boolean mostrarMejorMano) {
+        List<Jugador> jugadores = new ArrayList<>();
 
-		jugadores.sort((j1, j2) -> Integer.compare(j2.getMano().getValor(), j1.getMano().getValor()));
+        for (int i = 0; i < manosJugadores.size(); i++) {
+            String mejorManoCartas = evaluarMejorManoConComunes(manosJugadores.get(i), cartasComunes);
+            Mano manoJugador = new Mano(UtilidadesCarta.parsearCartas(mejorManoCartas));
+            jugadores.add(new Jugador("J" + (i + 1), manoJugador));
+        }
 
-		List<String> resultados = new ArrayList<>();
-		for (Jugador jugador : jugadores) {
-			resultados.add(jugador.getIdentificador() + ": " + jugador.getMano().getDescripcionMano());
-		}
+        jugadores.sort((j1, j2) -> Integer.compare(j2.getMano().getValor(), j1.getMano().getValor()));
 
-		return resultados;
-	}
+        List<String> resultados = new ArrayList<>();
+        for (Jugador jugador : jugadores) {
+            String resultado = jugador.getIdentificador() + ": " + //Dependiendo del valor muestra la mano raw o la descipcion completa
+            				   (mostrarMejorMano ? jugador.getMano().obtenerMejorManoComoString() : jugador.getMano().getDescripcionMano());
+            resultados.add(resultado);
+        }
 
-	private String evaluarMejorManoGenerica(String cartasPropias, String cartasComunes, int minCombinacionPropia, int maxCombinacionComunes) {
-		List<Carta> cartasJugador = parsearCartas(cartasPropias);
-		List<Carta> cartasComunesLista = parsearCartas(cartasComunes);
+        return resultados;
+    }
 
-		Mano mejorMano = null;
+    private String evaluarMejorManoGenerica(String cartasPropias, String cartasComunes, int minCombinacionPropia, int maxCombinacionComunes) {
+        List<Carta> cartasJugador = parsearCartas(cartasPropias);
+        List<Carta> cartasComunesLista = parsearCartas(cartasComunes);
 
-		for (int i = minCombinacionPropia; i <= maxCombinacionComunes; i++) {
-			List<List<Carta>> combinacionesComunes = UtilidadesMano.generarCombinaciones(cartasComunesLista, i);
+        Mano mejorMano = null;
 
-			for (List<Carta> combinacionComunes : combinacionesComunes) {
-				List<Carta> combinacionTotal = new ArrayList<>(cartasJugador);
-				combinacionTotal.addAll(combinacionComunes);
+        for (int i = minCombinacionPropia; i <= maxCombinacionComunes; i++) {
+            for (List<Carta> combinacionComunes : UtilidadesMano.generarCombinaciones(cartasComunesLista, i)) {
+                List<Carta> combinacionTotal = new ArrayList<>(cartasJugador);
+                combinacionTotal.addAll(combinacionComunes);
 
-				Mano manoActual = new Mano(combinacionTotal);
+                Mano manoActual = new Mano(combinacionTotal);
+                if (mejorMano == null || manoActual.evaluarValorMano() > mejorMano.evaluarValorMano()) {
+                    mejorMano = manoActual;
+                }
+            }
+        }
+        return mejorMano.obtenerCartasComoString();
+    }
 
-				if (mejorMano == null || manoActual.evaluarValorMano() > mejorMano.evaluarValorMano()) {
-					mejorMano = manoActual;
-				}
-			}
-		}
+    public String evaluarMejorManoOmaha(String cartasPropias, String cartasComunes) {
+        List<Carta> cartasJugador = parsearCartas(cartasPropias);
+        List<Carta> cartasComunesLista = parsearCartas(cartasComunes);
 
-		return mejorMano != null ? mejorMano.obtenerCartasComoString() : null;
-	}
+        Mano mejorMano = null;
+        List<List<Carta>> combinacionesPropias = UtilidadesMano.generarCombinaciones(cartasJugador, 2);
+        List<List<Carta>> combinacionesComunes = UtilidadesMano.generarCombinaciones(cartasComunesLista, 3);
 
-	public String evaluarMejorManoOmaha(String cartasPropias, String cartasComunes) {
-	    // Parsear las cartas propias y comunes a listas de objetos Carta
-	    List<Carta> cartasJugador = parsearCartas(cartasPropias);
-	    List<Carta> cartasComunesLista = parsearCartas(cartasComunes);
+        for (List<Carta> combinacionPropias : combinacionesPropias) {
+            for (List<Carta> combinacionComunes : combinacionesComunes) {
+                List<Carta> combinacionTotal = new ArrayList<>(combinacionPropias);
+                combinacionTotal.addAll(combinacionComunes);
 
-	    Mano mejorMano = null;
-
-	    // Generar combinaciones de exactamente 2 cartas propias
-	    List<List<Carta>> combinacionesPropias = UtilidadesMano.generarCombinaciones(cartasJugador, 2);
-
-	    // Generar combinaciones de exactamente 3 cartas comunes
-	    List<List<Carta>> combinacionesComunes = UtilidadesMano.generarCombinaciones(cartasComunesLista, 3);
-
-	    // Evaluar todas las combinaciones posibles de 2 cartas propias y 3 cartas comunes
-	    for (List<Carta> combinacionPropias : combinacionesPropias) {
-	        for (List<Carta> combinacionComunes : combinacionesComunes) {
-	            // Crear la combinación total (2 cartas propias + 3 cartas comunes)
-	            List<Carta> combinacionTotal = new ArrayList<>(combinacionPropias);
-	            combinacionTotal.addAll(combinacionComunes);
-
-	            // Crear la mano a partir de la combinación
-	            Mano manoActual = new Mano(combinacionTotal);
-
-	            // Evaluar si es la mejor mano hasta ahora
-	            if (mejorMano == null || manoActual.evaluarValorMano() > mejorMano.evaluarValorMano()) {
-	                mejorMano = manoActual;
-	            }
-	        }
-	    }
-
-	    // Devolver la mejor mano como string
-	    return mejorMano != null ? mejorMano.obtenerCartasComoString() : null;
-	}
-
-	public List<String> ordJugRaw(List<String> manosJugadores, String cartasComunes) {
-		List<Jugador> jugadores = new ArrayList<>();
-
-		for (int i = 0; i < manosJugadores.size(); i++) {
-			String mejorManoCartas = evaluarMejorManoConComunes(manosJugadores.get(i), cartasComunes);
-			Mano manoJugador = new Mano(UtilidadesCarta.parsearCartas(mejorManoCartas));
-
-			Jugador jugador = new Jugador("J" + (i + 1), manoJugador);
-			jugadores.add(jugador);
-		}
-
-		jugadores.sort((j1, j2) -> Integer.compare(j2.getMano().getValor(), j1.getMano().getValor()));
-
-		List<String> resultados = new ArrayList<>();
-		for (Jugador jugador : jugadores) {
-			resultados.add(jugador.getIdentificador() + ": " + jugador.getMano().obtenerMejorManoComoString());
-		}
-
-		return resultados;
-	}
-	
+                Mano manoActual = new Mano(combinacionTotal);
+                if (mejorMano == null || manoActual.evaluarValorMano() > mejorMano.evaluarValorMano()) {
+                    mejorMano = manoActual;
+                }
+            }
+        }
+        return mejorMano.obtenerCartasComoString();
+    }
 }

@@ -19,7 +19,7 @@ public class Controller {
 	public void procesarOrden(String apartado, String archivoEntrada, String archivoSalida) {
 		try {
 			List<String> input = vista.leerArchivo(archivoEntrada);
-			List<String> resultados = new ArrayList<>();
+			List<String> resultados;
 
 			switch (apartado) {
 			case "1":
@@ -44,7 +44,7 @@ public class Controller {
 		}
 	}
 
-	public List<String> procesarApartado1(List<String> input) {
+	private List<String> procesarApartado1(List<String> input) {
 		List<String> resultados = new ArrayList<>();
 
 		for (String mano : input) {
@@ -65,8 +65,7 @@ public class Controller {
 			String mejorMano = modelo.evaluarMejorManoConComunes(partes[0], partes[2]);
 
 			StringBuilder resultado = new StringBuilder(String.join(";", partes[0], partes[1], partes[2]))
-					.append("\n- Best hand: ").append(modelo.getDescripcionMano(mejorMano)).append(" con ")
-					.append(partes[0]).append(partes[2]).append("\n");
+					.append("\n- Best hand: ").append(modelo.getDescripcionMano(mejorMano)).append(" con ").append(mejorMano).append("\n");
 
 			if (Integer.parseInt(partes[1]) < 5) { // Si hay menos de 5 cartas comunes se miran los draws
 				agregarDraws(resultado, modelo.detectarDraws(mejorMano));
@@ -74,7 +73,6 @@ public class Controller {
 
 			resultados.add(resultado.toString());
 		}
-
 		return resultados;
 	}
 
@@ -88,7 +86,7 @@ public class Controller {
 			List<String> manosJugadores = extraerManosJugadores(partes, numJugadores);
 
 			StringBuilder resultado = new StringBuilder().append(mano).append("\n");
-			
+
 			List<String> resultadoMano = modelo.ordenarJugadoresPorMejorMano(manosJugadores, cartasComunes);
 			for (String jugadorResultado : resultadoMano) {
 				resultado.append(jugadorResultado).append("\n");
@@ -108,7 +106,7 @@ public class Controller {
 			String mejorMano = modelo.evaluarMejorManoOmaha(partes[0], partes[2]);
 
 			StringBuilder resultado = new StringBuilder(String.join(";", partes[0], partes[1], partes[2]))
-									  .append("\n- Best hand: ").append(modelo.getDescripcionMano(mejorMano)).append("\n");
+					.append("\n- Best hand: ").append(modelo.getDescripcionMano(mejorMano)).append("\n");
 
 			resultados.add(resultado.toString());
 		}
@@ -127,75 +125,60 @@ public class Controller {
 
 		for (int i = 1; i <= numJugadores; i++) {
 			String cartasJugador = partes[i].substring(2);
-			StringBuilder manoJugador = new StringBuilder();
-
-			for (int j = 0; j < cartasJugador.length(); j += 2) {
-				manoJugador.append(cartasJugador.substring(j, j + 2));
-			}
-			manosJugadores.add(manoJugador.toString().trim());
+			manosJugadores.add(cartasJugador.trim());
 		}
 
 		return manosJugadores;
 	}
-	//////////////////////////////////////
-	////METODOS PARA USARLOS EN LA GUI////
-	//////////////////////////////////////
-    public List<String> leerYProcesarArchivo(String rutaArchivo) throws IOException {
-        return vista.leerArchivo(rutaArchivo);
-    }
-    
-    public List<String> obtenerManoRaw(List<String> input){
-    	List<String> resultados = new ArrayList<>();
 
+	//////////////////////////////////////
+	//// MÉTODOS PARA USO EN LA GUI //////
+	//////////////////////////////////////
+	public List<String> leerYProcesarArchivo(String rutaArchivo) throws IOException {
+		return vista.leerArchivo(rutaArchivo);
+	}
+
+	public List<String> obtenerManoRaw(List<String> input) {
+		List<String> resultados = new ArrayList<>();
 		for (String mano : input) {
-			String mejorMano = modelo.getCartasMejorMano(mano);
-			resultados.add(mejorMano);
+			resultados.add(modelo.getCartasMejorMano(mano));
 		}
 		return resultados;
-    }
-    
-    public List<String> obtenerManoComunesRaw(List<String> input){
-    	List<String> resultados = new ArrayList<>();
+	}
 
+	public List<String> obtenerManoComunesRaw(List<String> input) {
+		List<String> resultados = new ArrayList<>();
 		for (String mano : input) {
 			String[] partes = mano.split(";");
-			String mejorMano = modelo.evaluarMejorManoConComunes(partes[0], partes[2]);
-			resultados.add(mejorMano);
+			resultados.add(modelo.evaluarMejorManoConComunes(partes[0], partes[2]));
 		}
-
 		return resultados;
-    }
-    
+	}
+
 	public List<String> ordJugRaw(List<String> input) {
 		List<String> resultados = new ArrayList<>();
-
 		for (String mano : input) {
 			String[] partes = mano.split(";");
 			int numJugadores = Integer.parseInt(partes[0]);
 			String cartasComunes = partes[numJugadores + 1];
 			List<String> manosJugadores = extraerManosJugadores(partes, numJugadores);
+			List<String> resultadoMano = modelo.ordJugRaw(manosJugadores, cartasComunes);
 
 			StringBuilder resultado = new StringBuilder().append(mano).append("\n");
-			
-			List<String> resultadoMano = modelo.ordJugRaw(manosJugadores, cartasComunes);
 			for (String jugadorResultado : resultadoMano) {
 				resultado.append(jugadorResultado).append("\n");
 			}
-
 			resultados.add(resultado.toString());
 		}
-
 		return resultados;
 	}
-	
-    public List<String> obtenerManoOmagaRaw(List<String> input){
-    	List<String> resultados = new ArrayList<>();
 
+	public List<String> obtenerManoOmahaRaw(List<String> input) {
+		List<String> resultados = new ArrayList<>();
 		for (String mano : input) {
 			String[] partes = mano.split(";");
-			String mejorMano = modelo.evaluarMejorManoOmaha(partes[0], partes[2]);
-			resultados.add(mejorMano);
+			resultados.add(modelo.evaluarMejorManoOmaha(partes[0], partes[2]));
 		}
 		return resultados;
-    }
+	}
 }
