@@ -36,10 +36,10 @@ public class Mesa extends JPanel {
 			"src/GUI/Imagenes/Cartas/9_of_clubs.png", "src/GUI/Imagenes/Cartas/8_of_clubs.png",
 			"src/GUI/Imagenes/Cartas/7_of_clubs.png", "src/GUI/Imagenes/Cartas/6_of_clubs.png" };
 
-	private int[][] posicionesIniciales = { { 1160, 150 }, // Jugador 1 (Derecha)
+	private int[][] posicionesIniciales = { { 1160, 200 }, // Jugador 1 (Derecha)
 			{ 570, 600 }, // Jugador 2 (Abajo)
 			{ 570, 100 }, // Jugador 3 (Arriba)
-			{ 300, 150 } // Jugador 4 (Izquierda)
+			{ 300, 200 } // Jugador 4 (Izquierda)
 	};
 
 	private int[] desplazamientoX = { 0, 80, 80, 0 };
@@ -133,10 +133,9 @@ public class Mesa extends JPanel {
 					}
 				} else if (apartado3.isSelected()) {
 					if (manos != null && indiceManoActual < manos.size()) {
-						if (indiceManoActual < resultados.size()) {
-							String board[] = manos.get(indiceManoActual).split(";");
-							labelBoardInicial.setText("Board Inicial: " + board[2]);
-							ejecutarApartado3(manos);
+						if (indiceManoActual < res_jugadores.size()) {
+							labelBoardInicial.setText("Board Inicial: " + manos.get(indiceManoActual));
+							ejecutarApartado3(res_jugadores);
 						}
 					}
 				} else if (apartado4.isSelected()) {
@@ -150,120 +149,116 @@ public class Mesa extends JPanel {
 	}
 
 	private void ejecutarApartado1(List<String> manos) {
+		borrarCartasJugadores();
 		labelBoardInicial.setText("Board Inicial: " + manos.get(indiceManoActual));
 		pintarBoard(resultados.get(indiceManoActual), null);
 		indiceManoActual++;
 	}
 
 	private void ejecutarApartado2(List<String> manos) {
-	    labelBoardInicial.setText("Board Inicial: " + manos.get(indiceManoActual));
+		borrarCartasJugadores();
+		labelBoardInicial.setText("Board Inicial: " + manos.get(indiceManoActual));
 
-	    String mano = resultados.get(indiceManoActual);
-	    String board[] = manos.get(indiceManoActual).split(";");
+		String mano = resultados.get(indiceManoActual);
+		String board[] = manos.get(indiceManoActual).split(";");
 
-	    pintarBoard(board[2], mano);
-	    int numCartasJugador = mano.length() / 2;
+		pintarBoard(board[2], mano);
+		int numCartasJugador = mano.length() / 2;
 
-	    Set<String> cartasBoard = new HashSet<>();// Filtra las cartas para no pintarlas en la mano del jugador y en el tablero tambien
-	    for (int i = 0; i < board[2].length(); i += 2) {
-	        cartasBoard.add(board[2].substring(i, i + 2));
-	    }
+		Set<String> cartasBoard = new HashSet<>();// Filtra las cartas para no pintarlas en la mano del jugador y en el
+													// tablero tambien
+		for (int i = 0; i < board[2].length(); i += 2) {
+			cartasBoard.add(board[2].substring(i, i + 2));
+		}
 
-	    for (int jugador = 0; jugador < 4; jugador++) {
-	        if (jugador == 1) { // Solo el jugador de abajo muestra sus cartas
-	            for (int pos_carta = 0; pos_carta < numCartasJugador; pos_carta++) {
-	                String carta = mano.substring(pos_carta * 2, pos_carta * 2 + 2);
-	                
-	                if (!cartasBoard.contains(carta)) {
-	                    String imagePath = UtilidadesGUI.getCartaPath(carta);
-	                    cartasJugadores[jugador][pos_carta] = new JLabel(new ImageIcon(imagePath));
+		for (int jugador = 0; jugador < 4; jugador++) {
+			if (jugador == 1) { // Solo el jugador de abajo muestra sus cartas
+				for (int pos_carta = 0; pos_carta < numCartasJugador; pos_carta++) {
+					String carta = mano.substring(pos_carta * 2, pos_carta * 2 + 2);
 
-	                    int x = posicionesIniciales[jugador][0] + (desplazamientoX[jugador] * pos_carta);
-	                    int y = posicionesIniciales[jugador][1] + (desplazamientoY[jugador] * pos_carta);
+					if (!cartasBoard.contains(carta)) {
+						String imagePath = UtilidadesGUI.getCartaPath(carta);
+						cartasJugadores[jugador][pos_carta] = new JLabel(new ImageIcon(imagePath));
 
-	                    cartasJugadores[jugador][pos_carta].setBounds(x, y, 70, 95);
-	                    cartasJugadores[jugador][pos_carta].setBorder(new LineBorder(Color.YELLOW, 5));
-	                    add(cartasJugadores[jugador][pos_carta]);
-	                }
-	            }
-	        } else { // Los otros jugadores muestran 4 jokers
-	            for (int pos_carta = 0; pos_carta < 4; pos_carta++) {
-	                String imagePath = "src/GUI/Imagenes/Cartas/red_joker.png";
-	                cartasJugadores[jugador][pos_carta] = new JLabel(new ImageIcon(imagePath));
+						int x = posicionesIniciales[jugador][0] + (desplazamientoX[jugador] * pos_carta);
+						int y = posicionesIniciales[jugador][1] + (desplazamientoY[jugador] * pos_carta);
 
-	                int x = posicionesIniciales[jugador][0] + (desplazamientoX[jugador] * pos_carta);
-	                int y = posicionesIniciales[jugador][1] + (desplazamientoY[jugador] * pos_carta);
+						cartasJugadores[jugador][pos_carta].setBounds(x, y, 70, 95);
+						cartasJugadores[jugador][pos_carta].setBorder(new LineBorder(Color.YELLOW, 5));
+						add(cartasJugadores[jugador][pos_carta]);
+					}
+				}
+			} else { // Los otros jugadores muestran 4 jokers
+				for (int pos_carta = 0; pos_carta < 4; pos_carta++) {
+					String imagePath = "src/GUI/Imagenes/Cartas/red_joker.png";
+					cartasJugadores[jugador][pos_carta] = new JLabel(new ImageIcon(imagePath));
 
-	                cartasJugadores[jugador][pos_carta].setBounds(x, y, 70, 95);
-	                add(cartasJugadores[jugador][pos_carta]);
-	            }
-	        }
-	    }
+					int x = posicionesIniciales[jugador][0] + (desplazamientoX[jugador] * pos_carta);
+					int y = posicionesIniciales[jugador][1] + (desplazamientoY[jugador] * pos_carta);
 
-	    revalidate();
-	    repaint();
-	    indiceManoActual++; // Incrementa el índice para la siguiente mano
+					cartasJugadores[jugador][pos_carta].setBounds(x, y, 70, 95);
+					add(cartasJugadores[jugador][pos_carta]);
+				}
+			}
+		}
+
+		revalidate();
+		repaint();
+		indiceManoActual++;
 	}
 
 	private void ejecutarApartado3(List<List<String>> res_jugadores) {
-	    labelBoardInicial.setText("Board Inicial: " + manos.get(indiceManoActual));
+		borrarCartasJugadores();
+		labelBoardInicial.setText("Board Inicial: " + manos.get(indiceManoActual));
 
-	    String mano = resultados.get(indiceManoActual);
-	    String board[] = manos.get(indiceManoActual).split(";");
+		List<String> listamano = res_jugadores.get(indiceManoActual);
+		String mano = String.join("", listamano);
 
-	    pintarBoard(board[2], mano);
-	    int numCartasJugador = mano.length() / 2;
+		String board[] = manos.get(indiceManoActual).split(";");
+		int numJugadores = Integer.parseInt(board[0]);
 
-	    Set<String> cartasBoard = new HashSet<>(); // Filtra las cartas para no pintarlas en la mano del jugador y en el tablero también
-	    for (int i = 0; i < board[2].length(); i += 2) {
-	        cartasBoard.add(board[2].substring(i, i + 2));
-	    }
+		pintarBoard(board[numJugadores + 1], mano);
 
-	    // Obtener el número de jugadores a partir de la mano
-	    int numJugadores = Integer.parseInt(board[0]); // Suponiendo que el número de jugadores está en la primera posición
+		Set<String> cartasBoard = new HashSet<>();
+		for (int i = 0; i < board[numJugadores + 1].length(); i += 2) {
+			cartasBoard.add(board[numJugadores + 1].substring(i, i + 2));
+		}
 
-	    for (int jugador = 0; jugador < 4; jugador++) {
-	        if (jugador < numJugadores) { // Solo los jugadores activos muestran sus cartas
-	            if (jugador == 1) { // Solo el jugador de abajo muestra sus cartas
-	                for (int pos_carta = 0; pos_carta < numCartasJugador; pos_carta++) {
-	                    String carta = mano.substring(pos_carta * 2, pos_carta * 2 + 2);
+		for (int jugador = 0; jugador < 4; jugador++) {
+			if (jugador < numJugadores) {
+				for (int pos_carta = 0; pos_carta < listamano.get(jugador).length() / 2; pos_carta++) {
+					String carta = listamano.get(jugador).substring(pos_carta * 2, pos_carta * 2 + 2);
 
-	                    if (!cartasBoard.contains(carta)) {
-	                        String imagePath = UtilidadesGUI.getCartaPath(carta);
-	                        cartasJugadores[jugador][pos_carta] = new JLabel(new ImageIcon(imagePath));
+					if (!cartasBoard.contains(carta)) {
+						String imagePath = UtilidadesGUI.getCartaPath(carta);
+						cartasJugadores[jugador][pos_carta] = new JLabel(new ImageIcon(imagePath));
 
-	                        int x = posicionesIniciales[jugador][0] + (desplazamientoX[jugador] * pos_carta);
-	                        int y = posicionesIniciales[jugador][1] + (desplazamientoY[jugador] * pos_carta);
+						int x = posicionesIniciales[jugador][0] + (desplazamientoX[jugador] * pos_carta);
+						int y = posicionesIniciales[jugador][1] + (desplazamientoY[jugador] * pos_carta);
 
-	                        cartasJugadores[jugador][pos_carta].setBounds(x, y, 70, 95);
-	                        cartasJugadores[jugador][pos_carta].setBorder(new LineBorder(Color.YELLOW, 5));
-	                        add(cartasJugadores[jugador][pos_carta]);
-	                    }
-	                }
-	            } else { // Los otros jugadores (que no son el jugador 1) no muestran cartas
-	                for (int pos_carta = 0; pos_carta < 4; pos_carta++) {
-	                    String imagePath = "src/GUI/Imagenes/Cartas/red_joker.png";
-	                    cartasJugadores[jugador][pos_carta] = new JLabel(new ImageIcon(imagePath));
+						cartasJugadores[jugador][pos_carta].setBounds(x, y, 70, 95);
+						cartasJugadores[jugador][pos_carta].setBorder(new LineBorder(Color.YELLOW, 5));
+						add(cartasJugadores[jugador][pos_carta]);
+					}
+				}
+			} else {
+				for (int pos_carta = 0; pos_carta < 4; pos_carta++) {
+					String imagePath = "src/GUI/Imagenes/Cartas/red_joker.png";
+					cartasJugadores[jugador][pos_carta] = new JLabel(new ImageIcon(imagePath));
 
-	                    int x = posicionesIniciales[jugador][0] + (desplazamientoX[jugador] * pos_carta);
-	                    int y = posicionesIniciales[jugador][1] + (desplazamientoY[jugador] * pos_carta);
+					int x = posicionesIniciales[jugador][0] + (desplazamientoX[jugador] * pos_carta);
+					int y = posicionesIniciales[jugador][1] + (desplazamientoY[jugador] * pos_carta);
 
-	                    cartasJugadores[jugador][pos_carta].setBounds(x, y, 70, 95);
-	                    add(cartasJugadores[jugador][pos_carta]);
-	                }
-	            }
-	        } else { // Si el jugador está fuera de la partida, se pueden dejar en su estado actual o esconder
-	            for (int pos_carta = 0; pos_carta < 4; pos_carta++) {
-	                cartasJugadores[jugador][pos_carta].setVisible(false); // Esconder las cartas de jugadores no activos
-	            }
-	        }
-	    }
+					cartasJugadores[jugador][pos_carta].setBounds(x, y, 70, 95);
+					add(cartasJugadores[jugador][pos_carta]);
+				}
+			}
+		}
 
-	    revalidate();
-	    repaint();
-	    indiceManoActual++; // Incrementa el índice para la siguiente mano
+		revalidate();
+		repaint();
+		indiceManoActual++; // Incrementa el índice para la siguiente mano
 	}
-
 
 	private void ejecutarApartado4(List<String> manos) {
 
@@ -305,6 +300,18 @@ public class Mesa extends JPanel {
 
 		revalidate();
 		repaint();
+	}
+	private void borrarCartasJugadores() {
+	    for (int i = 0; i < cartasJugadores.length; i++) {
+	        for (int j = 0; j < cartasJugadores[i].length; j++) {
+	            if (cartasJugadores[i][j] != null) {
+	                remove(cartasJugadores[i][j]);
+	                cartasJugadores[i][j] = null;
+	            }
+	        }
+	    }
+	    revalidate();
+	    repaint();
 	}
 
 	protected void paintComponent(Graphics g) {
