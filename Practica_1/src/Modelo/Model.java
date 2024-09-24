@@ -28,7 +28,11 @@ public class Model {
     }
 
     public String evaluarMejorManoConComunes(String cartasPropias, String cartasComunes) {
-        return evaluarMejorManoGenerica(cartasPropias, cartasComunes, 2, 5);
+        return evaluarMejorManoGenerica(cartasPropias, cartasComunes, 2, 5, false);
+    }
+    
+    public String evaluarMejorManoConComunesRaw(String cartasPropias, String cartasComunes) {
+        return evaluarMejorManoGenerica(cartasPropias, cartasComunes, 2, 5, true);
     }
 
     public List<String> ordenarJugadoresPorMejorMano(List<String> manosJugadores, String cartasComunes) {
@@ -60,7 +64,7 @@ public class Model {
         return resultados;
     }
 
-    private String evaluarMejorManoGenerica(String cartasPropias, String cartasComunes, int minCombinacionPropia, int maxCombinacionComunes) {
+    private String evaluarMejorManoGenerica(String cartasPropias, String cartasComunes, int minCombinacionPropia, int maxCombinacionComunes, boolean res) {
         List<Carta> cartasJugador = parsearCartas(cartasPropias);
         List<Carta> cartasComunesLista = parsearCartas(cartasComunes);
 
@@ -77,7 +81,7 @@ public class Model {
                 }
             }
         }
-        return mejorMano.obtenerCartasComoString();
+        return res ? mejorMano.obtenerMejorManoComoString() : mejorMano.obtenerCartasComoString();
     }
 
     public String evaluarMejorManoOmaha(String cartasPropias, String cartasComunes) {

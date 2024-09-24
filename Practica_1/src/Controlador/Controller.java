@@ -151,25 +151,28 @@ public class Controller {
 		List<String> resultados = new ArrayList<>();
 		for (String mano : input) {
 			String[] partes = mano.split(";");
-			resultados.add(modelo.evaluarMejorManoConComunes(partes[0], partes[2]));
+			resultados.add(modelo.evaluarMejorManoConComunesRaw(partes[0], partes[2]));
 		}
 		return resultados;
 	}
 
-	public List<String> ordJugRaw(List<String> input) {
-		List<String> resultados = new ArrayList<>();
+	public List<List<String>> ordJugRaw(List<String> input) {
+		List<List<String>> resultados = new ArrayList<>();
 		for (String mano : input) {
 			String[] partes = mano.split(";");
 			int numJugadores = Integer.parseInt(partes[0]);
 			String cartasComunes = partes[numJugadores + 1];
 			List<String> manosJugadores = extraerManosJugadores(partes, numJugadores);
+
 			List<String> resultadoMano = modelo.ordJugRaw(manosJugadores, cartasComunes);
 
-			StringBuilder resultado = new StringBuilder().append(mano).append("\n");
+			List<String> resultadoSinEtiquetas = new ArrayList<>();
 			for (String jugadorResultado : resultadoMano) {
-				resultado.append(jugadorResultado).append("\n");
+				String resultadoSinEtiqueta = jugadorResultado.replaceAll("J\\d+: ", "");
+				resultadoSinEtiquetas.add(resultadoSinEtiqueta);
 			}
-			resultados.add(resultado.toString());
+
+			resultados.add(resultadoSinEtiquetas);
 		}
 		return resultados;
 	}

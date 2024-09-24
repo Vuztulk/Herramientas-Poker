@@ -24,7 +24,7 @@ public class MenuApartado3 extends JPanel {
         JPanel resultadosPanel = new JPanel();
         resultadosPanel.setLayout(new GridLayout(manos.size(), 1));
 
-        List<String> resultados = controller.ordJugRaw(manos); 
+        List<String> resultados = null; 
         
         for (int m = 0; m < manos.size(); m++) {
             String resultado = resultados.get(m);
