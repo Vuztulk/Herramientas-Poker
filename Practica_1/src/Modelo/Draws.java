@@ -21,11 +21,11 @@ public class Draws {
 	}
 
 	private boolean tieneFlushDraw(List<Carta> cartas) {
-		Map<Character, Long> paloConteo = new HashMap<>();
+		Map<Character, Integer> paloConteo = new HashMap<>();
 		for (Carta carta : cartas) {
-			paloConteo.put(carta.getPalo(), paloConteo.getOrDefault(carta.getPalo(), 0L) + 1);
+			paloConteo.put(carta.getPalo(), paloConteo.getOrDefault(carta.getPalo(), 0) + 1);
 		}
-		return paloConteo.containsValue(4L);
+		return paloConteo.containsValue(4);
 	}
 
 	private boolean tieneGutshot(List<Carta> cartas) {
@@ -36,6 +36,8 @@ public class Draws {
 		valores.sort(Comparator.naturalOrder());
 
 		for (int i = 0; i < valores.size() - 4; i++) {
+			//Verifica que las cartas en los extremos (i y i + 4) tienen una diferencia de 4
+			//y verifica que no hay una diferencia de 2 entre las cartas intermedias
 			if (valores.get(i + 4) - valores.get(i) == 4 && valores.get(i + 3) - valores.get(i + 1) != 2) {
 				return true;
 			}
@@ -50,7 +52,7 @@ public class Draws {
 		}
 		valores.sort(Comparator.naturalOrder());
 
-		int[] valoresArray = new int[15];
+		int[] valoresArray = new int[15];//Cuenta cuantas cartas hay de cada valor
 		for (int valor : valores) {
 			valoresArray[valor]++;
 		}
@@ -60,9 +62,9 @@ public class Draws {
 		}
 
 		for (int i = 0; i < valores.size() - 3; i++) {
-			int diferencia = valores.get(i + 3) - valores.get(i);
+			int diferencia = valores.get(i + 3) - valores.get(i);//Diferencia entre la cuarta carta y la primera
 
-			if (diferencia == 3 && valores.get(i) > 2 && valores.get(i + 3) < 14) { // Verificar que no este en losextremos
+			if (diferencia == 3 && valores.get(i) > 2 && valores.get(i + 3) < 14) { // Verificar que no este en los extremos
 				return true;
 			}
 		}

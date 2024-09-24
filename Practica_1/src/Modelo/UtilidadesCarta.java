@@ -16,7 +16,7 @@ public class UtilidadesCarta {
         }
     }
 
-    public static int parseValor(char valor) {
+    public static int getValorNombre(char valor) {
         switch (valor) {
             case 'A': return 14;
             case 'K': return 13;

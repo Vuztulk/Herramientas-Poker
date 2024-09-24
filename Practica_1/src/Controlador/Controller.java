@@ -65,7 +65,8 @@ public class Controller {
 			String mejorMano = modelo.evaluarMejorManoConComunes(partes[0], partes[2]);
 
 			StringBuilder resultado = new StringBuilder(String.join(";", partes[0], partes[1], partes[2]))
-					.append("\n- Best hand: ").append(modelo.getDescripcionMano(mejorMano)).append(" con ").append(mejorMano).append("\n");
+					.append("\n- Best hand: ").append(modelo.getDescripcionMano(mejorMano)).append(" con ")
+					.append(mejorMano).append("\n");
 
 			if (Integer.parseInt(partes[1]) < 5) { // Si hay menos de 5 cartas comunes se miran los draws
 				agregarDraws(resultado, modelo.detectarDraws(mejorMano));
@@ -131,9 +132,9 @@ public class Controller {
 		return manosJugadores;
 	}
 
-	//////////////////////////////////////
-	//// MÉTODOS PARA USO EN LA GUI //////
-	//////////////////////////////////////
+	////////////////////////////////////////
+	////// METODOS PARA USO EN LA GUI //////
+	////////////////////////////////////////
 	public List<String> leerYProcesarArchivo(String rutaArchivo) throws IOException {
 		return vista.leerArchivo(rutaArchivo);
 	}

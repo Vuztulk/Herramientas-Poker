@@ -1,7 +1,5 @@
 package App;
 
-import javax.swing.SwingUtilities;
-import GUI.MainFrame;
 import Controlador.Controller;
 import Modelo.Model;
 import Vista.View;

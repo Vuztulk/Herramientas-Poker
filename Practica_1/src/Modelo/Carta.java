@@ -5,7 +5,7 @@ public class Carta {
     private final char palo;
 
     public Carta(char valor, char palo) {
-        this.valor = UtilidadesCarta.parseValor(valor);
+        this.valor = UtilidadesCarta.getValorNombre(valor);
         this.palo = palo;
     }
 
