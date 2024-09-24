@@ -99,7 +99,7 @@ public class Mesa extends JPanel {
 				} else if (apartado3.isSelected()) {
 					indiceManoActual = 0;
 					res_jugadores = controller.ordJugRaw(manos);
-					ejecutarApartado3(manos);
+					ejecutarApartado3(res_jugadores);
 				} else if (apartado4.isSelected()) {
 					indiceManoActual = 0;
 					// resultados = controller.obtenerManoRaw(manos);
@@ -205,7 +205,7 @@ public class Mesa extends JPanel {
 	    indiceManoActual++; // Incrementa el índice para la siguiente mano
 	}
 
-	private void ejecutarApartado3(List<String> manos) {
+	private void ejecutarApartado3(List<List<String>> res_jugadores) {
 	    labelBoardInicial.setText("Board Inicial: " + manos.get(indiceManoActual));
 
 	    String mano = resultados.get(indiceManoActual);
