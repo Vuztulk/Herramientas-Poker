@@ -96,10 +96,10 @@ public class Mesa extends JPanel {
 				} else if (apartado3.isSelected()) {
 					indiceManoActual = 0;
 					res_jugadores = controller.ordJugRaw(manos);
-					ejecutarApartado3(res_jugadores);
+					ejecutarApartado3(manos);
 				} else if (apartado4.isSelected()) {
 					indiceManoActual = 0;
-					// resultados = controller.obtenerManoRaw(manos);
+					resultados = controller.obtenerManoOmahaRaw(manos);
 					ejecutarApartado4(manos);
 				}
 			}
@@ -132,11 +132,16 @@ public class Mesa extends JPanel {
 					if (manos != null && indiceManoActual < manos.size()) {
 						if (indiceManoActual < res_jugadores.size()) {
 							labelBoardInicial.setText("Board Inicial: " + manos.get(indiceManoActual));
-							ejecutarApartado3(res_jugadores);
+							ejecutarApartado3(manos);
 						}
 					}
 				} else if (apartado4.isSelected()) {
-
+					if (manos != null && indiceManoActual < manos.size()) {
+						if (indiceManoActual < resultados.size()) {
+							labelBoardInicial.setText("Board Inicial: " + manos.get(indiceManoActual));
+							ejecutarApartado4(manos);
+						}
+					}
 				}
 
 			}
@@ -204,7 +209,7 @@ public class Mesa extends JPanel {
 		indiceManoActual++;
 	}
 
-	private void ejecutarApartado3(List<List<String>> res_jugadores) {
+	private void ejecutarApartado3(List<String> manos) {
 	    borrarCartasJugadores();
 	    borrarEtiquetasDinamicas(); // Limpia las etiquetas antes de agregar las nuevas
 	    
@@ -258,7 +263,7 @@ public class Mesa extends JPanel {
 	    listajug.setBounds(10, 270, 200, 30);
 	    listajug.setFont(new Font("Arial", Font.PLAIN, 14));
 	    add(listajug);
-	    etiquetasDinamicas.add(listajug); // Añadir etiqueta a la lista
+	    etiquetasDinamicas.add(listajug);
 
 	    int yPos = 300;
 	    for (int i = 0; i < listamano.size(); i++) {
@@ -266,7 +271,7 @@ public class Mesa extends JPanel {
 	        labelMano.setBounds(10, yPos, 200, 30);
 	        labelMano.setFont(new Font("Arial", Font.PLAIN, 14));
 	        add(labelMano);
-	        etiquetasDinamicas.add(labelMano); // Añadir cada etiqueta a la lista
+	        etiquetasDinamicas.add(labelMano);
 	        yPos += 20;
 	    }
 
@@ -275,18 +280,65 @@ public class Mesa extends JPanel {
 	    indiceManoActual++;
 	}
 
-	private void borrarEtiquetasDinamicas() {
-	    for (JLabel etiqueta : etiquetasDinamicas) {
-	        remove(etiqueta); // Eliminar cada etiqueta del panel
-	    }
-	    etiquetasDinamicas.clear(); // Vaciar la lista después de eliminarlas
-	    revalidate();
-	    repaint();
-	}
-
-
 	private void ejecutarApartado4(List<String> manos) {
 
+		borrarCartasJugadores();
+		labelBoardInicial.setText("Board Inicial: " + manos.get(indiceManoActual));
+		
+		String partes[] = manos.get(indiceManoActual).split(";");
+		String mano = partes[0];
+
+		pintarBoard(partes[2], resultados.get(indiceManoActual));
+		int numCartasJugador = mano.length() / 2;
+
+		Set<String> cartasBoard = new HashSet<>();
+		for (int i = 0; i < resultados.get(indiceManoActual).length(); i += 2) {
+			cartasBoard.add(resultados.get(indiceManoActual).substring(i, i + 2));
+		}
+
+		for (int jugador = 0; jugador < 4; jugador++) {
+			if (jugador == 1) { // Solo el jugador de abajo muestra sus cartas
+				for (int pos_carta = 0; pos_carta < numCartasJugador; pos_carta++) {
+					String carta = mano.substring(pos_carta * 2, pos_carta * 2 + 2);
+
+					if (cartasBoard.contains(carta)) {
+						String imagePath = UtilidadesGUI.getCartaPath(carta);
+						cartasJugadores[jugador][pos_carta] = new JLabel(new ImageIcon(imagePath));
+
+						int x = posicionesIniciales[jugador][0] + (desplazamientoX[jugador] * pos_carta);
+						int y = posicionesIniciales[jugador][1] + (desplazamientoY[jugador] * pos_carta);
+
+						cartasJugadores[jugador][pos_carta].setBounds(x, y, 70, 95);
+						cartasJugadores[jugador][pos_carta].setBorder(new LineBorder(Color.YELLOW, 4));
+						add(cartasJugadores[jugador][pos_carta]);
+					}
+				}
+			} else { // Los otros jugadores muestran 4 jokers
+				for (int pos_carta = 0; pos_carta < 4; pos_carta++) {
+					String imagePath = "src/GUI/Imagenes/Cartas/red_joker.png";
+					cartasJugadores[jugador][pos_carta] = new JLabel(new ImageIcon(imagePath));
+
+					int x = posicionesIniciales[jugador][0] + (desplazamientoX[jugador] * pos_carta);
+					int y = posicionesIniciales[jugador][1] + (desplazamientoY[jugador] * pos_carta);
+
+					cartasJugadores[jugador][pos_carta].setBounds(x, y, 70, 95);
+					add(cartasJugadores[jugador][pos_carta]);
+				}
+			}
+		}
+
+		revalidate();
+		repaint();
+		indiceManoActual++;
+	}
+	
+	private void borrarEtiquetasDinamicas() {
+	    for (JLabel etiqueta : etiquetasDinamicas) {
+	        remove(etiqueta);
+	    }
+	    etiquetasDinamicas.clear();
+	    revalidate();
+	    repaint();
 	}
 
 	private void pintarBoard(String mano, String cards) {

@@ -1,3 +1,6 @@
+AcKcQcJc;4;Tc9C8c7c
+- Best hand: Color [Ac, Kc, Tc, 8c, 7c]
+
 AhAc8s5h;4;2h2d2c2s
 - Best hand: Full de 2 y A: [2h, 2d, 2c, Ah, Ac]
 
