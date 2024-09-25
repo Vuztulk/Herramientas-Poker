@@ -72,28 +72,4 @@ public class MainFrame extends JFrame {
 		return this.mano;
 
 	}
-
-	public void agregarPantallas() {
-		switch (1) {
-		case 1:
-			MenuApartado1 pantalla1 = new MenuApartado1(mano, controller);
-			getContentPane().add(pantalla1, "MenuApartado1");
-			break;
-		case 2:
-			MenuApartado2 pantalla2 = new MenuApartado2(mano, controller);
-			getContentPane().add(pantalla2, "MenuApartado2");
-			break;
-		case 3:
-			MenuApartado3 pantalla3 = new MenuApartado3(mano, controller);
-			getContentPane().add(pantalla3, "MenuApartado3");
-			break;
-		case 4:
-			MenuApartado4 pantalla4 = new MenuApartado4(mano, controller);
-			getContentPane().add(pantalla4, "MenuApartado4");
-			break;
-		default:
-			JOptionPane.showMessageDialog(this, "Apartado no válido.");
-			return;
-		}
-	}
 }
