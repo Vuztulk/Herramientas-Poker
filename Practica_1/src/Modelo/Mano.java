@@ -33,20 +33,22 @@ public class Mano {
 		}
 		return suma;
 	}
-    private int calcularValorMano() {//Usamos valores grandes para evitar que la suma de cartas se puedan colar en otro rango que no es el suyo
-        switch (mejorMano.getTipoMano()) {
-            case ESCALERA_COLOR: return 9000;
-            case COLOR: return 6000;
-            case ESCALERA: return 5000;
-            case POKER: return 8000;
-            case FULL: return 7000;
-            case TRIO: return 4000;
-            case PAREJA: return 2000;
-            case CARTA_MAS_ALTA: return 1000;
-            default: return 0;
-        }
-    }
-	
+	private int calcularValorMano() {
+	    // Usamos valores grandes para evitar que la suma de cartas se pueda colar en otro rango que no es el suyo
+	    switch (mejorMano.getTipoMano()) {
+	        case ESCALERA_COLOR: return 9000;
+	        case COLOR: return 6000;
+	        case ESCALERA: return 5000;
+	        case POKER: return 8000;
+	        case FULL: return 7000;
+	        case TRIO: return 4000;
+	        case DOBLE_PAREJA: return 3000;
+	        case PAREJA: return 2000;
+	        case CARTA_MAS_ALTA: return 1000;
+	        default: return 0;
+	    }
+	}
+
 	public String obtenerCartasComoString() {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < cartas.size(); i++) {

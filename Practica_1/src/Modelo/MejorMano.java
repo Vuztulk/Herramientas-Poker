@@ -46,11 +46,13 @@ public class MejorMano {
             claseMano = ClasesMano.ESCALERA;
         } else if (comprobarTrio(cartas, valores)) {
             claseMano = ClasesMano.TRIO;
+        } else if (comprobarDoblePareja(cartas, valores)) {
+            claseMano = ClasesMano.DOBLE_PAREJA;
         } else if (comprobarPareja(cartas, valores)) {
             claseMano = ClasesMano.PAREJA;
         } else {
             claseMano = ClasesMano.CARTA_MAS_ALTA;
-            descripcionMano = "Carta mas alta [" + UtilidadesCarta.getNombreValor(max) + cartas.get(posMax).getPalo() + "]";
+            descripcionMano = "Carta más alta [" + UtilidadesCarta.getNombreValor(max) + cartas.get(posMax).getPalo() + "]";
             cartasMano.add(cartas.get(posMax));
         }
     }
@@ -170,7 +172,41 @@ public class MejorMano {
         }
         return false;
     }
+    
+    private boolean comprobarDoblePareja(List<Carta> cartas, int[] valores) {
+        List<Integer> parejas = new ArrayList<>();
+        List<Carta> cartasRestantes = new ArrayList<>(cartas);
+        
+        for (int i = 14; i >= 2; i--) {
+            if (valores[i] == 2) {
+                parejas.add(i);
+                if (parejas.size() == 2) {
+                    List<Carta> cartasPareja1 = UtilidadesMano.obtenerCartasPorValor(cartas, parejas.get(0), 2);
+                    cartasRestantes.removeAll(cartasPareja1);
+                    
+                    List<Carta> cartasPareja2 = UtilidadesMano.obtenerCartasPorValor(cartas, parejas.get(1), 2);
+                    cartasRestantes.removeAll(cartasPareja2);
+                    
+                    cartasMano.clear();
+                    cartasMano.addAll(cartasPareja1);
+                    cartasMano.addAll(cartasPareja2);
+                    
+                    Carta cartaAlta = cartasRestantes.get(0);
+                    for (Carta carta : cartasRestantes) {
+                        if (carta.getValor() > cartaAlta.getValor()) {
+                            cartaAlta = carta;
+                        }
+                    }
+                    cartasMano.add(cartaAlta);
 
+                    descripcionMano = "Doble pareja de " + UtilidadesCarta.getNombreValor(parejas.get(0)) + " y " + UtilidadesCarta.getNombreValor(parejas.get(1)) + ", con " + cartaAlta;
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
     private boolean comprobarPareja(List<Carta> cartas, int[] valores) {
         for (int i = 14; i >= 2; i--) {
             if (valores[i] == 2) {
