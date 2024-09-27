@@ -1,5 +1,6 @@
 package Vista;
 
+import Modelo.RangoCartas;
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -12,10 +13,12 @@ public class JugadorFrame extends JFrame {
     private JPanel panelContenido;
     private List<JButton> botonesRango = new ArrayList<>();
     private List<String> seleccionesGuardadas = new ArrayList<>();
-    private JTextField campoSeleccionado;
-    JSlider slider;
-    
-    public JugadorFrame(int idJugador, String rangoInput) {
+    private JTextArea campoSeleccionado;
+    private JSlider slider;
+    private JTextField campoTextoJugador;
+    private JTextField campoPorcentaje;
+
+    public JugadorFrame(int idJugador, String rangoInput, JTextField campoTextoJugador) {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setBounds(0, 0, 1200, 800);
         setTitle("Distribucion de Hold'em [Jugador " + idJugador + "]");
@@ -31,8 +34,6 @@ public class JugadorFrame extends JFrame {
         
         JPanel panelCartas = new JPanel();
         panelPestanas.addTab("Cartas", null, panelCartas, "Cartas");
-        
-/////////////////////////////////////////////////////////////////////////////////////////////
         
         JPanel panelCuadricula = new JPanel(new GridLayout(13, 13, 2, 2));
         panelPreflop.add(panelCuadricula, BorderLayout.CENTER);
@@ -52,13 +53,13 @@ public class JugadorFrame extends JFrame {
 
                 if (i == j) {
                     textoBoton = valores[i] + valores[i];
-                    colorFondo = new Color(144, 238, 144);
+                    colorFondo = new Color(140, 230, 140);
                 } else if (i < j) {
                     textoBoton = valores[i] + valores[j] + "s";
-                    colorFondo = new Color(255, 182, 193);
+                    colorFondo = new Color(255, 180, 190);
                 } else {
                     textoBoton = valores[j] + valores[i] + "o";
-                    colorFondo = new Color(173, 216, 230);
+                    colorFondo = new Color(170, 210, 230);
                 }
 
                 JButton boton = new JButton(textoBoton);
@@ -76,8 +77,7 @@ public class JugadorFrame extends JFrame {
                 botonesRango.add(boton);
             }
         }
-        
-        
+
         JPanel panelDerecho = new JPanel();
         panelDerecho.setLayout(new BoxLayout(panelDerecho, BoxLayout.Y_AXIS));
         panelDerecho.setBorder(new EmptyBorder(10, 40, 10, 40));
@@ -93,51 +93,85 @@ public class JugadorFrame extends JFrame {
             panelDerecho.add(boton);
             panelDerecho.add(Box.createVerticalStrut(5));
         }
-
         panelDerecho.add(Box.createVerticalStrut(20));
+        
+//CUADRO SELECCION
+        
         JLabel etiquetaSeleccionada = new JLabel("Seleccionado:");
-        panelDerecho.add(etiquetaSeleccionada);
-        campoSeleccionado = new JTextField();
+        campoSeleccionado = new JTextArea();
         campoSeleccionado.setEditable(false);
-        panelDerecho.add(campoSeleccionado);
+        campoSeleccionado.setLineWrap(true);
+        campoSeleccionado.setWrapStyleWord(true);
+        campoSeleccionado.setPreferredSize(new Dimension(200, 100));
+        JScrollPane scrollPane = new JScrollPane(campoSeleccionado);
+        scrollPane.setPreferredSize(new Dimension(200, 100));
+        panelDerecho.add(etiquetaSeleccionada);
+        panelDerecho.add(scrollPane);
         panelDerecho.add(Box.createVerticalGlue());
-
+        
+//SLIDER PANEL
+        
         JPanel sliderPanel = new JPanel();
-        JSlider slider = new JSlider(0, 100, 0);
+        slider = new JSlider(0, 100, 0);
         slider.setMajorTickSpacing(10);
-        slider.setMinorTickSpacing(1);
-        slider.setPaintTicks(true);
         slider.setPaintLabels(true);
-
-        slider.addChangeListener(e -> {
-            int value = slider.getValue();
-            System.out.println("Valor del slider: " + value);
-        });
-
+        campoPorcentaje = new JTextField("0%");
+        campoPorcentaje.setEditable(false);
+        campoPorcentaje.setColumns(5);
         sliderPanel.add(slider);
-
+        sliderPanel.add(campoPorcentaje);
+        
+//PANEL INFERIOR
+        
         JPanel panelInferior = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JButton botonAceptar = new JButton("Aceptar");
         JButton botonCancelar = new JButton("Cancelar");
         JButton botonAplicar = new JButton("Aplicar");
+        
+        botonAceptar.addActionListener(e -> {
+            String rangoSeleccionado = getSeleccionesGuardadas();
+            campoTextoJugador.setText(rangoSeleccionado);
+            dispose();
+        });
 
-        botonAceptar.addActionListener(e -> dispose());
+        botonAplicar.addActionListener(e -> {
+            String rangoSeleccionado = getSeleccionesGuardadas();
+            campoTextoJugador.setText(rangoSeleccionado);
+        });
+
         botonCancelar.addActionListener(e -> dispose());
-        botonAplicar.addActionListener(e -> guardarSeleccion());
 
         panelInferior.add(botonAceptar);
         panelInferior.add(botonCancelar);
         panelInferior.add(botonAplicar);
 
-        JPanel panelInferiorCompleto = new JPanel();//Contiene el slider y los botones
+        JPanel panelInferiorCompleto = new JPanel();
         panelInferiorCompleto.setLayout(new BoxLayout(panelInferiorCompleto, BoxLayout.Y_AXIS));
         panelInferiorCompleto.add(sliderPanel);
         panelInferiorCompleto.add(panelInferior);
 
         panelPreflop.add(panelInferiorCompleto, BorderLayout.SOUTH);
-
+        
+        procesarRango(rangoInput);//Si viene con input en texto se muestra con ese input en vez de mostrarse limpio
+        double porcentaje = (seleccionesGuardadas.size() / 169.0) * 100;
+        slider.setValue((int) porcentaje);
+        campoPorcentaje.setText(String.format("%.2f%%", porcentaje));
+        
         panelContenido.add(panelPestanas, BorderLayout.CENTER);
         setVisible(true);
+    }
+
+    private void procesarRango(String rangoInput) {
+        RangoCartas rangoCartas = new RangoCartas(rangoInput);
+        for (String carta : rangoCartas.getRangos()) {
+            for (JButton boton : botonesRango) {
+                if (boton.getText().equals(carta)) {
+                    boton.setSelected(true);
+                    boton.setBackground(Color.RED);
+                }
+            }
+        }
+        actualizarSeleccion(); 
     }
 
     private void manejarBotonSeleccion(String accion) {
@@ -157,11 +191,11 @@ public class JugadorFrame extends JFrame {
                 });
                 break;
             case "Cualquier Broadway":
-                String[] broadway = {"A", "K", "Q", "J", "T"};
+                String[] bw = {"A", "K", "Q", "J", "T"};
                 botonesRango.forEach(b -> {
                     String texto = b.getText();
-                    if (texto.length() >= 2 && 
-                        (contiene(broadway, texto.substring(0, 1)) && contiene(broadway, texto.substring(1, 2)))) {
+                    if (texto.length() >= 2 &&
+                        (contiene(bw, texto.substring(0, 1)) && contiene(bw, texto.substring(1, 2)))) {
                         b.setSelected(true);
                         b.setBackground(Color.RED);
                     }
@@ -199,23 +233,29 @@ public class JugadorFrame extends JFrame {
     private void actualizarSeleccion() {
         StringBuilder seleccionado = new StringBuilder();
         seleccionesGuardadas.clear();
+        int totalCartasSeleccionadas = 0;
+
         for (JButton b : botonesRango) {
             if (b.isSelected()) {
                 seleccionado.append(b.getText()).append(", ");
                 seleccionesGuardadas.add(b.getText());
+                totalCartasSeleccionadas++;
             }
         }
+
         if (seleccionado.length() > 2) {
             seleccionado.setLength(seleccionado.length() - 2);
         }
         campoSeleccionado.setText(seleccionado.toString());
+        
+        double porcentaje = (totalCartasSeleccionadas / 169.0) * 100;
+        slider.setValue((int) porcentaje);
+        campoPorcentaje.setText(String.format("%.2f%%", porcentaje));
     }
 
-    private void guardarSeleccion() {
-        JOptionPane.showMessageDialog(this, "Selección guardada: " + String.join(", ", seleccionesGuardadas));
+    public String getSeleccionesGuardadas() {
+        return String.join(", ", seleccionesGuardadas);
     }
+    
 
-    public List<String> getSeleccionesGuardadas() {
-        return new ArrayList<>(seleccionesGuardadas);
-    }
 }

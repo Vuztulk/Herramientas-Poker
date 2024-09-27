@@ -1,12 +1,7 @@
 package Vista;
 
 import javax.swing.*;
-
-import Modelo.RangoCartas;
-
 import java.awt.*;
-import java.util.List;
-import java.util.Map;
 
 public class Vista extends JFrame {
 
@@ -50,7 +45,7 @@ public class Vista extends JFrame {
             final int playerId = i + 1;
             playerButton.addActionListener(e -> {
                 String rangoInput = playerInputs[playerId - 1].getText();
-                new JugadorFrame(playerId, rangoInput);
+                new JugadorFrame(playerId, rangoInput, playerInputs[playerId - 1]);//Le pasamos el playerInput para que cuando se escoja graficamente se ponga aqui
             });
             panel.add(playerButton);
 
@@ -65,7 +60,6 @@ public class Vista extends JFrame {
         return panel;
     }
 
-
     private JPanel createControlPanel() {
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -73,16 +67,14 @@ public class Vista extends JFrame {
 
         JTextField boardField = new JTextField(15);
         JButton selectBoardButton = new JButton("Seleccionar");
-        
-        // Etiqueta Board
+
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.gridwidth = 2; // Etiqueta ocupa 2 columnas
+        gbc.gridwidth = 2;
         gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = new Insets(5, 5, 2, 5); // Menos espacio inferior entre la etiqueta y el cuadro de texto
+        gbc.insets = new Insets(5, 5, 2, 5);
         panel.add(new JLabel("Board:"), gbc);
 
-        // Campo de texto board
         gbc.gridy = 1;
         gbc.gridwidth = 1;
         gbc.insets = new Insets(0, 5, 5, 5);
@@ -92,11 +84,9 @@ public class Vista extends JFrame {
         gbc.insets = new Insets(0, 5, 5, 5);
         panel.add(selectBoardButton, gbc);
 
-        // Campo de texto y boton Dead Cards
         JTextField deadCardsField = new JTextField(15);
         JButton selectDeadCardsButton = new JButton("Seleccionar");
 
-        // Etiqueta Dead Cards
         gbc.gridx = 0;
         gbc.gridy = 2;
         gbc.gridwidth = 2; 
@@ -122,9 +112,9 @@ public class Vista extends JFrame {
 
         gbc.gridy = 5;
         JButton clearAllButton = new JButton("Limpiar Todos");
+        clearAllButton.addActionListener(e -> clearAllInputs());
         panel.add(clearAllButton, gbc);
 
-        // Radio buttons
         gbc.gridy = 6;
         JRadioButton enumerateAllButton = new JRadioButton("Enumerar Todos");
         JRadioButton monteCarloButton = new JRadioButton("Monte Carlo");
@@ -138,6 +128,16 @@ public class Vista extends JFrame {
         panel.add(monteCarloButton, gbc);
 
         return panel;
+    }
+
+    private void clearAllInputs() {
+        for (JTextField playerInput : playerInputs) {
+            playerInput.setText("");
+        }
+
+        for (JTextField equityField : equityFields) {
+            equityField.setText("");
+        }
     }
 
     public static void main(String[] args) {

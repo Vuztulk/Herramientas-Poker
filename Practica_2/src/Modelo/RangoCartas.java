@@ -26,8 +26,6 @@ public class RangoCartas {
             }
         }
 
-        // Calcular el porcentaje basado en el tamaño del conjunto
-        // Por simplicidad, asumo un total de 169 manos posibles en Hold'em
         this.porcentaje = (double) rangos.size() / 169 * 100;
     }
 
