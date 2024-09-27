@@ -30,15 +30,17 @@ public class JugadorFrame extends JFrame {
 
         JPanel panelPreflop = new JPanel(new BorderLayout());
         panelPestanas.addTab("Preflop", null, panelPreflop, "Preflop");
-
+        
+/////////////////////////////////////////////////////////////////////////////////////////////
+        
         JPanel panelCuadricula = new JPanel(new GridLayout(13, 13, 2, 2));
         panelPreflop.add(panelCuadricula, BorderLayout.CENTER);
         
-        JPanel panelGrid = new JPanel();
-        panelGrid.setBorder(new EmptyBorder(10, 10, 10, 10));
-        panelGrid.setLayout(new BorderLayout());
-        panelGrid.add(panelCuadricula, BorderLayout.CENTER);
-        panelPreflop.add(panelGrid, BorderLayout.CENTER);
+        JPanel panelSeparadorCuadricula = new JPanel();
+        panelSeparadorCuadricula.setBorder(new EmptyBorder(10, 10, 10, 10));
+        panelSeparadorCuadricula.setLayout(new BorderLayout());
+        panelSeparadorCuadricula.add(panelCuadricula, BorderLayout.CENTER);
+        panelPreflop.add(panelSeparadorCuadricula, BorderLayout.CENTER);
         
         String[] valores = {"A", "K", "Q", "J", "T", "9", "8", "7", "6", "5", "4", "3", "2"};
 
@@ -74,9 +76,6 @@ public class JugadorFrame extends JFrame {
             }
         }
         
-        JPanel panelSeparador = new JPanel();
-        panelSeparador.setPreferredSize(new Dimension(800, 10));
-        
         JPanel panelDerecho = new JPanel();
         panelDerecho.setLayout(new BoxLayout(panelDerecho, BoxLayout.Y_AXIS));
         panelPreflop.add(panelDerecho, BorderLayout.EAST);
@@ -103,7 +102,7 @@ public class JugadorFrame extends JFrame {
 
         panelDerecho.add(Box.createVerticalGlue());
 
-        JPanel panelInferior = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JPanel panelInferior = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JButton botonAceptar = new JButton("Aceptar");
         JButton botonCancelar = new JButton("Cancelar");
         JButton botonAplicar = new JButton("Aplicar");
