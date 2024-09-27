@@ -4,5 +4,6 @@
 /**
  * 
  */
-module Practica_2 {
+module Practica_1 {
+	requires java.desktop;
 }
