@@ -2,81 +2,137 @@ package Vista;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 
 public class Vista extends JFrame {
-	private static final long serialVersionUID = 1L;
-	private JTextField rangoInput;
-	private JButton convertirButton;
-	private JPanel gridPanel;
-	private JTextArea outputText;
-	private JButton clearButton, anySuitedButton, anyPairButton;
-	private JPanel inputPanel_1;
-	private JPanel mainPanel;
-	private JButton evaluarButton;
+    private JTextField[] playerInputs;
+    private JTextField[] equityFields;
+    private JTextArea outputArea;
 
-	public Vista() {
-		super("PokerStove");
-		getContentPane().setLayout(null);
+    public Vista() {
+        setTitle("Hold'em");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new BorderLayout(10, 10));
 
-		// Panel principal
-		mainPanel = new JPanel();
-		mainPanel.setBounds(0, 0, 1200, 800);
-		getContentPane().add(mainPanel);
-		mainPanel.setLayout(null);
-		
-		crearJugadores(10);
-		
-		JTextArea textArea = new JTextArea();
-		textArea.setBounds(10, 518, 762, 236);
-		mainPanel.add(textArea);
-		
-		JButton boton_evaluar = new JButton("Evaluar");
-		boton_evaluar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			}
-		});
-		boton_evaluar.setBounds(570, 359, 94, 52);
-		mainPanel.add(boton_evaluar);
-		
-		JButton boton_limpiar = new JButton("Limpiar");
-		boton_limpiar.setBounds(570, 421, 94, 21);
-		boton_limpiar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			}
-		});
-		mainPanel.add(boton_limpiar);
-		
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(800, 800);
-		setVisible(true);
-	}
+        // Panel para los jugadores a la izquierda
+        JPanel playerPanel = createPlayerPanel();
+        playerPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); // EmptyBorder de 20px
+        add(playerPanel, BorderLayout.WEST);
 
-	public void crearJugadores(int numJugadores) {
-	    JPanel topLeftPanel = new JPanel(new GridLayout(numJugadores, 1));
-	    topLeftPanel.setBounds(24, 10, 420, 498);
+        // Panel para los botones a la derecha
+        JPanel controlPanel = createControlPanel();
+        controlPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); // EmptyBorder de 20px
+        add(controlPanel, BorderLayout.EAST);
 
-	    for (int i = 1; i <= numJugadores; i++) {
-	        JPanel jugadorPanel = new JPanel(new BorderLayout());
+        // Panel para el cuadro de texto de salida en la parte inferior
+        outputArea = new JTextArea(10, 50);
+        outputArea.setBorder(BorderFactory.createTitledBorder("Output"));
+        JScrollPane scrollPane = new JScrollPane(outputArea);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); // EmptyBorder de 20px
+        add(scrollPane, BorderLayout.SOUTH);
 
-	        final int playerId = i;
-	        JButton jugadorButton = new JButton("Player " + playerId);
-	        jugadorButton.addActionListener(new ActionListener() {
-	            public void actionPerformed(ActionEvent e) {
-	            	new JugadorFrame(playerId);
-	            }
-	        });
-	        jugadorPanel.add(jugadorButton, BorderLayout.WEST);
+        pack();
+        setLocationRelativeTo(null);
+        setVisible(true);
+    }
 
-	        JTextField rangoInput = new JTextField(40); 
-	        jugadorPanel.add(rangoInput, BorderLayout.CENTER);
+    private JPanel createPlayerPanel() {
+        JPanel panel = new JPanel(new GridLayout(10, 3, 0, 5));
 
-	        topLeftPanel.add(jugadorPanel);
-	    }
-	    mainPanel.add(topLeftPanel);
-	}
+        playerInputs = new JTextField[10];
+        equityFields = new JTextField[10];
 
+        for (int i = 0; i < 10; i++) {
+            JButton playerButton = new JButton("Player " + (i + 1));
+            final int playerId = i + 1;
+            playerButton.addActionListener(e -> new JugadorFrame(playerId));
+            panel.add(playerButton);
 
+            playerInputs[i] = new JTextField(10);
+            panel.add(playerInputs[i]);
 
+            equityFields[i] = new JTextField(5);
+            equityFields[i].setEditable(false);
+            panel.add(equityFields[i]);
+        }
+
+        return panel;
+    }
+
+    private JPanel createControlPanel() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+
+        JTextField boardField = new JTextField(15);
+        JButton selectBoardButton = new JButton("select");
+        
+        // Etiqueta Board
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2; // Etiqueta ocupa 2 columnas
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(5, 5, 2, 5); // Menos espacio inferior entre la etiqueta y el cuadro de texto
+        panel.add(new JLabel("Board:"), gbc);
+
+        // Campo de texto board
+        gbc.gridy = 1;
+        gbc.gridwidth = 1;
+        gbc.insets = new Insets(0, 5, 5, 5);
+        panel.add(boardField, gbc);
+
+        gbc.gridx = 1;
+        gbc.insets = new Insets(0, 5, 5, 5);
+        panel.add(selectBoardButton, gbc);
+
+        // Campo de texto y boton Dead Cards
+        JTextField deadCardsField = new JTextField(15);
+        JButton selectDeadCardsButton = new JButton("select");
+
+        // Etiqueta Dead Cards
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.gridwidth = 2; 
+        gbc.insets = new Insets(5, 5, 2, 5);
+        panel.add(new JLabel("Dead Cards:"), gbc);
+
+        gbc.gridy = 3;
+        gbc.gridwidth = 1;
+        gbc.insets = new Insets(0, 5, 5, 5);
+        gbc.gridx = 0;
+        panel.add(deadCardsField, gbc);
+
+        gbc.gridx = 1;
+        gbc.insets = new Insets(0, 5, 5, 5);
+        panel.add(selectDeadCardsButton, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        gbc.gridwidth = 2;
+        gbc.insets = new Insets(10, 5, 5, 5);
+        JButton evaluateButton = new JButton("Evaluate");
+        panel.add(evaluateButton, gbc);
+
+        gbc.gridy = 5;
+        JButton clearAllButton = new JButton("Clear All");
+        panel.add(clearAllButton, gbc);
+
+        // Radio buttons
+        gbc.gridy = 6;
+        JRadioButton enumerateAllButton = new JRadioButton("Enumerate All");
+        JRadioButton monteCarloButton = new JRadioButton("Monte Carlo");
+
+        ButtonGroup buttonGroup = new ButtonGroup();
+        buttonGroup.add(enumerateAllButton);
+        buttonGroup.add(monteCarloButton);
+
+        panel.add(enumerateAllButton, gbc);
+        gbc.gridy = 7;
+        panel.add(monteCarloButton, gbc);
+
+        return panel;
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(Vista::new);
+    }
 }
