@@ -13,10 +13,11 @@ public class JugadorFrame extends JFrame {
     private List<JButton> botonesRango = new ArrayList<>();
     private List<String> seleccionesGuardadas = new ArrayList<>();
     private JTextField campoSeleccionado;
-
+    JSlider slider;
+    
     public JugadorFrame(int idJugador) {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setBounds(0, 0, 1000, 800);
+        setBounds(0, 0, 1200, 800);
         setTitle("Distribucion de Hold'em [Jugador " + idJugador + "]");
         panelContenido = new JPanel();
         panelContenido.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -76,15 +77,15 @@ public class JugadorFrame extends JFrame {
             }
         }
         
+        
         JPanel panelDerecho = new JPanel();
         panelDerecho.setLayout(new BoxLayout(panelDerecho, BoxLayout.Y_AXIS));
+        panelDerecho.setBorder(new EmptyBorder(10, 40, 10, 40));
         panelPreflop.add(panelDerecho, BorderLayout.EAST);
-
         panelDerecho.add(new JLabel("SHIFT, CTRL, ALT"));
-        panelDerecho.add(new JLabel("modificar selección"));
+        panelDerecho.add(new JLabel("Modificar seleccion"));
         panelDerecho.add(Box.createVerticalStrut(10));
 
-        
         String[] botonesSeleccion = {"Todos", "Cualquier Suited", "Cualquier Broadway", "Cualquier Par", "Limpiar"};
         for (String texto : botonesSeleccion) {
             JButton boton = new JButton(texto);
@@ -99,22 +100,41 @@ public class JugadorFrame extends JFrame {
         campoSeleccionado = new JTextField();
         campoSeleccionado.setEditable(false);
         panelDerecho.add(campoSeleccionado);
-
         panelDerecho.add(Box.createVerticalGlue());
+
+        JPanel sliderPanel = new JPanel();
+        JSlider slider = new JSlider(0, 100, 0);
+        slider.setMajorTickSpacing(10);
+        slider.setMinorTickSpacing(1);
+        slider.setPaintTicks(true);
+        slider.setPaintLabels(true);
+
+        slider.addChangeListener(e -> {
+            int value = slider.getValue();
+            System.out.println("Valor del slider: " + value);
+        });
+
+        sliderPanel.add(slider);
 
         JPanel panelInferior = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JButton botonAceptar = new JButton("Aceptar");
         JButton botonCancelar = new JButton("Cancelar");
         JButton botonAplicar = new JButton("Aplicar");
-        
+
         botonAceptar.addActionListener(e -> dispose());
         botonCancelar.addActionListener(e -> dispose());
         botonAplicar.addActionListener(e -> guardarSeleccion());
-        
+
         panelInferior.add(botonAceptar);
         panelInferior.add(botonCancelar);
         panelInferior.add(botonAplicar);
-        panelPreflop.add(panelInferior, BorderLayout.SOUTH);
+
+        JPanel panelInferiorCompleto = new JPanel();//Contiene el slider y los botones
+        panelInferiorCompleto.setLayout(new BoxLayout(panelInferiorCompleto, BoxLayout.Y_AXIS));
+        panelInferiorCompleto.add(sliderPanel);
+        panelInferiorCompleto.add(panelInferior);
+
+        panelPreflop.add(panelInferiorCompleto, BorderLayout.SOUTH);
 
         panelContenido.add(panelPestanas, BorderLayout.CENTER);
         setVisible(true);
