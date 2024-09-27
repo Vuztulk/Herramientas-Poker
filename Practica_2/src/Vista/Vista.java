@@ -60,10 +60,9 @@ public class Vista extends JFrame {
 	    for (int i = 1; i <= numJugadores; i++) {
 	        JPanel jugadorPanel = new JPanel(new BorderLayout());
 
-	        final int playerId = i;  // Crear una variable final
+	        final int playerId = i;
 	        JButton jugadorButton = new JButton("Player " + playerId);
 	        jugadorButton.addActionListener(new ActionListener() {
-	            @Override
 	            public void actionPerformed(ActionEvent e) {
 	            	new JugadorFrame(playerId);
 	            }
