@@ -12,6 +12,6 @@ public class Controlador {
     public Controlador(Modelo modelo, Vista vista) {
         this.modelo = modelo;
         this.vista = vista;
-
     }
+    
 }
