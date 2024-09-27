@@ -15,7 +15,7 @@ public class JugadorFrame extends JFrame {
     private JTextField campoSeleccionado;
     JSlider slider;
     
-    public JugadorFrame(int idJugador) {
+    public JugadorFrame(int idJugador, String rangoInput) {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setBounds(0, 0, 1200, 800);
         setTitle("Distribucion de Hold'em [Jugador " + idJugador + "]");
@@ -25,12 +25,12 @@ public class JugadorFrame extends JFrame {
         panelContenido.setLayout(new BorderLayout());
 
         JTabbedPane panelPestanas = new JTabbedPane(JTabbedPane.TOP);
-
-        JPanel panelCartas = new JPanel();
-        panelPestanas.addTab("Cartas", null, panelCartas, "Cartas");
-
+        
         JPanel panelPreflop = new JPanel(new BorderLayout());
         panelPestanas.addTab("Preflop", null, panelPreflop, "Preflop");
+        
+        JPanel panelCartas = new JPanel();
+        panelPestanas.addTab("Cartas", null, panelCartas, "Cartas");
         
 /////////////////////////////////////////////////////////////////////////////////////////////
         
