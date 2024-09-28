@@ -126,7 +126,7 @@ public class JugadorFrame extends JFrame {
         
         slider.addChangeListener(e -> {
             double porcentaje = slider.getValue() / 10.0;
-            campoPorcentaje.setText(String.format("%.1f%%", porcentaje));
+            campoPorcentaje.setText(String.format("%.2f%%", porcentaje));
             controlador.actualizarPorcentajeJugador(idJugador, porcentaje);
         });
         
@@ -246,7 +246,7 @@ public class JugadorFrame extends JFrame {
         double porcentaje = (totalCartasSeleccionadas * 100.0) / botonesRango.size();
         int porcentajeSlider = (int) (porcentaje * 10);
         slider.setValue(porcentajeSlider);
-        campoPorcentaje.setText(String.format("%.1f%%", porcentaje));
+        campoPorcentaje.setText(String.format("%.2f%%", porcentaje));
         controlador.actualizarPorcentajeJugador(idJugador, porcentaje);
     }
 
@@ -254,7 +254,7 @@ public class JugadorFrame extends JFrame {
         double porcentaje = controlador.getPorcentajeJugador(idJugador);
         int porcentajeSlider = (int) (porcentaje * 10);
         slider.setValue(porcentajeSlider);
-        campoPorcentaje.setText(String.format("%.1f%%", porcentaje));
+        campoPorcentaje.setText(String.format("%.2f%%", porcentaje));
     }
 
     public String getSeleccionesGuardadas() {
