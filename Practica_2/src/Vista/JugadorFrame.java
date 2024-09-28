@@ -15,75 +15,72 @@ public class JugadorFrame extends JFrame {
     private List<String> seleccionesGuardadas = new ArrayList<>();
     private JTextArea campoSeleccionado;
     private JSlider slider;
-    private JTextField campoTextoJugador;
     private JTextField campoPorcentaje;
 
     public JugadorFrame(int idJugador, String rangoInput, JTextField campoTextoJugador) {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setBounds(0, 0, 1200, 800);
-        setTitle("Distribucion de Hold'em [Jugador " + idJugador + "]");
-        panelContenido = new JPanel();
-        panelContenido.setBorder(new EmptyBorder(5, 5, 5, 5));
+        setTitle("Distribución de Hold'em [Jugador " + idJugador + "]");
+        panelContenido = new JPanel(new BorderLayout(5, 5));
         setContentPane(panelContenido);
-        panelContenido.setLayout(new BorderLayout());
 
         JTabbedPane panelPestanas = new JTabbedPane(JTabbedPane.TOP);
-        
         JPanel panelPreflop = new JPanel(new BorderLayout());
         panelPestanas.addTab("Preflop", null, panelPreflop, "Preflop");
-        
-        JPanel panelCartas = new JPanel();
-        panelPestanas.addTab("Cartas", null, panelCartas, "Cartas");
-        
-        JPanel panelCuadricula = new JPanel(new GridLayout(13, 13, 2, 2));
-        panelPreflop.add(panelCuadricula, BorderLayout.CENTER);
-        
-        JPanel panelSeparadorCuadricula = new JPanel();
-        panelSeparadorCuadricula.setBorder(new EmptyBorder(10, 10, 10, 10));
-        panelSeparadorCuadricula.setLayout(new BorderLayout());
-        panelSeparadorCuadricula.add(panelCuadricula, BorderLayout.CENTER);
-        panelPreflop.add(panelSeparadorCuadricula, BorderLayout.CENTER);
-        
-        String[] valores = {"A", "K", "Q", "J", "T", "9", "8", "7", "6", "5", "4", "3", "2"};
 
+        JPanel panelCuadricula = new JPanel(new GridLayout(13, 13, 2, 2));
+        panelPreflop.add(new JScrollPane(panelCuadricula), BorderLayout.CENTER);
+
+        String[] valores = {"A", "K", "Q", "J", "T", "9", "8", "7", "6", "5", "4", "3", "2"};
+        agregarBotonesRango(panelCuadricula, valores);
+
+        JPanel panelDerecho = crearPanelDerecho();
+        panelPreflop.add(panelDerecho, BorderLayout.EAST);
+
+        JPanel panelInferiorCompleto = crearPanelInferior(campoTextoJugador);
+        panelPreflop.add(panelInferiorCompleto, BorderLayout.SOUTH);
+
+        procesarRango(rangoInput);
+        actualizarSlider();
+        
+        panelContenido.add(panelPestanas, BorderLayout.CENTER);
+        setVisible(true);
+    }
+
+    private void agregarBotonesRango(JPanel panelCuadricula, String[] valores) {
         for (int i = 0; i < valores.length; i++) {
             for (int j = 0; j < valores.length; j++) {
-                String textoBoton;
-                Color colorFondo;
+                String textoBoton = (i == j) ? valores[i] + valores[i] : (i < j) ? valores[i] + valores[j] + "s" : valores[j] + valores[i] + "o";
+                Color colorFondo = (i == j) ? new Color(140, 230, 140) : (i < j) ? new Color(255, 180, 190) : new Color(170, 210, 230);
 
-                if (i == j) {
-                    textoBoton = valores[i] + valores[i];
-                    colorFondo = new Color(140, 230, 140);
-                } else if (i < j) {
-                    textoBoton = valores[i] + valores[j] + "s";
-                    colorFondo = new Color(255, 180, 190);
-                } else {
-                    textoBoton = valores[j] + valores[i] + "o";
-                    colorFondo = new Color(170, 210, 230);
-                }
-
-                JButton boton = new JButton(textoBoton);
-                boton.setBackground(colorFondo);
-                boton.setOpaque(true);
-                boton.setBorderPainted(false);
-                boton.setFocusPainted(false);
-                boton.addActionListener(e -> {
-                    JButton botonOrigen = (JButton) e.getSource();
-                    botonOrigen.setSelected(!botonOrigen.isSelected());
-                    botonOrigen.setBackground(botonOrigen.isSelected() ? Color.RED : colorFondo);
-                    actualizarSeleccion();
-                });
+                JButton boton = crearBotonRango(textoBoton, colorFondo);
                 panelCuadricula.add(boton);
                 botonesRango.add(boton);
             }
         }
+    }
 
+    private JButton crearBotonRango(String textoBoton, Color colorFondo) {
+        JButton boton = new JButton(textoBoton);
+        boton.setBackground(colorFondo);
+        boton.setOpaque(true);
+        boton.setBorderPainted(false);
+        boton.setFocusPainted(false);
+        
+        boton.addActionListener(e -> {
+            boton.setSelected(!boton.isSelected());
+            boton.setBackground(boton.isSelected() ? Color.RED : colorFondo);
+            actualizarSeleccion();
+        });
+        return boton;
+    }
+
+    private JPanel crearPanelDerecho() {
         JPanel panelDerecho = new JPanel();
         panelDerecho.setLayout(new BoxLayout(panelDerecho, BoxLayout.Y_AXIS));
         panelDerecho.setBorder(new EmptyBorder(10, 40, 10, 40));
-        panelPreflop.add(panelDerecho, BorderLayout.EAST);
         panelDerecho.add(new JLabel("SHIFT, CTRL, ALT"));
-        panelDerecho.add(new JLabel("Modificar seleccion"));
+        panelDerecho.add(new JLabel("Modificar selección"));
         panelDerecho.add(Box.createVerticalStrut(10));
 
         String[] botonesSeleccion = {"Todos", "Cualquier Suited", "Cualquier Broadway", "Cualquier Par", "Limpiar"};
@@ -93,52 +90,41 @@ public class JugadorFrame extends JFrame {
             panelDerecho.add(boton);
             panelDerecho.add(Box.createVerticalStrut(5));
         }
-        panelDerecho.add(Box.createVerticalStrut(20));
-        
-//CUADRO SELECCION
-        
-        JLabel etiquetaSeleccionada = new JLabel("Seleccionado:");
+        panelDerecho.add(Box.createVerticalGlue());
+
         campoSeleccionado = new JTextArea();
         campoSeleccionado.setEditable(false);
         campoSeleccionado.setLineWrap(true);
-        campoSeleccionado.setWrapStyleWord(true);
-        campoSeleccionado.setPreferredSize(new Dimension(200, 100));
         JScrollPane scrollPane = new JScrollPane(campoSeleccionado);
         scrollPane.setPreferredSize(new Dimension(200, 100));
-        panelDerecho.add(etiquetaSeleccionada);
+        panelDerecho.add(new JLabel("Seleccionado:"));
         panelDerecho.add(scrollPane);
-        panelDerecho.add(Box.createVerticalGlue());
-        
-//SLIDER PANEL
-        
-        JPanel sliderPanel = new JPanel();
+
+        return panelDerecho;
+    }
+
+    private JPanel crearPanelInferior(JTextField campoTextoJugador) {
         slider = new JSlider(0, 100, 0);
         slider.setMajorTickSpacing(10);
         slider.setPaintLabels(true);
         campoPorcentaje = new JTextField("0%");
         campoPorcentaje.setEditable(false);
-        campoPorcentaje.setColumns(5);
+        campoPorcentaje.setPreferredSize(new Dimension(55, 20));
+        
+        JPanel sliderPanel = new JPanel();
         sliderPanel.add(slider);
         sliderPanel.add(campoPorcentaje);
-        
-//PANEL INFERIOR
-        
+
         JPanel panelInferior = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JButton botonAceptar = new JButton("Aceptar");
-        JButton botonCancelar = new JButton("Cancelar");
         JButton botonAplicar = new JButton("Aplicar");
-        
+        JButton botonCancelar = new JButton("Cancelar");
+
         botonAceptar.addActionListener(e -> {
-            String rangoSeleccionado = getSeleccionesGuardadas();
-            campoTextoJugador.setText(rangoSeleccionado);
+            campoTextoJugador.setText(getSeleccionesGuardadas());
             dispose();
         });
-
-        botonAplicar.addActionListener(e -> {
-            String rangoSeleccionado = getSeleccionesGuardadas();
-            campoTextoJugador.setText(rangoSeleccionado);
-        });
-
+        botonAplicar.addActionListener(e -> campoTextoJugador.setText(getSeleccionesGuardadas()));
         botonCancelar.addActionListener(e -> dispose());
 
         panelInferior.add(botonAceptar);
@@ -150,76 +136,59 @@ public class JugadorFrame extends JFrame {
         panelInferiorCompleto.add(sliderPanel);
         panelInferiorCompleto.add(panelInferior);
 
-        panelPreflop.add(panelInferiorCompleto, BorderLayout.SOUTH);
-        
-        procesarRango(rangoInput);//Si viene con input en texto se muestra con ese input en vez de mostrarse limpio
-        double porcentaje = (seleccionesGuardadas.size() / 169.0) * 100;
-        slider.setValue((int) porcentaje);
-        campoPorcentaje.setText(String.format("%.2f%%", porcentaje));
-        
-        panelContenido.add(panelPestanas, BorderLayout.CENTER);
-        setVisible(true);
+        return panelInferiorCompleto;
     }
 
     private void procesarRango(String rangoInput) {
         RangoCartas rangoCartas = new RangoCartas(rangoInput);
-        for (String carta : rangoCartas.getRangos()) {
-            for (JButton boton : botonesRango) {
-                if (boton.getText().equals(carta)) {
-                    boton.setSelected(true);
-                    boton.setBackground(Color.RED);
-                }
-            }
-        }
-        actualizarSeleccion(); 
+        rangoCartas.getRangos().forEach(carta -> botonesRango.stream()
+            .filter(b -> b.getText().equals(carta))
+            .forEach(b -> {
+                b.setSelected(true);
+                b.setBackground(Color.RED);
+            })
+        );
+        actualizarSeleccion();
     }
 
     private void manejarBotonSeleccion(String accion) {
-        switch (accion) {
-            case "Todos":
-                botonesRango.forEach(b -> {
+        String[] broadway = {"A", "K", "Q", "J", "T"};
+        
+        botonesRango.forEach(b -> {
+            boolean esSuited = b.getText().endsWith("s");
+            boolean esPar = b.getText().charAt(0) == b.getText().charAt(1);
+            String carta1 = b.getText().substring(0, 1);
+            String carta2 = b.getText().substring(1, 2);
+
+            switch (accion) {
+                case "Todos":
                     b.setSelected(true);
                     b.setBackground(Color.RED);
-                });
-                break;
-            case "Cualquier Suited":
-                botonesRango.forEach(b -> {
-                    if (b.getText().endsWith("s")) {
+                    break;
+                case "Cualquier Suited":
+                    if (esSuited) {
                         b.setSelected(true);
                         b.setBackground(Color.RED);
                     }
-                });
-                break;
-            case "Cualquier Broadway":
-                String[] bw = {"A", "K", "Q", "J", "T"};
-                botonesRango.forEach(b -> {
-                    String texto = b.getText();
-                    if (texto.length() >= 2 &&
-                        (contiene(bw, texto.substring(0, 1)) && contiene(bw, texto.substring(1, 2)))) {
+                    break;
+                case "Cualquier Broadway":
+                    if (contiene(broadway, carta1) && contiene(broadway, carta2)) {
                         b.setSelected(true);
                         b.setBackground(Color.RED);
                     }
-                });
-                break;
-            case "Cualquier Par":
-                botonesRango.forEach(b -> {
-                    if (b.getText().charAt(0) == b.getText().charAt(1)) {
+                    break;
+                case "Cualquier Par":
+                    if (esPar) {
                         b.setSelected(true);
                         b.setBackground(Color.RED);
                     }
-                });
-                break;
-            case "Limpiar":
-                botonesRango.forEach(b -> {
+                    break;
+                case "Limpiar":
                     b.setSelected(false);
-                    b.setBackground(b.getBackground() == Color.RED ? 
-                        (b.getText().endsWith("s") ? new Color(255, 182, 193) : 
-                         b.getText().charAt(0) == b.getText().charAt(1) ? new Color(144, 238, 144) : 
-                         new Color(173, 216, 230)) : 
-                        b.getBackground());
-                });
-                break;
-        }
+                    b.setBackground(esSuited ? new Color(255, 180, 190) : esPar ? new Color(140, 230, 140) : new Color(170, 210, 230));
+                    break;
+            }
+        });
         actualizarSeleccion();
     }
 
@@ -253,9 +222,14 @@ public class JugadorFrame extends JFrame {
         campoPorcentaje.setText(String.format("%.2f%%", porcentaje));
     }
 
+    private void actualizarSlider() {
+        double porcentaje = (seleccionesGuardadas.size() / 169.0) * 100;
+        slider.setValue((int) porcentaje);
+        campoPorcentaje.setText(String.format("%.2f%%", porcentaje));
+    }
+
     public String getSeleccionesGuardadas() {
         return String.join(", ", seleccionesGuardadas);
     }
-    
 
 }
