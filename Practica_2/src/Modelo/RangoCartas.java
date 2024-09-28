@@ -4,8 +4,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class RangoCartas {
-    private Set<String> rangos; // Conjunto de cartas en el rango
-    private double porcentaje; // Porcentaje de manos que representa el rango
+    private Set<String> rangos;
+    private double porcentaje;
 
     public RangoCartas(String rangoInput) {
         rangos = new HashSet<>();
@@ -30,16 +30,15 @@ public class RangoCartas {
     }
 
     private void agregarRangoMayor(String parte) {
-        String carta = parte.substring(0, 2); // Asumiendo que son dos caracteres
-        boolean suited = parte.endsWith("s"); // Verificar si es suited
-        char valorCarta = carta.charAt(0); // Valor de la carta (2-10, J, Q, K, A)
-        char tipoCarta = carta.charAt(1); // Tipo de carta (suited o offsuit)
+        String carta = parte.substring(0, 2);
+        boolean suited = parte.endsWith("s");
+        char valorCarta = carta.charAt(0);
+        char tipoCarta = carta.charAt(1);
 
-        // Agregar cartas superiores
         for (char i = valorCarta; i <= 'A'; i++) {
             String nuevaCarta = String.valueOf(i);
             if (i == 'T') {
-                nuevaCarta = "T"; // Manejar el 10 como "T"
+                nuevaCarta = "T";
             }
             if (suited) {
                 rangos.add(nuevaCarta + 's');
@@ -55,17 +54,15 @@ public class RangoCartas {
         String limiteInferior = limites[0].trim();
         String limiteSuperior = limites[1].trim();
 
-        // Asumimos que ambos límites son del mismo tipo (suited u offsuit)
         boolean suited = limiteInferior.endsWith("s") && limiteSuperior.endsWith("s");
 
-        char cartaInferior = limiteInferior.charAt(0); // Valor de la carta inferior
-        char cartaSuperior = limiteSuperior.charAt(0); // Valor de la carta superior
+        char cartaInferior = limiteInferior.charAt(0);
+        char cartaSuperior = limiteSuperior.charAt(0);
 
-        // Agregar cartas entre los límites
         for (char i = cartaInferior; i <= cartaSuperior; i++) {
             String nuevaCarta = String.valueOf(i);
             if (i == 'T') {
-                nuevaCarta = "T"; // Manejar el 10 como "T"
+                nuevaCarta = "T";
             }
             if (suited) {
                 rangos.add(nuevaCarta + 's');
@@ -84,12 +81,8 @@ public class RangoCartas {
         return porcentaje;
     }
 
-    public String representacionGrafica() {
-        // Método para devolver una representación gráfica del rango
-        StringBuilder representacion = new StringBuilder();
-        for (String rango : rangos) {
-            representacion.append(rango).append(", ");
-        }
-        return representacion.toString().replaceAll(", $", ""); // Eliminar última coma
-    }
+	public void actualizarPorcentaje(double nuevoPorcentaje) {
+		 this.porcentaje = nuevoPorcentaje;
+		
+	}
 }

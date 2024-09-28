@@ -1,7 +1,6 @@
 package Controlador;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.util.Set;
 import Modelo.Modelo;
 import Vista.Vista;
 
@@ -14,4 +13,28 @@ public class Controlador {
         this.vista = vista;
     }
     
+    public void setVista(Vista vista) {
+        this.vista = vista;
+    }
+    
+	public Set<String> getRangosJugador(int idJugador) {
+		return modelo.obtenerRangoPorJugador(idJugador);
+	}
+
+	public void establecerRangoParaJugador(String rangoInput, int idJugador) {
+		modelo.establecerRangoParaJugador(rangoInput, idJugador);
+	}
+	
+    public void actualizarPorcentajeJugador(int idJugador, double porcentaje) {
+        modelo.actualizarPorcentajeJugador(idJugador, porcentaje);
+    }
+
+    public double getPorcentajeJugador(int idJugador) {
+        return modelo.getPorcentajeJugador(idJugador);
+    }
+
+	public void guardarRangoJugador(int idJugador, String rangoSeleccionado) {
+		modelo.guardarRangoJugador(idJugador, rangoSeleccionado);
+		
+	}
 }

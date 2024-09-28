@@ -1,6 +1,8 @@
 package Vista;
 
 import javax.swing.*;
+
+import Controlador.Controlador;
 import java.awt.*;
 
 public class Vista extends JFrame {
@@ -9,8 +11,10 @@ public class Vista extends JFrame {
     private JTextField[] playerInputs;
     private JTextField[] equityFields;
     private JTextArea outputArea;
-
-    public Vista() {
+    private Controlador  controlador;
+    
+    public Vista(Controlador controlador) {
+    	this.controlador = controlador;
         setTitle("Hold'em");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout(10, 10));
@@ -45,7 +49,7 @@ public class Vista extends JFrame {
             final int playerId = i + 1;
             playerButton.addActionListener(e -> {
                 String rangoInput = playerInputs[playerId - 1].getText();
-                new JugadorFrame(playerId, rangoInput, playerInputs[playerId - 1]);//Le pasamos el playerInput para que cuando se escoja graficamente se ponga aqui
+                new JugadorFrame(controlador, playerId, rangoInput, playerInputs[playerId - 1]);//Le pasamos el playerInput para que cuando se escoja graficamente se ponga aqui
             });
             panel.add(playerButton);
 
@@ -131,16 +135,15 @@ public class Vista extends JFrame {
     }
 
     private void clearAllInputs() {
-        for (JTextField playerInput : playerInputs) {
-            playerInput.setText("");
+        for (int i = 0; i < playerInputs.length; i++) {
+            playerInputs[i].setText("");
+            equityFields[i].setText("");
+            
+            controlador.guardarRangoJugador(i + 1, "");
+            controlador.actualizarPorcentajeJugador(i + 1, 0.0);
         }
 
-        for (JTextField equityField : equityFields) {
-            equityField.setText("");
-        }
+        outputArea.setText("");
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(Vista::new);
-    }
 }
