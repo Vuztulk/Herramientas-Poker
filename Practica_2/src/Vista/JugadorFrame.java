@@ -5,7 +5,12 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import Controlador.Controlador;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class JugadorFrame extends JFrame {
 
@@ -19,25 +24,35 @@ public class JugadorFrame extends JFrame {
     private Controlador controlador;
     private int idJugador;
     String cartasRanking[];
+    private JTextField boardInput;
+    
+    private JPanel cardSelectionPanel;
+    private JPanel resultPanel;
+    private Map<String, JButton> cardButtons;
+    private List<String> selectedCards;
+    private RangeAnalyzer rangeAnalyzer;
     
     public JugadorFrame(Controlador controlador, int idJugador, String rangoInput, JTextField campoTextoJugador) {
         this.controlador = controlador;
         this.idJugador = idJugador;
-        this.cartasRanking = new Ranking().getCartasOrdenadas();
+        this.cartasRanking = new Sklansky_Chubukov().getCartasOrdenadas();
         
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setBounds(0, 0, 1200, 800);
         setTitle("Distribución de Hold'em [Jugador " + idJugador + "]");
-
+        
         panelContenido = new JPanel(new BorderLayout(5, 5));
         setContentPane(panelContenido);
 
         JTabbedPane panelPestanas = new JTabbedPane(JTabbedPane.TOP);
+        
         JPanel panelPreflop = new JPanel(new BorderLayout());
         panelPestanas.addTab("Preflop", null, panelPreflop, "Preflop");
 
-        JPanel panelCuadricula = new JPanel(new GridLayout(13, 13, 2, 2));
+        JPanel analysisPanel = createAnalysisPanel();
+        panelPestanas.addTab("Análisis", null, analysisPanel, "Analisis de Rango");
         
+        JPanel panelCuadricula = new JPanel(new GridLayout(13, 13, 2, 2));
         JPanel panelConBorder = new JPanel(new BorderLayout());
         panelConBorder.setBorder(new EmptyBorder(10, 10, 10, 10));
         panelConBorder.add(panelCuadricula, BorderLayout.CENTER);
@@ -80,7 +95,7 @@ public class JugadorFrame extends JFrame {
         
         boton.addActionListener(e -> {
             boton.setSelected(!boton.isSelected());
-            boton.setBackground(boton.isSelected() ? Color.RED : colorFondo);
+            boton.setBackground(boton.isSelected() ? new Color(180, 120, 160) : colorFondo);
             actualizarSeleccion();
         });
         return boton;
@@ -170,8 +185,8 @@ public class JugadorFrame extends JFrame {
         controlador.getRangosJugador(idJugador).forEach(carta -> botonesRango.stream()
             .filter(b -> b.getText().equals(carta))
             .forEach(b -> {
-                b.setSelected(true);
-                b.setBackground(Color.RED);
+                b.setSelected(true);	
+                b.setBackground(new Color(180, 120, 160));
             })
         );
         actualizarSeleccion();
@@ -189,24 +204,24 @@ public class JugadorFrame extends JFrame {
             switch (accion) {
                 case "Todos":
                     b.setSelected(true);
-                    b.setBackground(Color.RED);
+                    b.setBackground(new Color(180, 120, 160));
                     break;
                 case "Cualquier Suited":
                     if (esSuited) {
                         b.setSelected(true);
-                        b.setBackground(Color.RED);
+                        b.setBackground(new Color(180, 120, 160));
                     }
                     break;
                 case "Cualquier Broadway":
                     if (contiene(broadway, carta1) && contiene(broadway, carta2)) {
                         b.setSelected(true);
-                        b.setBackground(Color.RED);
+                        b.setBackground(new Color(180, 120, 160));
                     }
                     break;
                 case "Cualquier Par":
                     if (esPar) {
                         b.setSelected(true);
-                        b.setBackground(Color.RED);
+                        b.setBackground(new Color(180, 120, 160));
                     }
                     break;
                 case "Limpiar":
@@ -259,13 +274,19 @@ public class JugadorFrame extends JFrame {
         seleccionesGuardadas.clear();
         for (JButton b : botonesRango) {
             b.setSelected(false);
+
+            String textoBoton = b.getText();
+            Color colorOriginal = textoBoton.length() == 2 ? new Color(140, 230, 140) : 
+                                  textoBoton.endsWith("s") ? new Color(255, 180, 190) : 
+                                  new Color(170, 210, 230);
+            b.setBackground(colorOriginal);
         }
         
         for (int i = 0; i < n_valores && i < cartasRanking.length; i++) {
             for (JButton b : botonesRango) {
                 if (b.getText().equals(cartasRanking[i])) {
                     b.setSelected(true);
-                    b.setBackground(Color.RED);
+                    b.setBackground(new Color(180, 120, 160));
                     seleccionesGuardadas.add(b.getText());
                     break;
                 }
@@ -275,4 +296,93 @@ public class JugadorFrame extends JFrame {
         actualizarSeleccion();
     }
 
+    private JPanel createAnalysisPanel() {
+        JPanel panel = new JPanel(new BorderLayout());
+        
+        cardSelectionPanel = createCardSelectionPanel();
+        resultPanel = new JPanel();
+        resultPanel.setLayout(new BoxLayout(resultPanel, BoxLayout.Y_AXIS));
+
+        JButton analyzeButton = new JButton("Analizar");
+        analyzeButton.addActionListener(e -> performAnalysis());
+
+        panel.add(cardSelectionPanel, BorderLayout.WEST);
+        panel.add(resultPanel, BorderLayout.CENTER);
+        panel.add(analyzeButton, BorderLayout.SOUTH);
+
+        return panel;
+    }
+
+    private JPanel createCardSelectionPanel() {
+        JPanel panel = new JPanel(new GridLayout(13, 4, 2, 2));
+        cardButtons = new HashMap<>();
+        selectedCards = new ArrayList<>();
+
+        String[] ranks = {"A", "K", "Q", "J", "T", "9", "8", "7", "6", "5", "4", "3", "2"};
+        String[] suits = {"h", "s", "d", "c"};
+        Color[] suitColors = {Color.ORANGE, Color.LIGHT_GRAY, Color.RED, Color.GREEN};
+
+        for (String rank : ranks) {
+            for (int i = 0; i < suits.length; i++) {
+                final Color suitColor = suitColors[i];
+                String card = rank + suits[i];
+                JButton button = new JButton(card);
+                button.setPreferredSize(new Dimension(60, 60));
+                button.addActionListener(e -> toggleCardSelection(card, button, suitColor));
+                cardButtons.put(card, button);
+                button.setBackground(suitColor);
+                panel.add(button);
+            }
+        }
+        return panel;
+    }
+
+    private void toggleCardSelection(String card, JButton button, Color suitColor) {
+        if (selectedCards.remove(card)) {
+            button.setBackground(suitColor);
+        } else if (selectedCards.size() < 5) {
+            selectedCards.add(card);
+            button.setBackground(new Color(180, 120, 160));
+        }
+    }
+
+
+    private void performAnalysis() {
+        if (selectedCards.size() < 3) {
+            JOptionPane.showMessageDialog(this, "Seleccione al menos 3 cartas para el board");
+            return;
+        }
+
+        Set<String> range = new HashSet<>(seleccionesGuardadas);
+        rangeAnalyzer = new RangeAnalyzer(range, selectedCards);
+        
+        Map<String, Double> probabilities = rangeAnalyzer.getHandProbabilities();
+        
+        updateResultPanel(probabilities);
+    }
+
+    private void updateResultPanel(Map<String, Double> probabilities) {
+        resultPanel.removeAll();
+        
+        JLabel totalCombosLabel = new JLabel("Numero total de combos: " + rangeAnalyzer.getTotalCombos());
+        resultPanel.add(totalCombosLabel);
+
+        for (Map.Entry<String, Double> entry : probabilities.entrySet()) {
+            JPanel handPanel = new JPanel(new BorderLayout());
+            JLabel handLabel = new JLabel(entry.getKey());
+            JProgressBar progressBar = new JProgressBar(0, 100);
+            progressBar.setValue((int) Math.round(entry.getValue()));
+            progressBar.setStringPainted(true);
+            progressBar.setString(String.format("%.1f%%", entry.getValue()));
+            
+            handPanel.add(handLabel, BorderLayout.WEST);
+            handPanel.add(progressBar, BorderLayout.CENTER);
+            
+            resultPanel.add(handPanel);
+        }
+
+        resultPanel.revalidate();
+        resultPanel.repaint();
+    }
+    
 }
