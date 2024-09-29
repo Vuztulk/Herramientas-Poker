@@ -118,7 +118,6 @@ public class JugadorFrame extends JFrame {
     	slider = new JSlider(0, 1690, 0);
         slider.setMajorTickSpacing(169);
         slider.setMinorTickSpacing(84);
-        //slider.setPaintTicks(true);
         slider.setPaintLabels(false);
         
         campoPorcentaje = new JTextField("0.0%");
