@@ -11,7 +11,7 @@ public class Main {
 		View vista = new View();
 		Controller control = new Controller(model, vista);
 		
-		control.procesarOrden(args[0], args[1], args[2]);
+		control.procesarOrden(args[0], args[1], args[2], true);
 
 	}
 }

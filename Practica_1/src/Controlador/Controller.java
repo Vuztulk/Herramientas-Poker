@@ -16,7 +16,7 @@ public class Controller {
 		this.vista = vista;
 	}
 
-	public void procesarOrden(String apartado, String archivoEntrada, String archivoSalida) {
+	public List<String> procesarOrden(String apartado, String archivoEntrada, String archivoSalida, boolean salidaEnArchivo) {
 		try {
 			List<String> input = vista.leerArchivo(archivoEntrada);
 			List<String> resultados;
@@ -35,13 +35,17 @@ public class Controller {
 				resultados = procesarApartado4(input);
 				break;
 			default:
-				return;
+				return null;
 			}
-
-			vista.escribirArchivo(archivoSalida, resultados);
+			if(salidaEnArchivo)
+				vista.escribirArchivo(archivoSalida, resultados);
+			else
+				return resultados;
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		return null;
 	}
 
 	private List<String> procesarApartado1(List<String> input) {
