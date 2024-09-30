@@ -8,7 +8,6 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import Controlador.Controlador;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -27,7 +26,6 @@ public class JugadorFrame extends JFrame {
     private Controlador controlador;
     private int idJugador;
     String cartasRanking[];
-    private JTextField boardInput;
     
     private JPanel cardSelectionPanel;
     private JPanel resultPanel;
@@ -143,7 +141,7 @@ public class JugadorFrame extends JFrame {
         campoPorcentaje.setPreferredSize(new Dimension(55, 20));
         
         slider.addChangeListener(e -> {
-            double porcentaje = slider.getValue() / 16.9;  // Changed divisor to 16.9
+            double porcentaje = slider.getValue() / 16.9;
             campoPorcentaje.setText(String.format("%.1f%%", porcentaje));
             controlador.actualizarPorcentajeJugador(idJugador, porcentaje);
             aplicarRanking(porcentaje);
@@ -371,7 +369,6 @@ public class JugadorFrame extends JFrame {
             button.setBackground(new Color(180, 120, 160));
         }
     }
-
 
     private void performAnalysis() {
         if (selectedCards.size() < 3) {
