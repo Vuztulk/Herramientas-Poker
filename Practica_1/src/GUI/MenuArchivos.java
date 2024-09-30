@@ -61,17 +61,17 @@ public class MenuArchivos extends JPanel {
 		if (archivoEntrada != null) {
 			try {
 				this.contenidoArchivo = controller.leerYProcesarArchivo(archivoEntrada.getAbsolutePath());
-				JOptionPane.showMessageDialog(this, "Archivo leído correctamente.");
+				JOptionPane.showMessageDialog(this, "Archivo leido correctamente");
 
 				if (dialog != null) {
 					dialog.dispose();
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
-				JOptionPane.showMessageDialog(this, "Error al leer el archivo.");
+				JOptionPane.showMessageDialog(this, "Error al leer el archivo");
 			}
 		} else {
-			JOptionPane.showMessageDialog(this, "Seleccione un archivo de entrada primero.");
+			JOptionPane.showMessageDialog(this, "Seleccione un archivo de entrada");
 		}
 	}
 

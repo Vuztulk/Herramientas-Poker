@@ -28,8 +28,8 @@ public class Mano {
 	private int calcularSumaCartas() {
 
 		int suma = 0;
-		for (int i = 0; i < 5 && i < cartas.size(); i++) {
-			suma += cartas.get(i).getValor();
+		for (int i = 0; i < 5 && i < mejorMano.getCartasMejorMano().size(); i++) {
+			suma += mejorMano.getCartasMejorMano().get(i).getValor();
 		}
 		return suma;
 	}

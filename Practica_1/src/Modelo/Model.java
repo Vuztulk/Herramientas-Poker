@@ -28,11 +28,11 @@ public class Model {
     }
 
     public String evaluarMejorManoConComunes(String cartasPropias, String cartasComunes) {
-        return evaluarMejorManoGenerica(cartasPropias, cartasComunes, 2, 5, false);
+        return evaluarMejorManoGenerica(cartasPropias, cartasComunes, 3, 5, false);
     }
     
     public String evaluarMejorManoConComunesRaw(String cartasPropias, String cartasComunes) {
-        return evaluarMejorManoGenerica(cartasPropias, cartasComunes, 2, 5, true);
+        return evaluarMejorManoGenerica(cartasPropias, cartasComunes, 3, 5, true);
     }
 
     public List<String> ordenarJugadoresPorMejorMano(List<String> manosJugadores, String cartasComunes) {
@@ -64,13 +64,13 @@ public class Model {
         return resultados;
     }
 
-    private String evaluarMejorManoGenerica(String cartasPropias, String cartasComunes, int minCombinacionPropia, int maxCombinacionComunes, boolean res) {
+    private String evaluarMejorManoGenerica(String cartasPropias, String cartasComunes, int minCombinacion, int maxCombinacion, boolean res) {
         List<Carta> cartasJugador = parsearCartas(cartasPropias);
         List<Carta> cartasComunesLista = parsearCartas(cartasComunes);
 
         Mano mejorMano = null;
 
-        for (int i = minCombinacionPropia; i <= maxCombinacionComunes; i++) {
+        for (int i = minCombinacion; i <= maxCombinacion; i++) {
             for (List<Carta> combinacionComunes : UtilidadesMano.generarCombinaciones(cartasComunesLista, i)) {
                 List<Carta> combinacionTotal = new ArrayList<>(cartasJugador);
                 combinacionTotal.addAll(combinacionComunes);

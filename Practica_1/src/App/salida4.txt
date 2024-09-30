@@ -1,9 +1,18 @@
-AcKcQcJc;4;Tc9C8c7c
-- Best hand: Color [Ac, Kc, Tc, 8c, 7c]
+AcKcQcJc;4;Tc9c8c7c
+- Best hand: Escalera de color [8c, 9c, Tc, Jc, Qc]
 
 AhAc8s5h;4;2h2d2c2s
 - Best hand: Full de 2 y A: [2h, 2d, 2c, Ah, Ac]
 
 AhAc8s5h;4;2h2d2cAh
 - Best hand: Full de A y 2: [Ah, Ac, Ah, 2h, 2d]
+
+2h5s7c9h;3;2sJcQs
+- Best hand: Pareja de 2 [2h, 2s]
+
+JcKsJhAc;4;9s6c3s3h
+- Best hand: Doble pareja de J y 3 + 9s
+
+Ah9s6c3s;5;3h2d2cAhQs
+- Best hand: Doble pareja de A y 3 + Qs
 

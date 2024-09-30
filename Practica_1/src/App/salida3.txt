@@ -1,11 +1,21 @@
+4;J19c8c;J2Ks6c;J32s9h;J4AsAc;3c4c5c6c7c
+J1: Escalera de color [5c, 6c, 7c, 8c, 9c]
+J2: Escalera de color [3c, 4c, 5c, 6c, 7c]
+J3: Escalera de color [3c, 4c, 5c, 6c, 7c]
+J4: Escalera de color [3c, 4c, 5c, 6c, 7c]
+
 4;J1AhAc;J2JsJh;J37c8c;J44sKc;5dKs6cTh9h
 J3: Escalera [6c, 7c, 8c, 9h, Th]
 J1: Pareja de A [Ah, Ac]
-J2: Pareja de J [Js, Jh]
 J4: Pareja de K [Kc, Ks]
+J2: Pareja de J [Js, Jh]
 
 3;J1AhAc;J2JsJh;J37c8c;5dKs6cTh9h
 J3: Escalera [6c, 7c, 8c, 9h, Th]
 J1: Pareja de A [Ah, Ac]
 J2: Pareja de J [Js, Jh]
+
+2;J12c5h;J2Ac9s;5d8hKs4c7h
+J1: Pareja de 5 [5h, 5d]
+J2: Carta mas alta [Ac]
 

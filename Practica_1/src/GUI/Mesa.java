@@ -24,7 +24,7 @@ public class Mesa extends JPanel {
 	List<List<String>> res_jugadores;
 	private JButton botonNext;
 	private JLabel labelBoardInicial;
-	private List<JLabel> etiquetasDinamicas = new ArrayList<>();
+	private List<JLabel> etiquetasJugadores = new ArrayList<>();
 
 	private JLabel[][] cartasJugadores = new JLabel[4][4];
 	private JLabel[] cartasBoard = new JLabel[5];
@@ -80,7 +80,7 @@ public class Mesa extends JPanel {
 		botonArchivos = new JButton("Seleccionar Archivos");
 		botonArchivos.setBounds(30, 40, 130, 22);
 		botonArchivos.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(ActionEvent e) {//Comportamiento al pulsar el boton de selccionar archivos
 				manos = mainFrame.mostrarMenuArchivos();
 
 				if (apartado1.isSelected()) {
@@ -108,7 +108,7 @@ public class Mesa extends JPanel {
 		botonNext = new JButton("Next");
 		botonNext.setBounds(180, 40, 130, 22);
 		botonNext.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(ActionEvent e) {//Comportamiento al pulsar el boton de next
 
 				if (apartado1.isSelected()) {
 					if (manos != null && indiceManoActual < manos.size()) {
@@ -165,8 +165,8 @@ public class Mesa extends JPanel {
 		pintarBoard(board[2], mano);
 		int numCartasJugador = mano.length() / 2;
 
-		Set<String> cartasBoard = new HashSet<>();// Filtra las cartas para no pintarlas en la mano del jugador y en el
-													// tablero tambien
+		Set<String> cartasBoard = new HashSet<>();// Filtra las cartas para no pintarlas en la mano del jugador y en el tablero tambien
+													
 		for (int i = 0; i < board[2].length(); i += 2) {
 			cartasBoard.add(board[2].substring(i, i + 2));
 		}
@@ -209,7 +209,7 @@ public class Mesa extends JPanel {
 
 	private void ejecutarApartado3(List<String> manos) {
 	    borrarCartasJugadores();
-	    borrarEtiquetasDinamicas(); // Limpia las etiquetas antes de agregar las nuevas
+	    borrarEtiquetas(); // Limpia las etiquetas antes de agregar las nuevas
 	    
 	    labelBoardInicial.setText("Board Inicial: " + manos.get(indiceManoActual));
 
@@ -261,7 +261,7 @@ public class Mesa extends JPanel {
 	    listajug.setBounds(10, 270, 200, 30);
 	    listajug.setFont(new Font("Arial", Font.PLAIN, 14));
 	    add(listajug);
-	    etiquetasDinamicas.add(listajug);
+	    etiquetasJugadores.add(listajug);
 
 	    int yPos = 300;
 	    for (int i = 0; i < listamano.size(); i++) {
@@ -269,7 +269,7 @@ public class Mesa extends JPanel {
 	        labelMano.setBounds(10, yPos, 200, 30);
 	        labelMano.setFont(new Font("Arial", Font.PLAIN, 14));
 	        add(labelMano);
-	        etiquetasDinamicas.add(labelMano);
+	        etiquetasJugadores.add(labelMano);
 	        yPos += 20;
 	    }
 
@@ -330,11 +330,11 @@ public class Mesa extends JPanel {
 		indiceManoActual++;
 	}
 	
-	private void borrarEtiquetasDinamicas() {
-	    for (JLabel etiqueta : etiquetasDinamicas) {
+	private void borrarEtiquetas() {
+	    for (JLabel etiqueta : etiquetasJugadores) {
 	        remove(etiqueta);
 	    }
-	    etiquetasDinamicas.clear();
+	    etiquetasJugadores.clear();
 	    revalidate();
 	    repaint();
 	}
@@ -376,6 +376,7 @@ public class Mesa extends JPanel {
 		revalidate();
 		repaint();
 	}
+	
 	private void borrarCartasJugadores() {
 	    for (int i = 0; i < cartasJugadores.length; i++) {
 	        for (int j = 0; j < cartasJugadores[i].length; j++) {

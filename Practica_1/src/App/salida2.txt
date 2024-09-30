@@ -1,8 +1,20 @@
 AhAc;3;QhJhTh
 - Best hand: Pareja de A [Ah, Ac] con AhAcQhJhTh
 - Draw: Flush Draw
-- Draw: Straight Gutshot
+- Draw: Straight Gunshot
 
-AhAc;5;As2s3h4dJd
-- Best hand: Trio de A [Ah, Ac, As] con AhAcAs4dJd
+7hKs;4;QhJhTh9c
+- Best hand: Escalera [9c, Th, Jh, Qh, Ks] con 7hKsQhJhTh9c
+- Draw: Flush Draw
+
+2s9h;5;8h5sTcJh3s
+- Best hand: Carta mas alta [Jh] con 2s9h8hTcJh
+
+As3h;4;2h3s5hAs
+- Best hand: Doble pareja de A y 3 + 5h con As3h3s5hAs
+
+4s6s;3;7h8c9h
+- Best hand: Carta mas alta [9h] con 4s6s7h8c9h
+- Draw: Straight Gunshot
+- Draw: Straight Open-Ended
 

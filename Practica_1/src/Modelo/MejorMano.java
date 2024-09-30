@@ -52,7 +52,7 @@ public class MejorMano {
             claseMano = ClasesMano.PAREJA;
         } else {
             claseMano = ClasesMano.CARTA_MAS_ALTA;
-            descripcionMano = "Carta más alta [" + UtilidadesCarta.getNombreValor(max) + cartas.get(posMax).getPalo() + "]";
+            descripcionMano = "Carta mas alta [" + UtilidadesCarta.getNombreValor(max) + cartas.get(posMax).getPalo() + "]";
             cartasMano.add(cartas.get(posMax));
         }
     }
@@ -199,7 +199,7 @@ public class MejorMano {
                     }
                     cartasMano.add(cartaAlta);
 
-                    descripcionMano = "Doble pareja de " + UtilidadesCarta.getNombreValor(parejas.get(0)) + " y " + UtilidadesCarta.getNombreValor(parejas.get(1)) + ", con " + cartaAlta;
+                    descripcionMano = "Doble pareja de " + UtilidadesCarta.getNombreValor(parejas.get(0)) + " y " + UtilidadesCarta.getNombreValor(parejas.get(1)) + " + " + cartaAlta;
                     return true;
                 }
             }

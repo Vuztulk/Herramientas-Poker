@@ -135,6 +135,9 @@ public class Controller {
 	////////////////////////////////////////
 	////// METODOS PARA USO EN LA GUI //////
 	////////////////////////////////////////
+	
+	//Hago esto puesto que la salida en los metodos de arriba no es la que necesito para pintar las cartas en la GUI
+	
 	public List<String> leerYProcesarArchivo(String rutaArchivo) throws IOException {
 		return vista.leerArchivo(rutaArchivo);
 	}
@@ -166,13 +169,13 @@ public class Controller {
 
 			List<String> resultadoMano = modelo.ordJugRaw(manosJugadores, cartasComunes);
 
-			List<String> resultadoSinEtiquetas = new ArrayList<>();
+			List<String> resultadoJugador = new ArrayList<>();
 			for (String jugadorResultado : resultadoMano) {
 				String resultadoSinEtiqueta = jugadorResultado.replaceAll("J\\d+: ", "");
-				resultadoSinEtiquetas.add(resultadoSinEtiqueta);
+				resultadoJugador.add(resultadoSinEtiqueta);
 			}
 
-			resultados.add(resultadoSinEtiquetas);
+			resultados.add(resultadoJugador);
 		}
 		return resultados;
 	}

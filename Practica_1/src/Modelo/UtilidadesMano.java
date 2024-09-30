@@ -4,7 +4,7 @@ import java.util.*;
 
 public class UtilidadesMano {
 	
-	public static int tieneEscalera(int[] valores, int maxValor) {
+	public static int tieneEscalera(int[] valores, int maxValor) { //Devuelve la posicion mas alta donde empieza la escalera
         for (int i = maxValor; i >= 5; i--) {
             boolean escalera = true;
             for (int j = 0; j < 5; j++) {
@@ -80,9 +80,6 @@ public class UtilidadesMano {
         return posMax;
     }
 	
-/////////////////////////////////////////////////////////////////////////////////////////
-//////https://www.wextensible.com/temas/combinatoria/combinaciones-repeticion.html///////
-/////////////////////////////////////////////////////////////////////////////////////////
 	public static List<List<Carta>> generarCombinaciones(List<Carta> cartas, int n) {
 		List<List<Carta>> combinaciones = new ArrayList<>();
 		generarCombinacionesRecursivo(cartas, n, 0, new ArrayList<>(), combinaciones);
