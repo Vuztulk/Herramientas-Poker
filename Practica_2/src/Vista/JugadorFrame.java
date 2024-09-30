@@ -1,6 +1,9 @@
 package Vista;
 
 import java.awt.*;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import Controlador.Controlador;
@@ -145,6 +148,14 @@ public class JugadorFrame extends JFrame {
             controlador.actualizarPorcentajeJugador(idJugador, porcentaje);
             aplicarRanking(porcentaje);
         });
+        
+        campoPorcentaje.addFocusListener(new FocusAdapter() {
+            public void focusLost(FocusEvent e) {
+                actualizarDesdeTexto();
+            }
+        });
+        
+        campoPorcentaje.addActionListener(e -> actualizarDesdeTexto());
         
         JPanel sliderPanel = new JPanel();
         sliderPanel.add(slider);
@@ -296,6 +307,21 @@ public class JugadorFrame extends JFrame {
         actualizarSeleccion();
     }
 
+    private void actualizarDesdeTexto() {
+        try {
+            String texto = campoPorcentaje.getText().replace("%", "").replace(",", ".").trim();
+            double porcentaje = Double.parseDouble(texto);
+            if (porcentaje >= 0 && porcentaje <= 100) {
+                slider.setValue((int) (porcentaje * 16.9));
+                controlador.actualizarPorcentajeJugador(idJugador, porcentaje);
+                aplicarRanking(porcentaje);
+            }
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Introduzca un porcentaje valido entre 0 y 100", "Error de entrada", JOptionPane.ERROR_MESSAGE);
+            campoPorcentaje.setText(String.format("%.1f%%", slider.getValue() / 16.9));
+        }
+    }
+    
     private JPanel createAnalysisPanel() {
         JPanel panel = new JPanel(new BorderLayout());
         
@@ -330,7 +356,7 @@ public class JugadorFrame extends JFrame {
                 button.setPreferredSize(new Dimension(60, 60));
                 button.addActionListener(e -> toggleCardSelection(card, button, suitColor));
                 cardButtons.put(card, button);
-                button.setBackground(suitColor);
+                button.setBackground(suitColor);	
                 panel.add(button);
             }
         }
@@ -363,23 +389,53 @@ public class JugadorFrame extends JFrame {
 
     private void updateResultPanel(Map<String, Double> probabilities) {
         resultPanel.removeAll();
+        resultPanel.setLayout(new BorderLayout());
         
         JLabel totalCombosLabel = new JLabel("Numero total de combos: " + rangeAnalyzer.getTotalCombos());
-        resultPanel.add(totalCombosLabel);
+        totalCombosLabel.setFont(totalCombosLabel.getFont().deriveFont(14f));
+        JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        headerPanel.add(totalCombosLabel);
+        resultPanel.add(headerPanel, BorderLayout.NORTH);
+
+        JPanel handListPanel = new JPanel();
+        handListPanel.setLayout(new BoxLayout(handListPanel, BoxLayout.Y_AXIS));
+        handListPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
+
+        int maxLabelWidth = 0;
+        for (String handName : probabilities.keySet()) {
+            JLabel tempLabel = new JLabel(handName);
+            maxLabelWidth = Math.max(maxLabelWidth, tempLabel.getPreferredSize().width);
+        }
+
+        final int finalMaxLabelWidth = maxLabelWidth;
 
         for (Map.Entry<String, Double> entry : probabilities.entrySet()) {
-            JPanel handPanel = new JPanel(new BorderLayout());
+            JPanel handPanel = new JPanel();
+            handPanel.setLayout(new BoxLayout(handPanel, BoxLayout.X_AXIS));
+            
             JLabel handLabel = new JLabel(entry.getKey());
+            handLabel.setPreferredSize(new Dimension(finalMaxLabelWidth + 10, handLabel.getPreferredSize().height));
+            handPanel.add(handLabel);
+
+            handPanel.add(Box.createHorizontalStrut(10));
+
             JProgressBar progressBar = new JProgressBar(0, 100);
             progressBar.setValue((int) Math.round(entry.getValue()));
             progressBar.setStringPainted(true);
             progressBar.setString(String.format("%.1f%%", entry.getValue()));
-            
-            handPanel.add(handLabel, BorderLayout.WEST);
-            handPanel.add(progressBar, BorderLayout.CENTER);
-            
-            resultPanel.add(handPanel);
+            progressBar.setPreferredSize(new Dimension(400, progressBar.getPreferredSize().height));
+            handPanel.add(progressBar);
+
+            handPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+            handListPanel.add(handPanel);
+            handListPanel.add(Box.createVerticalStrut(5));
         }
+
+        JScrollPane scrollPane = new JScrollPane(handListPanel);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        
+        resultPanel.add(scrollPane, BorderLayout.CENTER);
 
         resultPanel.revalidate();
         resultPanel.repaint();
