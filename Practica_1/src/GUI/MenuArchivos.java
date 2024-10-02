@@ -77,7 +77,7 @@ public class MenuArchivos extends JPanel {
 
 	private void seleccionarArchivo() {
 		try {
-			JFileChooser fileChooser = new JFileChooser();
+			JFileChooser fileChooser = new JFileChooser();//Aqui salta excepcion y ni si quiera el try catch es capaz de capturarla
 			int returnValue = fileChooser.showOpenDialog(this);
 			if (returnValue == JFileChooser.APPROVE_OPTION) {
 				archivoEntrada = fileChooser.getSelectedFile();

@@ -1,7 +1,7 @@
 AhAcQhJhTh
 - Best hand: Pareja de A [Ah, Ac]
 - Draw: Flush Draw
-- Draw: Straight Gunshot
+- Draw: Straight Gutshot
 
 7h8h9dTdJd
 - Best hand: Escalera [7h, 8h, 9d, Td, Jd]
@@ -11,7 +11,7 @@ AhAcQhJhTh
 
 KhKdQdJcTc
 - Best hand: Pareja de K [Kh, Kd]
-- Draw: Straight Gunshot
+- Draw: Straight Gutshot
 - Draw: Straight Open-Ended
 
 5h5c5d7h9s
@@ -33,7 +33,7 @@ KhKdQdJcTc
 AhAcQhJhTh
 - Best hand: Pareja de A [Ah, Ac]
 - Draw: Flush Draw
-- Draw: Straight Gunshot
+- Draw: Straight Gutshot
 
 AhAcAcAsTh
 - Best hand: Poker de A [Ah, Ac, Ac, As]
@@ -49,18 +49,29 @@ KsJhKcJs6h
 
 2s5d6c7c8h
 - Best hand: Carta mas alta [8h]
-- Draw: Straight Gunshot
+- Draw: Straight Gutshot
 - Draw: Straight Open-Ended
 
 3h5s6c7h9s
 - Best hand: Carta mas alta [9s]
-- Draw: Straight Gunshot
+- Draw: Straight Gutshot
 
 5c5s5d6h8s
 - Best hand: Trio de 5 [5c, 5s, 5d]
 
 5s7h8c9hTs
 - Best hand: Carta mas alta [Ts]
-- Draw: Straight Gunshot
+- Draw: Straight Gutshot
 - Draw: Straight Open-Ended
+
+4h6h6hKhAh
+- Best hand: Color [Ah, Kh, 6h, 6h, 4h]
+
+Jh9sAsKhQs
+- Best hand: Carta mas alta [As]
+- Draw: Straight Gutshot
+
+2h3h4s5cTh
+- Best hand: Carta mas alta [Th]
+- Draw: Straight Gutshot
 

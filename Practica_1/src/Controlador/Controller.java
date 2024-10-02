@@ -113,6 +113,7 @@ public class Controller {
 			StringBuilder resultado = new StringBuilder(String.join(";", partes[0], partes[1], partes[2]))
 					.append("\n- Best hand: ").append(modelo.getDescripcionMano(mejorMano)).append("\n");
 
+			agregarDraws(resultado, modelo.detectarDraws(mejorMano));
 			resultados.add(resultado.toString());
 		}
 

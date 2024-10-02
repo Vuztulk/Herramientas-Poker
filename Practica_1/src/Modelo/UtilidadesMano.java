@@ -80,6 +80,15 @@ public class UtilidadesMano {
         return posMax;
     }
 	
+    public static List<Carta> obtenerCartasComplementarias(List<Carta> todasLasCartas, List<Carta> cartasMano, int cantidadNecesaria) {
+        List<Carta> cartasDisponibles = new ArrayList<>(todasLasCartas);
+        
+        cartasDisponibles.removeAll(cartasMano);
+        cartasDisponibles.sort((c1, c2) -> Integer.compare(c2.getValor(), c1.getValor()));
+
+        return cartasDisponibles.subList(0, Math.min(cantidadNecesaria, cartasDisponibles.size()));
+    }
+    
 	public static List<List<Carta>> generarCombinaciones(List<Carta> cartas, int n) {
 		List<List<Carta>> combinaciones = new ArrayList<>();
 		generarCombinacionesRecursivo(cartas, n, 0, new ArrayList<>(), combinaciones);

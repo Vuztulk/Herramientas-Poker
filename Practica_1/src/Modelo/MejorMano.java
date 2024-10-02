@@ -54,6 +54,8 @@ public class MejorMano {
             claseMano = ClasesMano.CARTA_MAS_ALTA;
             descripcionMano = "Carta mas alta [" + UtilidadesCarta.getNombreValor(max) + cartas.get(posMax).getPalo() + "]";
             cartasMano.add(cartas.get(posMax));
+            List<Carta> cartasComplementarias = UtilidadesMano.obtenerCartasComplementarias(cartas, cartasMano, 4);
+            cartasMano.addAll(cartasComplementarias);
         }
     }
 
@@ -141,6 +143,8 @@ public class MejorMano {
             if (valores[i] == 4) {
                 cartasMano = UtilidadesMano.obtenerCartasPorValor(cartas, i, 4);
                 descripcionMano = "Poker de " + UtilidadesCarta.getNombreValor(i) + " " + cartasMano;
+                List<Carta> cartasComplementarias = UtilidadesMano.obtenerCartasComplementarias(cartas, cartasMano, 1);
+                cartasMano.addAll(cartasComplementarias);
                 return true;
             }
         }
@@ -167,6 +171,8 @@ public class MejorMano {
             if (valores[i] == 3) {
                 cartasMano = UtilidadesMano.obtenerCartasPorValor(cartas, i, 3);
                 descripcionMano = "Trio de " + UtilidadesCarta.getNombreValor(i) + " " + cartasMano;
+                List<Carta> cartasComplementarias = UtilidadesMano.obtenerCartasComplementarias(cartas, cartasMano, 2);
+                cartasMano.addAll(cartasComplementarias);
                 return true;
             }
         }
@@ -191,15 +197,9 @@ public class MejorMano {
                     cartasMano.addAll(cartasPareja1);
                     cartasMano.addAll(cartasPareja2);
                     
-                    Carta cartaAlta = cartasRestantes.get(0);
-                    for (Carta carta : cartasRestantes) {
-                        if (carta.getValor() > cartaAlta.getValor()) {
-                            cartaAlta = carta;
-                        }
-                    }
-                    cartasMano.add(cartaAlta);
-
-                    descripcionMano = "Doble pareja de " + UtilidadesCarta.getNombreValor(parejas.get(0)) + " y " + UtilidadesCarta.getNombreValor(parejas.get(1)) + " + " + cartaAlta;
+                    List<Carta> cartasComplementarias = UtilidadesMano.obtenerCartasComplementarias(cartas, cartasMano, 1);
+                    descripcionMano = "Doble pareja de " + UtilidadesCarta.getNombreValor(parejas.get(0)) + " y " + UtilidadesCarta.getNombreValor(parejas.get(1));
+                    cartasMano.addAll(cartasComplementarias);
                     return true;
                 }
             }
@@ -212,6 +212,8 @@ public class MejorMano {
             if (valores[i] == 2) {
                 cartasMano = UtilidadesMano.obtenerCartasPorValor(cartas, i, 2);
                 descripcionMano = "Pareja de " + UtilidadesCarta.getNombreValor(i) + " " + cartasMano;
+                List<Carta> cartasComplementarias = UtilidadesMano.obtenerCartasComplementarias(cartas, cartasMano, 3);
+                cartasMano.addAll(cartasComplementarias);
                 return true;
             }
         }

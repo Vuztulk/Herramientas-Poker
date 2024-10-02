@@ -1,20 +1,42 @@
 AhAc;3;QhJhTh
 - Best hand: Pareja de A [Ah, Ac] con AhAcQhJhTh
 - Draw: Flush Draw
-- Draw: Straight Gunshot
+- Draw: Straight Gutshot
+
+AhAc;5;As2s3h4dJd
+- Best hand: Trio de A [Ah, Ac, As] con AhAcAsJd4d
 
 7hKs;4;QhJhTh9c
-- Best hand: Escalera [9c, Th, Jh, Qh, Ks] con 7hKsQhJhTh9c
-- Draw: Flush Draw
+- Best hand: Escalera [9c, Th, Jh, Qh, Ks] con 9cThJhQhKs
 
 2s9h;5;8h5sTcJh3s
-- Best hand: Carta mas alta [Jh] con 2s9h8hTcJh
+- Best hand: Carta mas alta [Jh] con JhTc9h8h5s
 
-As3h;4;2h3s5hAs
-- Best hand: Doble pareja de A y 3 + 5h con As3h3s5hAs
+As3h;4;2h3s5hAh
+- Best hand: Doble pareja de A y 3 con AsAh3h3s5h
 
 4s6s;3;7h8c9h
-- Best hand: Carta mas alta [9h] con 4s6s7h8c9h
-- Draw: Straight Gunshot
+- Best hand: Carta mas alta [9h] con 9h8c7h6s4s
+- Draw: Straight Gutshot
 - Draw: Straight Open-Ended
+
+KhQc;4;9c8d7dTh
+- Best hand: Carta mas alta [Kh] con KhQcTh9c8d
+- Draw: Straight Gutshot
+
+5d6h;3;7sTs9h8c
+- Best hand: Escalera [6h, 7s, 8c, 9h, Ts] con 6h7s8c9hTs
+
+Jh9s;4;AsKhQh5c
+- Best hand: Carta mas alta [As] con AsKhQhJh9s
+- Draw: Straight Gutshot
+
+3c4h;5;QsKdTc8h6d
+- Best hand: Carta mas alta [Kd] con KdQsTc8h6d
+
+2h2d;3;5c6h9s2c
+- Best hand: Trio de 2 [2h, 2d, 2c] con 2h2d2c9s6h
+
+2h2d;3;2c3h3s2c
+- Best hand: Poker de 2 [2h, 2d, 2c, 2c] con 2h2d2c2c3h
 

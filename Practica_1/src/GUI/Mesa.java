@@ -202,8 +202,7 @@ public class Mesa extends JPanel {
 		pintarBoard(board[2], mano);
 		int numCartasJugador = mano.length() / 2;
 
-		Set<String> cartasBoard = new HashSet<>();// Filtra las cartas para no pintarlas en la mano del jugador y en el
-													// tablero tambien
+		Set<String> cartasBoard = new HashSet<>();// Filtra las cartas para no pintarlas en la mano del jugador y en el tablero tambien
 
 		for (int i = 0; i < board[2].length(); i += 2) {
 			cartasBoard.add(board[2].substring(i, i + 2));

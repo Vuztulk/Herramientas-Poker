@@ -13,7 +13,7 @@ public class Draws {
         if (tieneFlushDraw(cartas))
             draws.add("Flush Draw");
         if (tieneGutshot(cartas))
-            draws.add("Straight Gunshot");
+            draws.add("Straight Gutshot");
         if (tieneOpenEnded(cartas))
             draws.add("Straight Open-Ended");
 
@@ -46,27 +46,28 @@ public class Draws {
             return false;
         }
         
-        // Consideramos el As como 1 y 14
-        if (valoresArray[14] > 0) {
-        	valoresArray[1] = valoresArray[14];
+        int primer_val = 1;//Buscamos el primer valor donde empieza a haber cartas por que si no puede que el bucle de abajo empiece con hueco != 0 
+        for (int i = 1; i <= 14; i++) {
+        	if (valoresArray[i] > 0) {
+        		primer_val = i;
+        		break;
+            }
         }
-
+        
         int consecutivos = 0;
         int huecos = 0;
-        for (int i = 1; i <= 14; i++) {
+        
+        for (int i = primer_val; i <= 14; i++) {
             if (valoresArray[i] > 0) {
                 consecutivos++;
             } else {
                 huecos++;
                 if (huecos > 1) {
-                    if (consecutivos == 4 && huecos == 2) {
-                        return true;
-                    }
                     consecutivos = 0;
                     huecos = 0;
                 }
             }
-            if (consecutivos == 4 && huecos == 1) {
+            if (consecutivos >= 4 && huecos == 1) {
                 return true;
             }
         }
@@ -90,8 +91,12 @@ public class Draws {
         }
 
         for (int i = 0; i < valores.size() - 3; i++) {
+            // Verifica si hay una secuencia de 4 cartas consecutivas
             if (valores.get(i + 1) - valores.get(i) == 1 && valores.get(i + 2) - valores.get(i + 1) == 1 && valores.get(i + 3) - valores.get(i + 2) == 1) {
-                return true;
+
+                if (!(valores.get(i) == 2 || valores.get(i + 3) == 14)) {//Verifica si en la secuencia de cartas consecutivas no esta ni el 2 ni el 14 
+                    return true;
+                }
             }
         }
 

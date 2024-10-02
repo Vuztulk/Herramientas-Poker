@@ -28,7 +28,7 @@ public class Model {
     }
 
     public String evaluarMejorManoConComunes(String cartasPropias, String cartasComunes) {
-        return evaluarMejorManoGenerica(cartasPropias, cartasComunes, 3, 5, false);
+        return evaluarMejorManoGenerica(cartasPropias, cartasComunes, 3, 5, true);
     }
     
     public String evaluarMejorManoConComunesRaw(String cartasPropias, String cartasComunes) {
