@@ -15,11 +15,11 @@ public class RangeAnalyzer {
 		this.board = board;
 		this.handCombos = new LinkedHashMap<>(); // Mantener el orden
 		this.totalCombos = 0;
-		initializeHandTypes();
-		analyzeRange();
+		inicializarTipoManos();
+		analizarRango();
 	}
 
-	private void initializeHandTypes() {
+	private void inicializarTipoManos() {
 		String[] handTypes = { "STRAIGHT_FLUSH", "FOUR_OF_A_KIND", "FULL_HOUSE", "FLUSH", "STRAIGHT", "THREE_OF_A_KIND",
 				"TWO_PAIR", "OVER_PAIR", "TOP_PAIR", "PP_BELOW_TP", "MIDDLE_PAIR", "WEAK_PAIR", "ACE_HIGH",
 				"NO_MADE_HAND", "STR_FLUSH_OPEN_ENDED", "STR_FLUSH_GUTSHOT", "DRAW_FLUSH", "STRAIGHT_OPEN_ENDED",
@@ -29,11 +29,11 @@ public class RangeAnalyzer {
 		}
 	}
 
-	private void analyzeRange() {
-		Set<String> combos = generateCombosFromRange(range);
+	private void analizarRango() {
+		Set<String> combos = generarCombosRango(range);
 		for (String hand : combos) {
-			if (isValidHand(hand)) {
-				String bestHand = evaluateBestHand(hand);
+			if (verificarMano(hand)) {
+				String bestHand = evaluarMejorMano(hand);
 				handCombos.put(bestHand, handCombos.get(bestHand) + 1);
 				totalCombos++;
 			}
@@ -41,18 +41,18 @@ public class RangeAnalyzer {
 	}
 
 	// Generar todas las combinaciones posibles a partir del rango
-	private Set<String> generateCombosFromRange(Set<String> range) {
+	private Set<String> generarCombosRango(Set<String> range) {
 		Set<String> combos = new HashSet<>();
 		for (String hand : range) {
-			combos.addAll(generateCombosForHand(hand));
+			combos.addAll(generarCombosMano(hand));
 		}
 		return combos;
 	}
 
-	private Set<String> generateCombosForHand(String hand) {
+	private Set<String> generarCombosMano(String hand) {
 		Set<String> combos = new HashSet<>();
 		if (hand.length() == 3 && hand.charAt(2) == 's') {
-			// Mano suited, ej: J7s
+			// Mano suited
 			char rank1 = hand.charAt(0);
 			char rank2 = hand.charAt(1);
 			for (char suit : SUITS) {
@@ -61,7 +61,7 @@ public class RangeAnalyzer {
 				combos.add(card1 + card2);
 			}
 		} else if (hand.length() == 3 && hand.charAt(2) == 'o') {
-			// Mano offsuited, ej: J7o
+			// Mano offsuited
 			char rank1 = hand.charAt(0);
 			char rank2 = hand.charAt(1);
 			for (char suit1 : SUITS) {
@@ -74,7 +74,7 @@ public class RangeAnalyzer {
 				}
 			}
 		} else if (hand.length() == 2) {
-			// Pareja, ej: JJ
+			// Parejas
 			char rank = hand.charAt(0);
 			for (int i = 0; i < SUITS.length; i++) {
 				for (int j = i + 1; j < SUITS.length; j++) {
@@ -88,7 +88,7 @@ public class RangeAnalyzer {
 	}
 
 	// Verifica que el combo no comparta cartas con el board
-	private boolean isValidHand(String hand) {
+	private boolean verificarMano(String hand) {
 		List<String> allCards = new ArrayList<>(board);
 		String card1 = hand.substring(0, 2);
 		String card2 = hand.substring(2, 4);
@@ -105,73 +105,69 @@ public class RangeAnalyzer {
 		return uniqueCards.size() == allCards.size(); // No hay duplicados
 	}
 
-	private String evaluateBestHand(String hand) {
-		List<String> allCards = new ArrayList<>(board);
-		String card1 = hand.substring(0, 2);
-		String card2 = hand.substring(2, 4);
-		allCards.add(card1);
-		allCards.add(card2);
+	private String evaluarMejorMano(String hand) {
+		List<String> cartas = new ArrayList<>(board);
+		String carta1 = hand.substring(0, 2);
+		String carta2 = hand.substring(2, 4);
+		cartas.add(carta1);
+		cartas.add(carta2);
 
-		// Evaluar las mejores manos en orden de jerarquía
-		if (isStraightFlush(allCards))
+		if (escaleraColor(cartas))
 			return "STRAIGHT_FLUSH";
-		if (isFourOfAKind(allCards))
+		if (poker(cartas))
 			return "FOUR_OF_A_KIND";
-		if (isFullHouse(allCards))
+		if (house(cartas))
 			return "FULL_HOUSE";
-		if (isFlush(allCards))
+		if (color(cartas))
 			return "FLUSH";
-		if (isStraight(allCards))
+		if (escalera(cartas))
 			return "STRAIGHT";
-		if (isThreeOfAKind(allCards))
+		if (trio(cartas))
 			return "THREE_OF_A_KIND";
-		if (isTwoPair(allCards))
+		if (par(cartas))
 			return "TWO_PAIR";
 
-		// Evaluar tipos de pares
-		String pairType = evaluatePairType(hand, board);
-		if (!pairType.equals("NO_MADE_HAND"))
-			return pairType;
+		String tipoPar = evaluarTipoPar(hand, board);
+		if (!tipoPar.equals("NO_MADE_HAND"))
+			return tipoPar;
 
-		if (hasAceHigh(hand))
+		if (contieneAs(hand))
 			return "ACE_HIGH";
 
-		// Evaluar posibles draws (opcional si se requiere)
-		if (isStraightFlushDraw(allCards))
+		if (straightFlushDraw(cartas))
 			return "STR_FLUSH_OPEN_ENDED";
-		if (isStraightFlushGutshot(allCards))
+		if (straightFlushGutshot(cartas))
 			return "STR_FLUSH_GUTSHOT";
-		if (isFlushDraw(allCards))
+		if (flushDraw(cartas))
 			return "DRAW_FLUSH";
-		if (isStraightOpenEnded(allCards))
+		if (straightOpenEnded(cartas))
 			return "STRAIGHT_OPEN_ENDED";
-		if (isStraightGutshot(allCards))
+		if (straightGutshot(cartas))
 			return "STRAIGHT_GUTSHOT";
 
 		return "NO_MADE_HAND";
 	}
 
-	// Métodos para verificar diferentes combinaciones de manos
-	private boolean isStraightFlush(List<String> cards) {
-		return isFlush(cards) && isStraight(cards);
+	private boolean escaleraColor(List<String> cards) {
+		return color(cards) && escalera(cards);
 	}
 
-	private boolean isFourOfAKind(List<String> cards) {
+	private boolean poker(List<String> cards) {
 		Map<Character, Integer> rankCount = getRankCount(cards);
 		return rankCount.containsValue(4);
 	}
 
-	private boolean isFullHouse(List<String> cards) {
+	private boolean house(List<String> cards) {
 		Map<Character, Integer> rankCount = getRankCount(cards);
 		return rankCount.containsValue(3) && rankCount.containsValue(2);
 	}
 
-	private boolean isFlush(List<String> cards) {
+	private boolean color(List<String> cards) {
 		Map<Character, Integer> suitCount = getSuitCount(cards);
 		return suitCount.containsValue(5);
 	}
 
-	private boolean isStraight(List<String> cards) {
+	private boolean escalera(List<String> cards) {
 		List<Integer> ranks = getRanks(cards);
 		Collections.sort(ranks);
 		for (int i = 0; i < ranks.size() - 4; i++) {
@@ -181,17 +177,17 @@ public class RangeAnalyzer {
 		return false;
 	}
 
-	private boolean isThreeOfAKind(List<String> cards) {
+	private boolean trio(List<String> cards) {
 		Map<Character, Integer> rankCount = getRankCount(cards);
 		return rankCount.containsValue(3);
 	}
 
-	private boolean isTwoPair(List<String> cards) {
+	private boolean par(List<String> cards) {
 		Map<Character, Integer> rankCount = getRankCount(cards);
 		return Collections.frequency(rankCount.values(), 2) == 2;
 	}
 
-	private String evaluatePairType(String hand, List<String> board) {
+	private String evaluarTipoPar(String hand, List<String> board) {
 		char handRank1 = hand.charAt(0);
 		char handRank2 = hand.charAt(2);
 		List<Character> boardRanks = getBoardRanks(board);
@@ -209,7 +205,7 @@ public class RangeAnalyzer {
 			char pairRank = boardRanks.contains(handRank1) ? handRank1 : handRank2;
 			if (pairRank == Collections.max(boardRanks))
 				return "TOP_PAIR";
-			if (pairRank == getSecondHighestRank(boardRanks))
+			if (pairRank == getSengundoMasAlto(boardRanks))
 				return "MIDDLE_PAIR";
 			return "WEAK_PAIR";
 		}
@@ -217,11 +213,11 @@ public class RangeAnalyzer {
 		return "NO_MADE_HAND";
 	}
 
-	private boolean hasAceHigh(String hand) {
+	private boolean contieneAs(String hand) {
 		return hand.contains("A");
 	}
 
-	private boolean isStraightFlushDraw(List<String> cards) {
+	private boolean straightFlushDraw(List<String> cards) {
 		Map<Character, List<Integer>> suitedRanks = getSuitedRanks(cards);
 		for (List<Integer> ranks : suitedRanks.values()) {
 			if (ranks.size() >= 4) {
@@ -235,7 +231,7 @@ public class RangeAnalyzer {
 		return false;
 	}
 
-	private boolean isStraightFlushGutshot(List<String> cards) {
+	private boolean straightFlushGutshot(List<String> cards) {
 		Map<Character, List<Integer>> suitedRanks = getSuitedRanks(cards);
 		for (List<Integer> ranks : suitedRanks.values()) {
 			if (ranks.size() >= 4) {
@@ -250,12 +246,12 @@ public class RangeAnalyzer {
 		return false;
 	}
 
-	private boolean isFlushDraw(List<String> cards) {
+	private boolean flushDraw(List<String> cards) {
 		Map<Character, Integer> suitCount = getSuitCount(cards);
 		return suitCount.containsValue(4);
 	}
 
-	private boolean isStraightOpenEnded(List<String> cards) {
+	private boolean straightOpenEnded(List<String> cards) {
 		List<Integer> ranks = getRanks(cards);
 		Collections.sort(ranks);
 		for (int i = 0; i < ranks.size() - 3; i++) {
@@ -268,7 +264,7 @@ public class RangeAnalyzer {
 		return false;
 	}
 
-	private boolean isStraightGutshot(List<String> cards) {
+	private boolean straightGutshot(List<String> cards) {
 		List<Integer> ranks = getRanks(cards);
 		Collections.sort(ranks);
 		for (int i = 0; i < ranks.size() - 3; i++) {
@@ -285,7 +281,6 @@ public class RangeAnalyzer {
 		return false;
 	}
 
-	// Métodos de soporte para obtener valores y contar combinaciones
 	private Map<Character, List<Integer>> getSuitedRanks(List<String> cards) {
 		Map<Character, List<Integer>> suitedRanks = new HashMap<>();
 		for (String card : cards) {
@@ -334,13 +329,13 @@ public class RangeAnalyzer {
 		return "23456789TJQKA".indexOf(rank);
 	}
 
-	private char getSecondHighestRank(List<Character> ranks) {
+	private char getSengundoMasAlto(List<Character> ranks) {
 		List<Character> sortedRanks = new ArrayList<>(ranks);
 		sortedRanks.sort((a, b) -> getRankValue(b) - getRankValue(a));
 		return sortedRanks.get(1);
 	}
 
-	public Map<String, Double> getHandProbabilities() {
+	public Map<String, Double> getProbabilidadesMano() {
 		Map<String, Double> probabilities = new LinkedHashMap<>();
 		for (Map.Entry<String, Integer> entry : handCombos.entrySet()) {
 			if (entry.getValue() > 0) {
@@ -351,7 +346,7 @@ public class RangeAnalyzer {
 		return probabilities;
 	}
 
-	public int getTotalCombos() {
+	public int getCombosTotales() {
 		return totalCombos;
 	}
 

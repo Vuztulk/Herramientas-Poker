@@ -15,20 +15,20 @@ public class Vista extends JFrame {
     
     public Vista(Controlador controlador) {
     	this.controlador = controlador;
-        setTitle("Hold'em");
+        setTitle("Analizador de Rangos de Poker");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout(10, 10));
 
-        JPanel playerPanel = createPlayerPanel();
-        playerPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        add(playerPanel, BorderLayout.WEST);
+        JPanel panelJugador = crearPanelJugador();
+        panelJugador.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        add(panelJugador, BorderLayout.WEST);
 
-        JPanel controlPanel = createControlPanel();
-        controlPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        add(controlPanel, BorderLayout.EAST);
+        JPanel panelControl = crearPanelControl();
+        panelControl.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        add(panelControl, BorderLayout.EAST);
 
         outputArea = new JTextArea(10, 50);
-        outputArea.setBorder(BorderFactory.createTitledBorder("Output"));
+        outputArea.setBorder(BorderFactory.createTitledBorder("Salida"));
         JScrollPane scrollPane = new JScrollPane(outputArea);
         scrollPane.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         add(scrollPane, BorderLayout.SOUTH);
@@ -38,7 +38,7 @@ public class Vista extends JFrame {
         setVisible(true);
     }
 
-    private JPanel createPlayerPanel() {
+    private JPanel crearPanelJugador() {
         JPanel panel = new JPanel(new GridLayout(10, 3, 0, 5));
 
         playerInputs = new JTextField[10];
@@ -64,7 +64,7 @@ public class Vista extends JFrame {
         return panel;
     }
 
-    private JPanel createControlPanel() {
+    private JPanel crearPanelControl() {
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
@@ -116,7 +116,7 @@ public class Vista extends JFrame {
 
         gbc.gridy = 5;
         JButton clearAllButton = new JButton("Limpiar Todos");
-        clearAllButton.addActionListener(e -> clearAllInputs());
+        clearAllButton.addActionListener(e -> limpiarInputs());
         panel.add(clearAllButton, gbc);
 
         gbc.gridy = 6;
@@ -134,7 +134,7 @@ public class Vista extends JFrame {
         return panel;
     }
 
-    private void clearAllInputs() {
+    private void limpiarInputs() {
         for (int i = 0; i < playerInputs.length; i++) {
             playerInputs[i].setText("");
             equityFields[i].setText("");
