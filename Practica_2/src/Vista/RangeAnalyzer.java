@@ -13,7 +13,7 @@ public class RangeAnalyzer {
 	public RangeAnalyzer(Set<String> range, List<String> board) {
 		this.range = range;
 		this.board = board;
-		this.handCombos = new LinkedHashMap<>(); // Mantener el orden
+		this.handCombos = new LinkedHashMap<>();
 		this.totalCombos = 0;
 		inicializarTipoManos();
 		analizarRango();
@@ -51,8 +51,7 @@ public class RangeAnalyzer {
 
 	private Set<String> generarCombosMano(String hand) {
 		Set<String> combos = new HashSet<>();
-		if (hand.length() == 3 && hand.charAt(2) == 's') {
-			// Mano suited
+		if (hand.length() == 3 && hand.charAt(2) == 's') {// Mano suited
 			char rank1 = hand.charAt(0);
 			char rank2 = hand.charAt(1);
 			for (char suit : SUITS) {
@@ -60,8 +59,7 @@ public class RangeAnalyzer {
 				String card2 = "" + rank2 + suit;
 				combos.add(card1 + card2);
 			}
-		} else if (hand.length() == 3 && hand.charAt(2) == 'o') {
-			// Mano offsuited
+		} else if (hand.length() == 3 && hand.charAt(2) == 'o') {// Mano offsuited
 			char rank1 = hand.charAt(0);
 			char rank2 = hand.charAt(1);
 			for (char suit1 : SUITS) {
@@ -73,8 +71,7 @@ public class RangeAnalyzer {
 					}
 				}
 			}
-		} else if (hand.length() == 2) {
-			// Parejas
+		} else if (hand.length() == 2) {// Parejas
 			char rank = hand.charAt(0);
 			for (int i = 0; i < SUITS.length; i++) {
 				for (int j = i + 1; j < SUITS.length; j++) {
@@ -87,8 +84,8 @@ public class RangeAnalyzer {
 		return combos;
 	}
 
-	// Verifica que el combo no comparta cartas con el board
-	private boolean verificarMano(String hand) {
+
+	private boolean verificarMano(String hand) {// Verifica que el combo no comparta cartas con el board
 		List<String> allCards = new ArrayList<>(board);
 		String card1 = hand.substring(0, 2);
 		String card2 = hand.substring(2, 4);
@@ -195,9 +192,9 @@ public class RangeAnalyzer {
 		if (handRank1 == handRank2) {
 			if (getRankValue(handRank1) > getRankValue(Collections.max(boardRanks)))
 				return "OVER_PAIR";
-			if (getRankValue(handRank1) < getRankValue(Collections.max(boardRanks))
-					&& getRankValue(handRank1) > getRankValue(Collections.min(boardRanks)))
+			if (getRankValue(handRank1) < getRankValue(Collections.max(boardRanks)) && getRankValue(handRank1) > getRankValue(Collections.min(boardRanks)))
 				return "PP_BELOW_TP";
+			
 			return "WEAK_PAIR";
 		}
 
