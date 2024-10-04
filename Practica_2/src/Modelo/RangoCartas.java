@@ -8,6 +8,11 @@ public class RangoCartas {
     private double porcentaje;
 
     public RangoCartas(String rangoInput) {
+        if (rangoInput == null || rangoInput.trim().isEmpty()) {
+        	rangos = new HashSet<>();
+            this.porcentaje = 0;
+            return;
+        }
         rangos = new HashSet<>();
         procesarRango(rangoInput);
     }
@@ -17,6 +22,8 @@ public class RangoCartas {
 
         for (String parte : partes) {
             parte = parte.trim();
+            if (parte.isEmpty()) continue;
+
             if (parte.contains("+")) {
                 agregarRangoMayor(parte);
             } else if (parte.contains("-")) {
@@ -26,7 +33,7 @@ public class RangoCartas {
             }
         }
 
-        this.porcentaje = (double) rangos.size() / 169 * 100;
+        this.porcentaje = (double) (rangos != null ? rangos.size() : 0) / 169 * 100;
     }
 
     private void agregarRangoMayor(String parte) {
@@ -40,10 +47,14 @@ public class RangoCartas {
                 nuevaCarta = "T";
             }
             if (suited) {
-                rangos.add(nuevaCarta + 's');
+                if (rangos != null) {
+                    rangos.add(nuevaCarta + 's');
+                }
             } else {
-                rangos.add(nuevaCarta + 's');
-                rangos.add(nuevaCarta + 'o');
+                if (rangos != null) {
+                    rangos.add(nuevaCarta + 's');
+                    rangos.add(nuevaCarta + 'o');
+                }
             }
         }
     }
@@ -64,10 +75,14 @@ public class RangoCartas {
                 nuevaCarta = "T";
             }
             if (suited) {
-                rangos.add(nuevaCarta + 's');
+                if (rangos != null) {
+                    rangos.add(nuevaCarta + 's');
+                }
             } else {
-                rangos.add(nuevaCarta + 's');
-                rangos.add(nuevaCarta + 'o');
+                if (rangos != null) {
+                    rangos.add(nuevaCarta + 's');
+                    rangos.add(nuevaCarta + 'o');
+                }
             }
         }
     }
@@ -80,8 +95,7 @@ public class RangoCartas {
         return porcentaje;
     }
 
-	public void actualizarPorcentaje(double nuevoPorcentaje) {
-		 this.porcentaje = nuevoPorcentaje;
-		
-	}
+    public void actualizarPorcentaje(double nuevoPorcentaje) {
+        this.porcentaje = nuevoPorcentaje;
+    }
 }

@@ -23,7 +23,7 @@ public class Modelo {
     private void inicializarRangosJugadores() {
         rangosPorJugador = new HashMap<>();
         for (int i = 1; i <= 10; i++) {
-            rangosPorJugador.put(i, new RangoCartas(""));
+            rangosPorJugador.put(i, new RangoCartas(null));
         }
     }
 

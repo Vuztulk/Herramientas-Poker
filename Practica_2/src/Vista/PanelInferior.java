@@ -93,8 +93,8 @@ public class PanelInferior extends JPanel {
 		});
 
 		panelInferior.add(botonAceptar);
-		panelInferior.add(botonAplicar);
 		panelInferior.add(botonCancelar);
+		panelInferior.add(botonAplicar);
 		add(panelInferior);
 	}
 
