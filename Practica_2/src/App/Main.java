@@ -3,7 +3,7 @@ package App;
 import javax.swing.SwingUtilities;
 import Controlador.Controlador;
 import Modelo.Modelo;
-import Vista.Vista;
+import Vista.MenuJugadores;
 
 public class Main {
     public static void main(String[] args) {
@@ -11,7 +11,7 @@ public class Main {
         
         SwingUtilities.invokeLater(() -> {
             Controlador controlador = new Controlador(modelo, null);
-            Vista vista = new Vista(controlador);
+            MenuJugadores vista = new MenuJugadores(controlador);
             controlador.setVista(vista);
         });
     }

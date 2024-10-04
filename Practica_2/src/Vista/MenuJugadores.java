@@ -5,7 +5,7 @@ import javax.swing.*;
 import Controlador.Controlador;
 import java.awt.*;
 
-public class Vista extends JFrame {
+public class MenuJugadores extends JFrame {
 
     private static final long serialVersionUID = 1L;
     private JTextField[] playerInputs;
@@ -13,7 +13,7 @@ public class Vista extends JFrame {
     private JTextArea outputArea;
     private Controlador  controlador;
     
-    public Vista(Controlador controlador) {
+    public MenuJugadores(Controlador controlador) {
     	this.controlador = controlador;
         setTitle("Analizador de Rangos de Poker");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -139,8 +139,8 @@ public class Vista extends JFrame {
             playerInputs[i].setText("");
             equityFields[i].setText("");
             
-            controlador.guardarRangoJugador(i + 1, "");
-            controlador.actualizarPorcentajeJugador(i + 1, 0.0);
+            controlador.setRangoJugador(i + 1, "");
+            controlador.setPorcentajeJugador(i + 1, 0.0);
         }
 
         outputArea.setText("");

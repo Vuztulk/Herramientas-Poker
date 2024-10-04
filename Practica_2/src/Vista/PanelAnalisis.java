@@ -2,6 +2,9 @@ package Vista;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+
+import Controlador.Controlador;
+import Modelo.AnalizadorRangos;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
@@ -14,11 +17,13 @@ public class PanelAnalisis extends JPanel {
     private Map<String, JButton> cardButtons;
     private List<String> selectedCards;
     private List<String> seleccionesGuardadas;
-    private RangeAnalyzer rangeAnalyzer;
-
+    private AnalizadorRangos rangeAnalyzer;
+    private Controlador controlador;
     
-    public PanelAnalisis(List<String> seleccionesGuardadas) {
+    public PanelAnalisis(List<String> seleccionesGuardadas, Controlador controlador) {
         this.seleccionesGuardadas = seleccionesGuardadas;
+        this.controlador = controlador;
+        
         setLayout(new BorderLayout());
         
         cardSelectionPanel = crearPanelCartas();
@@ -73,7 +78,7 @@ public class PanelAnalisis extends JPanel {
         }
 
         Set<String> range = new HashSet<>(seleccionesGuardadas);
-        rangeAnalyzer = new RangeAnalyzer(range, selectedCards);
+        rangeAnalyzer = controlador.inicializarAnalizadorRangos(range, seleccionesGuardadas);
         
         Map<String, Double> probabilities = rangeAnalyzer.getProbabilidadesMano();
         actualizarPanelResultados(probabilities);

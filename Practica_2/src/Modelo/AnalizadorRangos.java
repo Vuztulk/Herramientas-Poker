@@ -1,8 +1,8 @@
-package Vista;
+package Modelo;
 
 import java.util.*;
 
-public class RangeAnalyzer {
+public class AnalizadorRangos {
 	private Set<String> range;
 	private List<String> board;
 	private Map<String, Integer> handCombos;
@@ -10,7 +10,7 @@ public class RangeAnalyzer {
 
 	private static final char[] SUITS = { 'h', 'd', 'c', 's' };
 
-	public RangeAnalyzer(Set<String> range, List<String> board) {
+	public AnalizadorRangos(Set<String> range, List<String> board) {
 		this.range = range;
 		this.board = board;
 		this.handCombos = new LinkedHashMap<>();
