@@ -33,7 +33,6 @@ public class RangoCartas {
         String carta = parte.substring(0, 2);
         boolean suited = parte.endsWith("s");
         char valorCarta = carta.charAt(0);
-        char tipoCarta = carta.charAt(1);
 
         for (char i = valorCarta; i <= 'A'; i++) {
             String nuevaCarta = String.valueOf(i);

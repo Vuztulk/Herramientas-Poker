@@ -14,28 +14,24 @@ public class PanelInferior extends JPanel {
 	private static final long serialVersionUID = 1L;
 	private JSlider slider;
 	private JTextField campoPorcentaje;
-	private JButton botonAceptar;
-	private JButton botonAplicar;
-	private JButton botonCancelar;
 	private Controlador controlador;
 	private int idJugador;
 	private List<String> seleccionesGuardadas;
-	private JTextArea campoSeleccionado;
 	private JugadorFrame jugadorFrame;
 	private List<JButton> botonesRango;
 	String[] cartasRanking;
 
 	public PanelInferior(Controlador controlador, int idJugador, JTextField campoTextoJugador,
 			JTextArea campoSeleccionado, JugadorFrame jugadorFrame, List<JButton> botonesRango,
-			String[] cartasRanking, JSlider slider) {
+			String[] cartasRanking, JSlider slider, List<String> seleccionesGuardadas) {
+		
 		this.controlador = controlador;
 		this.idJugador = idJugador;
-		this.seleccionesGuardadas = new ArrayList<>();
-		this.campoSeleccionado = campoSeleccionado;
 		this.jugadorFrame = jugadorFrame;
 		this.botonesRango = botonesRango;
 		this.cartasRanking = cartasRanking;
 		this.slider = slider;
+		this.seleccionesGuardadas = seleccionesGuardadas;
 
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -45,6 +41,7 @@ public class PanelInferior extends JPanel {
 	}
 
 	private void crearPanelSlider(JTextField campoTextoJugador) {
+		
 		slider.setMajorTickSpacing(169);
 		slider.setMinorTickSpacing(84);
 		slider.setPaintLabels(false);
@@ -57,7 +54,7 @@ public class PanelInferior extends JPanel {
 			double porcentaje = slider.getValue() / 16.9;
 			campoPorcentaje.setText(String.format("%.1f%%", porcentaje));
 			controlador.setPorcentajeJugador(idJugador, porcentaje);
-			aplicarRanking(porcentaje);
+			aplicarSeleccion(porcentaje);
 		});
 
 		campoPorcentaje.addFocusListener(new FocusAdapter() {
@@ -78,9 +75,9 @@ public class PanelInferior extends JPanel {
 		JPanel panelInferior = new JPanel();
 		panelInferior.setLayout(new FlowLayout(FlowLayout.CENTER));
 
-		botonAceptar = new JButton("Aceptar");
-		botonAplicar = new JButton("Aplicar");
-		botonCancelar = new JButton("Cancelar");
+		JButton botonAceptar = new JButton("Aceptar");
+		JButton botonAplicar = new JButton("Aplicar");
+		JButton botonCancelar = new JButton("Cancelar");
 
 		botonAceptar.addActionListener(e -> {
 			String rangoSeleccionado = getSeleccionesGuardadas();
@@ -103,7 +100,7 @@ public class PanelInferior extends JPanel {
 		add(panelInferior);
 	}
 
-	private void aplicarRanking(double porcentaje) {
+	private void aplicarSeleccion(double porcentaje) {
 		int n_valores = (int) Math.round((porcentaje / 100) * 169);
 
 		seleccionesGuardadas.clear();
@@ -111,8 +108,7 @@ public class PanelInferior extends JPanel {
 			b.setSelected(false);
 
 			String textoBoton = b.getText();
-			Color colorOriginal = textoBoton.length() == 2 ? new Color(140, 230, 140)
-					: textoBoton.endsWith("s") ? new Color(255, 180, 190) : new Color(170, 210, 230);
+			Color colorOriginal = textoBoton.length() == 2 ? new Color(140, 230, 140): textoBoton.endsWith("s") ? new Color(255, 180, 190) : new Color(170, 210, 230);
 			b.setBackground(colorOriginal);
 		}
 
@@ -137,7 +133,7 @@ public class PanelInferior extends JPanel {
 			if (porcentaje >= 0 && porcentaje <= 100) {
 				slider.setValue((int) (porcentaje * 16.9));
 				controlador.setPorcentajeJugador(idJugador, porcentaje);
-				aplicarRanking(porcentaje);
+				aplicarSeleccion(porcentaje);
 			}
 		} catch (NumberFormatException e) {
 			JOptionPane.showMessageDialog(this, "Introduzca un porcentaje valido entre 0 y 100", "Error",JOptionPane.ERROR_MESSAGE);
@@ -148,7 +144,7 @@ public class PanelInferior extends JPanel {
 	public String getSeleccionesGuardadas() {
 		return String.join(", ", seleccionesGuardadas);
 	}
-
+	
 	// Actualizan la referencia por que se crean en el JugadorFrame
 	public void setCampoPorcentaje(JTextField campoPorcentaje) {
 		this.campoPorcentaje = campoPorcentaje;

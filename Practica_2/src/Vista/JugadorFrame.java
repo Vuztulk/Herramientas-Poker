@@ -24,10 +24,12 @@ public class JugadorFrame extends JFrame {
 	private Controlador controlador;
 	private int idJugador;
 	String cartasRanking[];
+	 JTextField campoTextoJugador;
 
 	public JugadorFrame(Controlador controlador, int idJugador, String rangoInput, JTextField campoTextoJugador) {
 		this.controlador = controlador;
 		this.idJugador = idJugador;
+		this.campoTextoJugador = campoTextoJugador;
 		this.cartasRanking = new Sklansky_Chubukov().getCartasOrdenadas();
 
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -69,7 +71,7 @@ public class JugadorFrame extends JFrame {
         campoPorcentaje.setEditable(true);
         campoPorcentaje.setPreferredSize(new Dimension(55, 20));
 
-        PanelInferior panelInferior = new PanelInferior(controlador, idJugador, campoTextoJugador, campoSeleccionado, this, botonesRango, cartasRanking, slider);
+        PanelInferior panelInferior = new PanelInferior(controlador, idJugador, campoTextoJugador, campoSeleccionado, this, botonesRango, cartasRanking, slider, seleccionesGuardadas);
         return panelInferior;
     }
 	
@@ -154,7 +156,7 @@ public class JugadorFrame extends JFrame {
 		}
 
 		campoSeleccionado.setText(seleccionado.toString());
-
+		
 		double porcentaje = (totalCartasSeleccionadas * 100.0) / botonesRango.size();
 		campoPorcentaje.setText(String.format("%.1f%%", porcentaje));
 		controlador.setPorcentajeJugador(idJugador, porcentaje);
