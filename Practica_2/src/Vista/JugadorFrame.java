@@ -7,10 +7,7 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import Controlador.Controlador;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 public class JugadorFrame extends JFrame {
@@ -25,12 +22,7 @@ public class JugadorFrame extends JFrame {
     private Controlador controlador;
     private int idJugador;
     String cartasRanking[];
-    private JPanel cardSelectionPanel;
-    private JPanel resultPanel;
-    private Map<String, JButton> cardButtons;
-    private List<String> selectedCards;
-    private RangeAnalyzer rangeAnalyzer;
-    
+
     public JugadorFrame(Controlador controlador, int idJugador, String rangoInput, JTextField campoTextoJugador) {
         this.controlador = controlador;
         this.idJugador = idJugador;
