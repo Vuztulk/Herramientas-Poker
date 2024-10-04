@@ -19,8 +19,7 @@ public class JugadorFrame extends JFrame {
 	private List<JButton> botonesRango = new ArrayList<>();
 	private List<String> seleccionesGuardadas = new ArrayList<>();
 	private JTextArea campoSeleccionado = new JTextArea();
-	private JSlider slider = new JSlider(0, 1690, 0);;
-	private JTextField campoPorcentaje;
+	PanelInferior panelInferior;
 	private Controlador controlador;
 	private int idJugador;
 	String cartasRanking[];
@@ -57,21 +56,18 @@ public class JugadorFrame extends JFrame {
 		JPanel panelDerecho = new PanelDerecho(botonesRango, this, campoSeleccionado);
 		panelPreflop.add(panelDerecho, BorderLayout.EAST);
 
-		PanelInferior panelInferior = crearPanelInferior(campoTextoJugador);
+		panelInferior = crearPanelInferior(campoTextoJugador);
 		panelPreflop.add(panelInferior, BorderLayout.SOUTH);
 
 		procesarRango(rangoInput);
+		
 		panelContenido.add(panelPestanas, BorderLayout.CENTER);
 		setVisible(true);
 	}
 	
 	private PanelInferior crearPanelInferior(JTextField campoTextoJugador) {
-        slider = new JSlider(0, 1690, 0);
-        campoPorcentaje = new JTextField("0.0%");
-        campoPorcentaje.setEditable(true);
-        campoPorcentaje.setPreferredSize(new Dimension(55, 20));
-
-        PanelInferior panelInferior = new PanelInferior(controlador, idJugador, campoTextoJugador, campoSeleccionado, this, botonesRango, cartasRanking, slider, seleccionesGuardadas);
+       
+        PanelInferior panelInferior = new PanelInferior(controlador, idJugador, campoTextoJugador, campoSeleccionado, this, botonesRango, cartasRanking, seleccionesGuardadas);
         return panelInferior;
     }
 	
@@ -123,18 +119,17 @@ public class JugadorFrame extends JFrame {
 
 	private void procesarRango(String rangoInput) {
 
-		controlador.setRangoJugador(idJugador, rangoInput);
-		Set<String> cartas = controlador.getRangoJugador(idJugador);
+		//controlador.setRangoJugador(idJugador, rangoInput);
+		Set<String> rangos = controlador.getRangoJugador(idJugador);
 
-		for (String carta : cartas) {
+		for (String rango : rangos) {
 			for (JButton boton : botonesRango) {
-				if (boton.getText().equals(carta)) {
+				if (boton.getText().equals(rango)) {
 					boton.setSelected(true);
 					boton.setBackground(new Color(180, 120, 160));
 				}
 			}
 		}
-
 		actualizarSeleccion();
 	}
 
@@ -158,7 +153,7 @@ public class JugadorFrame extends JFrame {
 		campoSeleccionado.setText(seleccionado.toString());
 		
 		double porcentaje = (totalCartasSeleccionadas * 100.0) / botonesRango.size();
-		campoPorcentaje.setText(String.format("%.1f%%", porcentaje));
+		panelInferior.modificarCampoPorcentaje(porcentaje);
 		controlador.setPorcentajeJugador(idJugador, porcentaje);
 	}
 

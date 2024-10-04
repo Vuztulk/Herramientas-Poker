@@ -96,8 +96,5 @@ public class PanelDerecho extends JPanel {
         }
         return false;
     }
-
-    public void actualizarCampoSeleccionado(String texto) {
-        campoSeleccionado.setText(texto);
-    }
+    
 }

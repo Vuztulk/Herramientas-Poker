@@ -23,14 +23,13 @@ public class PanelInferior extends JPanel {
 
 	public PanelInferior(Controlador controlador, int idJugador, JTextField campoTextoJugador,
 			JTextArea campoSeleccionado, JugadorFrame jugadorFrame, List<JButton> botonesRango,
-			String[] cartasRanking, JSlider slider, List<String> seleccionesGuardadas) {
+			String[] cartasRanking, List<String> seleccionesGuardadas) {
 		
 		this.controlador = controlador;
 		this.idJugador = idJugador;
 		this.jugadorFrame = jugadorFrame;
 		this.botonesRango = botonesRango;
 		this.cartasRanking = cartasRanking;
-		this.slider = slider;
 		this.seleccionesGuardadas = seleccionesGuardadas;
 
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -41,14 +40,13 @@ public class PanelInferior extends JPanel {
 	}
 
 	private void crearPanelSlider(JTextField campoTextoJugador) {
-		
+		slider = new JSlider(0, 1690, 0);
+        campoPorcentaje = new JTextField("0.0%");
+        campoPorcentaje.setEditable(true);
+        campoPorcentaje.setPreferredSize(new Dimension(55, 20));
 		slider.setMajorTickSpacing(169);
 		slider.setMinorTickSpacing(84);
 		slider.setPaintLabels(false);
-
-		campoPorcentaje = new JTextField("0.0%");
-		campoPorcentaje.setEditable(true);
-		campoPorcentaje.setPreferredSize(new Dimension(55, 20));
 
 		slider.addChangeListener(e -> {
 			double porcentaje = slider.getValue() / 16.9;
@@ -80,13 +78,13 @@ public class PanelInferior extends JPanel {
 		JButton botonCancelar = new JButton("Cancelar");
 
 		botonAceptar.addActionListener(e -> {
-			String rangoSeleccionado = getSeleccionesGuardadas();
+			String rangoSeleccionado = jugadorFrame.getSeleccionesGuardadas();
 			campoTextoJugador.setText(rangoSeleccionado);
 			controlador.setRangoJugador(idJugador, rangoSeleccionado);
 			jugadorFrame.dispose();
 		});
 		botonAplicar.addActionListener(e -> {
-			String rangoSeleccionado = getSeleccionesGuardadas();
+			String rangoSeleccionado = jugadorFrame.getSeleccionesGuardadas();
 			campoTextoJugador.setText(rangoSeleccionado);
 			controlador.setRangoJugador(idJugador, rangoSeleccionado);
 		});
@@ -140,14 +138,9 @@ public class PanelInferior extends JPanel {
 			campoPorcentaje.setText(String.format("%.1f%%", slider.getValue() / 16.9));
 		}
 	}
-
-	public String getSeleccionesGuardadas() {
-		return String.join(", ", seleccionesGuardadas);
-	}
 	
-	// Actualizan la referencia por que se crean en el JugadorFrame
-	public void setCampoPorcentaje(JTextField campoPorcentaje) {
-		this.campoPorcentaje = campoPorcentaje;
+	public void modificarCampoPorcentaje(double porcentaje){
+		campoPorcentaje.setText(String.format("%.1f%%", porcentaje));
 	}
 
 }
