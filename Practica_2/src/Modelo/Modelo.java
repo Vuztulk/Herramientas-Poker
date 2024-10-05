@@ -1,6 +1,7 @@
 package Modelo;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -50,7 +51,20 @@ public class Modelo {
         return new RangoCartas(rangoInput);
     }
 
-    public void setRangoJugador(int idJugador, String rangoSeleccionado) {
+    public void setRangoJugador(int idJugador, String rangoSeleccionado) { 	
         rangosPorJugador.put(idJugador, crearRangoCartas(rangoSeleccionado));
     }
+    
+    public String transformarRango(int idJugador,String rangoSeleccionado) {
+    	Set<String> rangos = new HashSet<>();
+        String[] partes = rangoSeleccionado.split(",");
+        for (String parte : partes) {
+            rangos.add(parte.trim());
+        }
+        
+    	String res = rangosPorJugador.get(idJugador).obtenerAbreviacionRango(rangos);
+    	
+		return res;
+    }
+    
 }

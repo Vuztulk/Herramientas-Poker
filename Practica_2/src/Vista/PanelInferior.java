@@ -79,14 +79,17 @@ public class PanelInferior extends JPanel {
 
 		botonAceptar.addActionListener(e -> {
 			String rangoSeleccionado = jugadorFrame.getSeleccionesGuardadas();
-			campoTextoJugador.setText(rangoSeleccionado);
+			String rangoProcesado = controlador.transformarRango(idJugador, rangoSeleccionado);
+			campoTextoJugador.setText(rangoProcesado);
 			controlador.setRangoJugador(idJugador, rangoSeleccionado);
 			jugadorFrame.dispose();
 		});
 		botonAplicar.addActionListener(e -> {
 			String rangoSeleccionado = jugadorFrame.getSeleccionesGuardadas();
-			campoTextoJugador.setText(rangoSeleccionado);
+			String rangoProcesado = controlador.transformarRango(idJugador, rangoSeleccionado);
+			campoTextoJugador.setText(rangoProcesado);
 			controlador.setRangoJugador(idJugador, rangoSeleccionado);
+			jugadorFrame.dispose();
 		});
 		botonCancelar.addActionListener(e -> {
 			jugadorFrame.dispose();
