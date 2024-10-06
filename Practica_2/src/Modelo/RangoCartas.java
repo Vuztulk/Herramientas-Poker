@@ -97,6 +97,7 @@ public class RangoCartas {
 			indiceSuperiorBajo = ordenCartas.indexOf(cartaSuperiorBaja);
 		}
 
+		
 		for (int i = indiceInferiorAlto; i <= indiceSuperiorAlto; i++) {
 			char cartaAlta = ordenCartas.charAt(i);
 
@@ -113,6 +114,9 @@ public class RangoCartas {
 					} else {
 						rangos.add(cartaAlta + String.valueOf(cartaBaja));
 					}
+				}
+				else {//Caso de que el intervalo sean de pares
+					rangos.add(cartaAlta + String.valueOf(cartaBaja));
 				}
 			}
 		}
@@ -282,13 +286,13 @@ public class RangoCartas {
     }
 
     private void agregarRango(StringBuilder resultado, String rangoInicio, String rangoFin, boolean incluyeAA) {
-        if (incluyeAA) {
+        if (incluyeAA) {//Agrega selecciones de pares
             resultado.append(rangoInicio).append("+,");
-        } else if (rangoInicio.equals(rangoFin)) {
+        } else if (rangoInicio.equals(rangoFin)) {//Agrega selecciones unicas
             resultado.append(rangoInicio).append(",");
-        } else if (esRangoConsecutivo(rangoInicio, rangoFin)) {
+        } else if (esRangoConsecutivo(rangoInicio, rangoFin)) {//Agrega intervalos
             resultado.append(rangoFin).append("-").append(rangoInicio).append(",");
-        } else {
+        } else {//Agrega rangos enteros
             resultado.append(rangoFin).append("+,");
         }
     }
