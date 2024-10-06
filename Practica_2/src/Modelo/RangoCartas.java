@@ -286,11 +286,25 @@ public class RangoCartas {
             // Si el rango incluye AA, agregamos como RangoInicio+
             resultado.append(rangoFin).append("+,");
         } else if (rangoInicio.equals(rangoFin)) {
-            resultado.append(rangoInicio).append("+,");  // Un solo par alto, formato JJ+
+            // Caso 1: Si el inicio es igual al fin, agregamos sin ningún símbolo adicional
+            resultado.append(rangoInicio).append(",");
+        } else if (esRangoConsecutivo(rangoInicio, rangoFin)) {
+            // Caso 2: Si es un rango consecutivo (por ejemplo, "KK-JJ"), agregamos con guion
+            resultado.append(rangoFin).append("-").append(rangoInicio).append(",");
         } else {
-            resultado.append(rangoFin).append("-").append(rangoInicio).append(",");  // Rango de pares, formato KK-JJ
+            // Caso 3: Si es un rango que puede extenderse hacia arriba (por ejemplo, "77+"), agregamos "+"
+            resultado.append(rangoFin).append("+,");
         }
     }
+
+    private boolean esRangoConsecutivo(String rangoInicio, String rangoFin) {
+        int indiceInicio = ordenCartas.indexOf(rangoInicio.charAt(0));
+        int indiceFin = ordenCartas.indexOf(rangoFin.charAt(0));
+
+        // Si el rangoInicio y rangoFin están en posiciones consecutivas
+        return indiceInicio - indiceFin == 1;
+    }
+
 
 
 	public Set<String> getRangos() {
