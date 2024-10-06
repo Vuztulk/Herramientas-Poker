@@ -154,7 +154,7 @@ public class RangoCartas {
 	                incluyeAA = true;
 	            }
 	        } else if (rangoInicio != null) {
-	            agregarRango(resultado, rangoInicio, rangoFin, incluyeAA);
+	            agregarRango(resultado, rangoFin, rangoInicio, incluyeAA);
 	            rangoInicio = null;
 	            rangoFin = null;
 	            incluyeAA = false;
@@ -162,7 +162,7 @@ public class RangoCartas {
 	    }
 
 	    if (rangoInicio != null) {
-	        agregarRango(resultado, rangoInicio, rangoFin, incluyeAA);
+	    	agregarRango(resultado, rangoFin, rangoInicio, incluyeAA);
 	    }
 	}
 
@@ -283,7 +283,7 @@ public class RangoCartas {
 
     private void agregarRango(StringBuilder resultado, String rangoInicio, String rangoFin, boolean incluyeAA) {
         if (incluyeAA) {
-            resultado.append(rangoFin).append("+,");
+            resultado.append(rangoInicio).append("+,");
         } else if (rangoInicio.equals(rangoFin)) {
             resultado.append(rangoInicio).append(",");
         } else if (esRangoConsecutivo(rangoInicio, rangoFin)) {
