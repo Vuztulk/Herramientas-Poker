@@ -30,90 +30,70 @@ public class AnalizadorRangos {
 	}
 
 	private void analizarRango() {
-		Set<String> combos = generarCombosRango(range);
-		for (String hand : combos) {
-			if (verificarMano(hand)) {
-				String bestHand = evaluarMejorMano(hand);
-				handCombos.put(bestHand, handCombos.get(bestHand) + 1);
+		for (String hand : range) {
+			Set<String> combos = generarCombosValidosMano(hand);
+			for (String combo : combos) {
+				String handType = evaluarMejorMano(combo);
+				handCombos.put(handType, handCombos.get(handType) + 1);
 				totalCombos++;
 			}
 		}
 	}
 
-	// Generar todas las combinaciones posibles a partir del rango
-	private Set<String> generarCombosRango(Set<String> range) {
+	private Set<String> generarCombosValidosMano(String hand) {
 		Set<String> combos = new HashSet<>();
-		for (String hand : range) {
-			combos.addAll(generarCombosMano(hand));
-		}
-		return combos;
-	}
+		Set<String> boardCards = new HashSet<>(board);
 
-	private Set<String> generarCombosMano(String hand) {
-		Set<String> combos = new HashSet<>();
-		if (hand.length() == 3 && hand.charAt(2) == 's') {// Mano suited
-			char rank1 = hand.charAt(0);
-			char rank2 = hand.charAt(1);
-			for (char suit : SUITS) {
-				String card1 = "" + rank1 + suit;
-				String card2 = "" + rank2 + suit;
-				combos.add(card1 + card2);
-			}
-		} else if (hand.length() == 3 && hand.charAt(2) == 'o') {// Mano offsuited
-			char rank1 = hand.charAt(0);
-			char rank2 = hand.charAt(1);
-			for (char suit1 : SUITS) {
-				for (char suit2 : SUITS) {
-					if (suit1 != suit2) {
-						String card1 = "" + rank1 + suit1;
-						String card2 = "" + rank2 + suit2;
-						combos.add(card1 + card2);
-					}
-				}
-			}
-		} else if (hand.length() == 2) {// Parejas
+		if (hand.length() == 2) { // Pocket pair
 			char rank = hand.charAt(0);
 			for (int i = 0; i < SUITS.length; i++) {
 				for (int j = i + 1; j < SUITS.length; j++) {
 					String card1 = "" + rank + SUITS[i];
 					String card2 = "" + rank + SUITS[j];
-					combos.add(card1 + card2);
+					if (!boardCards.contains(card1) && !boardCards.contains(card2)) {
+						combos.add(card1 + card2);
+					}
+				}
+			}
+		} else if (hand.length() == 3) {
+			char rank1 = hand.charAt(0);
+			char rank2 = hand.charAt(1);
+			char type = hand.charAt(2);
+			if (type == 's') { // Suited
+				for (char suit : SUITS) {
+					String card1 = "" + rank1 + suit;
+					String card2 = "" + rank2 + suit;
+					if (!boardCards.contains(card1) && !boardCards.contains(card2)) {
+						combos.add(card1 + card2);
+					}
+				}
+			} else if (type == 'o') { // Offsuit
+				for (char suit1 : SUITS) {
+					for (char suit2 : SUITS) {
+						if (suit1 != suit2) {
+							String card1 = "" + rank1 + suit1;
+							String card2 = "" + rank2 + suit2;
+							if (!boardCards.contains(card1) && !boardCards.contains(card2)) {
+								combos.add(card1 + card2);
+							}
+						}
+					}
 				}
 			}
 		}
 		return combos;
 	}
 
-
-	private boolean verificarMano(String hand) {// Verifica que el combo no comparta cartas con el board
-		List<String> allCards = new ArrayList<>(board);
-		String card1 = hand.substring(0, 2);
-		String card2 = hand.substring(2, 4);
-
-		// Verificar que las cartas no estén en el board
-		if (board.contains(card1) || board.contains(card2)) {
-			return false;
-		}
-
-		allCards.add(card1);
-		allCards.add(card2);
-
-		Set<String> uniqueCards = new HashSet<>(allCards);
-		return uniqueCards.size() == allCards.size(); // No hay duplicados
-	}
-
 	private String evaluarMejorMano(String hand) {
 		List<String> cartas = new ArrayList<>(board);
-		String carta1 = hand.substring(0, 2);
-		String carta2 = hand.substring(2, 4);
-		cartas.add(carta1);
-		cartas.add(carta2);
+		cartas.add(hand.substring(0, 2));
+		cartas.add(hand.substring(2, 4));
 
 		if (escaleraColor(cartas))
 			return "STRAIGHT_FLUSH";
 		if (poker(cartas))
 			return "FOUR_OF_A_KIND";
-		if (house(cartas))
+		if (full(cartas))
 			return "FULL_HOUSE";
 		if (color(cartas))
 			return "FLUSH";
@@ -154,7 +134,7 @@ public class AnalizadorRangos {
 		return rankCount.containsValue(4);
 	}
 
-	private boolean house(List<String> cards) {
+	private boolean full(List<String> cards) {
 		Map<Character, Integer> rankCount = getRankCount(cards);
 		return rankCount.containsValue(3) && rankCount.containsValue(2);
 	}
@@ -185,33 +165,90 @@ public class AnalizadorRangos {
 	}
 
 	private String evaluarTipoPar(String hand, List<String> board) {
-		char handRank1 = hand.charAt(0);
-		char handRank2 = hand.charAt(2);
-		List<Character> boardRanks = getBoardRanks(board);
+		int handValue1 = getRankValue(hand.charAt(0));
+		int handValue2 = getRankValue(hand.charAt(2));
+		List<Integer> boardValues = getBoardValues(board); // Obtener los valores del board
 
-		if (handRank1 == handRank2) {
-			if (getRankValue(handRank1) > getRankValue(Collections.max(boardRanks)))
+		int highestBoardValue = maxRank(boardValues);
+		int secondHighestBoardValue = getSegundoMasAlto(boardValues);
+
+		// Determinamos si hay pareja en la mano
+		if (handValue1 == handValue2) {
+			if (handValue1 > highestBoardValue) {
 				return "OVER_PAIR";
-			if (getRankValue(handRank1) < getRankValue(Collections.max(boardRanks)) && getRankValue(handRank1) > getRankValue(Collections.min(boardRanks)))
-				return "PP_BELOW_TP";
-			
-			return "WEAK_PAIR";
-		}
-
-		if (boardRanks.contains(handRank1) || boardRanks.contains(handRank2)) {
-			char pairRank = boardRanks.contains(handRank1) ? handRank1 : handRank2;
-			if (pairRank == Collections.max(boardRanks))
+			} else if (handValue1 == highestBoardValue) {
 				return "TOP_PAIR";
-			if (pairRank == getSengundoMasAlto(boardRanks))
+			} else if (handValue1 >= secondHighestBoardValue) {
 				return "MIDDLE_PAIR";
-			return "WEAK_PAIR";
-		}
+			} else {
+				return "WEAK_PAIR";
+			}
+		} else {//No hay pareja en la mano y verificamos si hay pareja en el board
+			int handHighCount = 0;
+			int handLowCount = 0;
 
-		return "NO_MADE_HAND";
+			for (int boardValue : boardValues) {
+				if (boardValue == handValue1)
+					handHighCount++;
+				if (boardValue == handValue2)
+					handLowCount++;
+			}
+
+			if (handHighCount > 0) {//Carta mas alta de la mano
+				if (handValue1 > highestBoardValue) {
+					return "OVER_PAIR";
+				} else if (handValue1 == highestBoardValue) {
+					return "TOP_PAIR";
+				} else if (handValue1 == secondHighestBoardValue) {
+					return "MIDDLE_PAIR";
+				} else {
+					return "WEAK_PAIR";
+				}
+			} else if (handLowCount > 0) {//Segunda carta de la mano
+				if (handValue2 > highestBoardValue) {
+					return "OVER_PAIR";
+				} else if (handValue2 == highestBoardValue) {
+					return "TOP_PAIR";
+				} else if (handValue2 == secondHighestBoardValue) {
+					return "MIDDLE_PAIR";
+				} else if (handValue2 < highestBoardValue && handValue1 < highestBoardValue) {
+					return "PP_BELOW_TP";
+				} else {
+					return "WEAK_PAIR";
+				}
+			} else {
+				return "NO_MADE_HAND";
+			}
+		}
 	}
 
-	private boolean contieneAs(String hand) {
-		return hand.contains("A");
+	private int maxRank(List<Integer> boardValues) {
+		int maxValue = boardValues.get(0);
+		for (int value : boardValues) {
+			if (value > maxValue) {
+				maxValue = value;
+			}
+		}
+		return maxValue;
+	}
+
+	private int minRank(List<Integer> boardValues) {
+		int minValue = boardValues.get(0);
+		for (int value : boardValues) {
+			if (value < minValue) {
+				minValue = value;
+			}
+		}
+		return minValue;
+	}
+
+	// Nueva función para obtener los valores de las cartas del board
+	private List<Integer> getBoardValues(List<String> board) {
+		List<Integer> values = new ArrayList<>();
+		for (String card : board) {
+			values.add(getRankValue(card.charAt(0))); // Asumiendo que la carta es una cadena con formato "RS"
+		}
+		return values;
 	}
 
 	private boolean straightFlushDraw(List<String> cards) {
@@ -278,6 +315,10 @@ public class AnalizadorRangos {
 		return false;
 	}
 
+	private boolean contieneAs(String hand) {
+		return hand.contains("A");
+	}
+
 	private Map<Character, List<Integer>> getSuitedRanks(List<String> cards) {
 		Map<Character, List<Integer>> suitedRanks = new HashMap<>();
 		for (String card : cards) {
@@ -314,22 +355,14 @@ public class AnalizadorRangos {
 		return ranks;
 	}
 
-	private List<Character> getBoardRanks(List<String> board) {
-		List<Character> ranks = new ArrayList<>();
-		for (String card : board) {
-			ranks.add(card.charAt(0));
-		}
-		return ranks;
-	}
-
 	private int getRankValue(char rank) {
-		return "23456789TJQKA".indexOf(rank);
+		return "23456789TJQKA".indexOf(rank) + 2;
 	}
 
-	private char getSengundoMasAlto(List<Character> ranks) {
-		List<Character> sortedRanks = new ArrayList<>(ranks);
-		sortedRanks.sort((a, b) -> getRankValue(b) - getRankValue(a));
-		return sortedRanks.get(1);
+	private int getSegundoMasAlto(List<Integer> values) {
+		List<Integer> sortedValues = new ArrayList<>(values);
+		sortedValues.sort((a, b) -> b - a);
+		return sortedValues.get(1);
 	}
 
 	public Map<String, Double> getProbabilidadesMano() {
@@ -341,6 +374,10 @@ public class AnalizadorRangos {
 			}
 		}
 		return probabilities;
+	}
+
+	public Map<String, Integer> getCombosPorTipoMano() {
+		return new LinkedHashMap<>(handCombos);
 	}
 
 	public int getCombosTotales() {

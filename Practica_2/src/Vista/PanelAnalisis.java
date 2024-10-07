@@ -78,7 +78,7 @@ public class PanelAnalisis extends JPanel {
         }
 
         Set<String> range = new HashSet<>(seleccionesGuardadas);
-        rangeAnalyzer = controlador.inicializarAnalizadorRangos(range, seleccionesGuardadas);
+        rangeAnalyzer = controlador.inicializarAnalizadorRangos(range, selectedCards);
         
         Map<String, Double> probabilities = rangeAnalyzer.getProbabilidadesMano();
         actualizarPanelResultados(probabilities);
@@ -137,4 +137,5 @@ public class PanelAnalisis extends JPanel {
         resultPanel.revalidate();
         resultPanel.repaint();
     }
+    
 }

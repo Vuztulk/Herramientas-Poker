@@ -19,6 +19,8 @@ public class RangoCartas {
 		procesarRango(rangoInput);
 	}
 
+//TRANSFORMA DE TEXTO A GRAFICO	
+	
 	private void procesarRango(String rangoInput) {
 		String[] partes = rangoInput.split(",");
 		for (String parte : partes) {
@@ -122,7 +124,7 @@ public class RangoCartas {
 		}
 	}
 
-////////////////////////////////////////////////////////////////////////////////////
+////TRANSFORMA DE GRAFICO A TEXTO
 
 	public String obtenerAbreviacionRango(Set<String> cartas) {
         StringBuilder resultado = new StringBuilder();
