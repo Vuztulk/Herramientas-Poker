@@ -167,12 +167,12 @@ public class AnalizadorRangos {
 	private String evaluarTipoPar(String hand, List<String> board) {
 		int handValue1 = getRankValue(hand.charAt(0));
 		int handValue2 = getRankValue(hand.charAt(2));
-		List<Integer> boardValues = getBoardValues(board); // Obtener los valores del board
+		List<Integer> boardValues = getBoardValues(board);
 
 		int highestBoardValue = maxRank(boardValues);
 		int secondHighestBoardValue = getSegundoMasAlto(boardValues);
 
-		// Determinamos si hay pareja en la mano
+		// Si hay pareja en la mano
 		if (handValue1 == handValue2) {
 			if (handValue1 > highestBoardValue) {
 				return "OVER_PAIR";
@@ -232,21 +232,10 @@ public class AnalizadorRangos {
 		return maxValue;
 	}
 
-	private int minRank(List<Integer> boardValues) {
-		int minValue = boardValues.get(0);
-		for (int value : boardValues) {
-			if (value < minValue) {
-				minValue = value;
-			}
-		}
-		return minValue;
-	}
-
-	// Nueva función para obtener los valores de las cartas del board
 	private List<Integer> getBoardValues(List<String> board) {
 		List<Integer> values = new ArrayList<>();
 		for (String card : board) {
-			values.add(getRankValue(card.charAt(0))); // Asumiendo que la carta es una cadena con formato "RS"
+			values.add(getRankValue(card.charAt(0)));
 		}
 		return values;
 	}
