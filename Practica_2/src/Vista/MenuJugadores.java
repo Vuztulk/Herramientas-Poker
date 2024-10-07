@@ -1,20 +1,19 @@
 package Vista;
 
 import javax.swing.*;
-
 import Controlador.Controlador;
 import java.awt.*;
 
 public class MenuJugadores extends JFrame {
 
     private static final long serialVersionUID = 1L;
-    private JTextField[] playerInputs;
-    private JTextField[] equityFields;
-    private JTextArea outputArea;
-    private Controlador  controlador;
-    
+    private JTextField[] entradasJugadores;
+    private JTextField[] camposEquidad;
+    private JTextArea areaSalida;
+    private Controlador controlador;
+
     public MenuJugadores(Controlador controlador) {
-    	this.controlador = controlador;
+        this.controlador = controlador;
         setTitle("Analizador de Rangos de Poker");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout(10, 10));
@@ -27,9 +26,9 @@ public class MenuJugadores extends JFrame {
         panelControl.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         add(panelControl, BorderLayout.EAST);
 
-        outputArea = new JTextArea(10, 50);
-        outputArea.setBorder(BorderFactory.createTitledBorder("Salida"));
-        JScrollPane scrollPane = new JScrollPane(outputArea);
+        areaSalida = new JTextArea(10, 50);
+        areaSalida.setBorder(BorderFactory.createTitledBorder("Salida"));
+        JScrollPane scrollPane = new JScrollPane(areaSalida);
         scrollPane.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         add(scrollPane, BorderLayout.SOUTH);
 
@@ -41,24 +40,24 @@ public class MenuJugadores extends JFrame {
     private JPanel crearPanelJugador() {
         JPanel panel = new JPanel(new GridLayout(10, 3, 0, 5));
 
-        playerInputs = new JTextField[10];
-        equityFields = new JTextField[10];
+        entradasJugadores = new JTextField[10];
+        camposEquidad = new JTextField[10];
 
         for (int i = 0; i < 10; i++) {
-            JButton playerButton = new JButton("Jugador " + (i + 1));
-            final int playerId = i + 1;
-            playerButton.addActionListener(e -> {
-                String rangoInput = playerInputs[playerId - 1].getText();
-                new JugadorFrame(controlador, playerId, rangoInput, playerInputs[playerId - 1]);//Le pasamos el playerInput para que cuando se escoja graficamente se ponga aqui
+            JButton botonJugador = new JButton("Jugador " + (i + 1));
+            final int idJugador = i + 1;
+            botonJugador.addActionListener(e -> {
+                String rangoInput = entradasJugadores[idJugador - 1].getText();
+                new JugadorFrame(controlador, idJugador, rangoInput, entradasJugadores[idJugador - 1]); // Le pasamos el input del jugador para que cuando se elija gráficamente se ponga aqui
             });
-            panel.add(playerButton);
+            panel.add(botonJugador);
 
-            playerInputs[i] = new JTextField(15);
-            panel.add(playerInputs[i]);
+            entradasJugadores[i] = new JTextField(15);
+            panel.add(entradasJugadores[i]);
 
-            equityFields[i] = new JTextField(5);
-            equityFields[i].setEditable(false);
-            panel.add(equityFields[i]);
+            camposEquidad[i] = new JTextField(5);
+            camposEquidad[i].setEditable(false);
+            panel.add(camposEquidad[i]);
         }
 
         return panel;
@@ -69,8 +68,8 @@ public class MenuJugadores extends JFrame {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
 
-        JTextField boardField = new JTextField(15);
-        JButton selectBoardButton = new JButton("Seleccionar");
+        JTextField campoBoard = new JTextField(15);
+        JButton botonSeleccionarBoard = new JButton("Seleccionar");
 
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -82,68 +81,67 @@ public class MenuJugadores extends JFrame {
         gbc.gridy = 1;
         gbc.gridwidth = 1;
         gbc.insets = new Insets(0, 5, 5, 5);
-        panel.add(boardField, gbc);
+        panel.add(campoBoard, gbc);
 
         gbc.gridx = 1;
         gbc.insets = new Insets(0, 5, 5, 5);
-        panel.add(selectBoardButton, gbc);
+        panel.add(botonSeleccionarBoard, gbc);
 
-        JTextField deadCardsField = new JTextField(15);
-        JButton selectDeadCardsButton = new JButton("Seleccionar");
+        JTextField campoCartasMuertas = new JTextField(15);
+        JButton botonSeleccionarCartasMuertas = new JButton("Seleccionar");
 
         gbc.gridx = 0;
         gbc.gridy = 2;
         gbc.gridwidth = 2; 
         gbc.insets = new Insets(5, 5, 2, 5);
-        panel.add(new JLabel("Dead Cards:"), gbc);
+        panel.add(new JLabel("Cartas Muertas:"), gbc);
 
         gbc.gridy = 3;
         gbc.gridwidth = 1;
         gbc.insets = new Insets(0, 5, 5, 5);
         gbc.gridx = 0;
-        panel.add(deadCardsField, gbc);
+        panel.add(campoCartasMuertas, gbc);
 
         gbc.gridx = 1;
         gbc.insets = new Insets(0, 5, 5, 5);
-        panel.add(selectDeadCardsButton, gbc);
+        panel.add(botonSeleccionarCartasMuertas, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 4;
         gbc.gridwidth = 2;
         gbc.insets = new Insets(10, 5, 5, 5);
-        JButton evaluateButton = new JButton("Evaluar");
-        panel.add(evaluateButton, gbc);
+        JButton botonEvaluar = new JButton("Evaluar");
+        panel.add(botonEvaluar, gbc);
 
         gbc.gridy = 5;
-        JButton clearAllButton = new JButton("Limpiar Todos");
-        clearAllButton.addActionListener(e -> limpiarInputs());
-        panel.add(clearAllButton, gbc);
+        JButton botonLimpiarTodos = new JButton("Limpiar Todos");
+        botonLimpiarTodos.addActionListener(e -> limpiarInputs());
+        panel.add(botonLimpiarTodos, gbc);
 
         gbc.gridy = 6;
-        JRadioButton enumerateAllButton = new JRadioButton("Enumerar Todos");
-        JRadioButton monteCarloButton = new JRadioButton("Monte Carlo");
+        JRadioButton botonEnumerarTodos = new JRadioButton("Enumerar Todos");
+        JRadioButton botonMonteCarlo = new JRadioButton("Monte Carlo");
 
-        ButtonGroup buttonGroup = new ButtonGroup();
-        buttonGroup.add(enumerateAllButton);
-        buttonGroup.add(monteCarloButton);
+        ButtonGroup grupoBotones = new ButtonGroup();
+        grupoBotones.add(botonEnumerarTodos);
+        grupoBotones.add(botonMonteCarlo);
 
-        panel.add(enumerateAllButton, gbc);
+        panel.add(botonEnumerarTodos, gbc);
         gbc.gridy = 7;
-        panel.add(monteCarloButton, gbc);
+        panel.add(botonMonteCarlo, gbc);
 
         return panel;
     }
 
     private void limpiarInputs() {
-        for (int i = 0; i < playerInputs.length; i++) {
-            playerInputs[i].setText("");
-            equityFields[i].setText("");
+        for (int i = 0; i < entradasJugadores.length; i++) {
+            entradasJugadores[i].setText("");
+            camposEquidad[i].setText("");
             
             controlador.setRangoJugador(i + 1, "");
             controlador.setPorcentajeJugador(i + 1, 0.0);
         }
 
-        outputArea.setText("");
+        areaSalida.setText("");
     }
-
 }
