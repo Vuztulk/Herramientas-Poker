@@ -22,7 +22,7 @@ public class AnalizadorRangos {
 	private void inicializarTipoManos() {
 		String[] handTypes = { "STRAIGHT_FLUSH", "FOUR_OF_A_KIND", "FULL_HOUSE", "FLUSH", "STRAIGHT", "THREE_OF_A_KIND",
 				"TWO_PAIR", "OVER_PAIR", "TOP_PAIR", "PP_BELOW_TP", "MIDDLE_PAIR", "WEAK_PAIR", "ACE_HIGH",
-				"NO_MADE_HAND", "STR_FLUSH_OPEN_ENDED", "STR_FLUSH_GUTSHOT", "DRAW_FLUSH", "STRAIGHT_OPEN_ENDED",
+				"NO_MADE_HAND", "DRAW_FLUSH", "STRAIGHT_OPEN_ENDED",
 				"STRAIGHT_GUTSHOT" };
 		for (String handType : handTypes) {
 			handCombos.put(handType, 0);
@@ -61,7 +61,8 @@ public class AnalizadorRangos {
 					}
 				}
 			}
-		} else if (hand.length() == 3) {
+		} 
+		else if (hand.length() == 3) {
 			char rank1 = hand.charAt(0);
 			char rank2 = hand.charAt(1);
 			char type = hand.charAt(2);
@@ -73,7 +74,8 @@ public class AnalizadorRangos {
 						combos.add(card1 + card2);
 					}
 				}
-			} else if (type == 'o') { // Offsuit
+			} 
+			else if (type == 'o') { // Offsuit
 				for (char suit1 : SUITS) {
 					for (char suit2 : SUITS) {
 						if (suit1 != suit2) {
@@ -118,8 +120,6 @@ public class AnalizadorRangos {
         
         List<String> draws = new ArrayList<>();
         
-        if (straightFlushDraw(cartas)) draws.add("STR_FLUSH_OPEN_ENDED");
-        if (straightFlushGutshot(cartas)) draws.add("STR_FLUSH_GUTSHOT");
         if (flushDraw(cartas)) draws.add("DRAW_FLUSH");
         if (straightOpenEnded(cartas)) draws.add("STRAIGHT_OPEN_ENDED");
         if (straightGutshot(cartas)) draws.add("STRAIGHT_GUTSHOT");
@@ -223,80 +223,83 @@ public class AnalizadorRangos {
 			}
 		}
 	}
-
-	private boolean straightFlushDraw(List<String> cards) {
-		Map<Character, List<Integer>> suitedRanks = getSuitedRanks(cards);
-		for (List<Integer> ranks : suitedRanks.values()) {
-			if (ranks.size() >= 4) {
-				Collections.sort(ranks);
-				for (int i = 0; i < ranks.size() - 3; i++) {
-					if (ranks.get(i + 3) - ranks.get(i) == 4)
-						return true;
-				}
-			}
-		}
-		return false;
-	}
-
-	private boolean straightFlushGutshot(List<String> cards) {
-		Map<Character, List<Integer>> suitedRanks = getSuitedRanks(cards);
-		for (List<Integer> ranks : suitedRanks.values()) {
-			if (ranks.size() >= 4) {
-				Collections.sort(ranks);
-				for (int i = 0; i < ranks.size() - 3; i++) {
-					if (ranks.get(i + 3) - ranks.get(i) == 5 && !ranks.contains(ranks.get(i) + 2)) {
-						return true;
-					}
-				}
-			}
-		}
-		return false;
-	}
-
-	private Map<Character, List<Integer>> getSuitedRanks(List<String> cards) {
-		Map<Character, List<Integer>> suitedRanks = new HashMap<>();
-		for (String card : cards) {
-			char suit = card.charAt(1);
-			int rank = getRankValue(card.charAt(0));
-			suitedRanks.computeIfAbsent(suit, k -> new ArrayList<>()).add(rank);
-		}
-		return suitedRanks;
-	}
 	
 	private boolean flushDraw(List<String> cards) {
-		Map<Character, Integer> suitCount = getSuitCount(cards);
-		return suitCount.containsValue(4);
-	}
+        Map<Character, Integer> suitCount = new HashMap<>();
+        for (String card : cards) {
+            char suit = card.charAt(1);
+            suitCount.put(suit, suitCount.getOrDefault(suit, 0) + 1);
+        }
+        return suitCount.containsValue(4);
+    }
 
-	private boolean straightOpenEnded(List<String> cards) {
-		List<Integer> ranks = getRanks(cards);
-		Collections.sort(ranks);
-		for (int i = 0; i < ranks.size() - 3; i++) {
-			if (ranks.get(i + 3) - ranks.get(i) == 3) {
-				if (ranks.get(i) > 0 || ranks.get(i + 3) < 12) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
+    private boolean straightGutshot(List<String> cards) {
+        List<Integer> ranks = getRanks(cards);
+        ranks.sort(Comparator.naturalOrder());
 
-	private boolean straightGutshot(List<String> cards) {
-		List<Integer> ranks = getRanks(cards);
-		Collections.sort(ranks);
-		for (int i = 0; i < ranks.size() - 3; i++) {
-			if (ranks.get(i + 3) - ranks.get(i) == 4) {
-				int missingRank = ranks.get(i) + 1;
-				if (!ranks.contains(missingRank) && missingRank >= 0 && missingRank <= 12) {
-					return true;
-				}
-			}
-		}
-		if (ranks.contains(12) && ranks.contains(0) && ranks.contains(1) && ranks.contains(2) && !ranks.contains(3)) {
-			return true;
-		}
-		return false;
-	}
+        int[] rankArray = new int[15];
+        for (int rank : ranks) {
+            rankArray[rank]++;
+        }
+
+        if (escalera(cards)) {
+            return false;
+        }
+
+        int firstRank = 1;
+        for (int i = 1; i <= 14; i++) {
+            if (rankArray[i] > 0) {
+                firstRank = i;
+                break;
+            }
+        }
+
+        int consecutive = 0;
+        int gaps = 0;
+
+        for (int i = firstRank; i <= 14; i++) {
+            if (rankArray[i] > 0) {
+                consecutive++;
+            } else {
+                gaps++;
+                if (gaps > 1) {
+                    consecutive = 0;
+                    gaps = 0;
+                }
+            }
+            if (consecutive >= 4 && gaps == 1) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean straightOpenEnded(List<String> cards) {
+        List<Integer> ranks = getRanks(cards);
+        ranks.sort(Comparator.naturalOrder());
+
+        int[] rankArray = new int[15];
+        for (int rank : ranks) {
+            rankArray[rank]++;
+        }
+
+        if (escalera(cards)) {
+            return false;
+        }
+
+        for (int i = 0; i < ranks.size() - 3; i++) {
+            if (ranks.get(i + 1) - ranks.get(i) == 1 &&
+                ranks.get(i + 2) - ranks.get(i + 1) == 1 &&
+                ranks.get(i + 3) - ranks.get(i + 2) == 1) {
+
+                if (!(ranks.get(i) == 2 || ranks.get(i + 3) == 14)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
 	
 	private int maxRank(List<Integer> boardValues) {
 		int maxValue = boardValues.get(0);
