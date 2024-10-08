@@ -30,15 +30,21 @@ public class AnalizadorRangos {
 	}
 
 	private void analizarRango() {
-		for (String hand : range) {
-			Set<String> combos = generarCombosValidosMano(hand);
-			for (String combo : combos) {
-				String handType = evaluarMejorMano(combo);
-				handCombos.put(handType, handCombos.get(handType) + 1);
-				totalCombos++;
-			}
-		}
-	}
+        for (String hand : range) {
+            Set<String> combos = generarCombosValidosMano(hand);
+            for (String combo : combos) {
+                String handType = evaluarMejorMano(combo);
+                handCombos.put(handType, handCombos.get(handType) + 1);
+                
+                List<String> draws = evaluarDraws(combo);
+                for (String draw : draws) {
+                    handCombos.put(draw, handCombos.get(draw) + 1);
+                }
+                
+                totalCombos++;
+            }
+        }
+    }
 
 	private Set<String> generarCombosValidosMano(String hand) {
 		Set<String> combos = new HashSet<>();
@@ -85,46 +91,42 @@ public class AnalizadorRangos {
 	}
 
 	private String evaluarMejorMano(String hand) {
-		List<String> cartas = new ArrayList<>(board);
-		cartas.add(hand.substring(0, 2));
-		cartas.add(hand.substring(2, 4));
+        List<String> cartas = new ArrayList<>(board);
+        cartas.add(hand.substring(0, 2));
+        cartas.add(hand.substring(2, 4));
 
-		if (escaleraColor(cartas))
-			return "STRAIGHT_FLUSH";
-		if (poker(cartas))
-			return "FOUR_OF_A_KIND";
-		if (full(cartas))
-			return "FULL_HOUSE";
-		if (color(cartas))
-			return "FLUSH";
-		if (escalera(cartas))
-			return "STRAIGHT";
-		if (trio(cartas))
-			return "THREE_OF_A_KIND";
-		if (par(cartas))
-			return "TWO_PAIR";
+        if (escaleraColor(cartas)) return "STRAIGHT_FLUSH";
+        if (poker(cartas)) return "FOUR_OF_A_KIND";
+        if (full(cartas)) return "FULL_HOUSE";
+        if (color(cartas)) return "FLUSH";
+        if (escalera(cartas)) return "STRAIGHT";
+        if (trio(cartas)) return "THREE_OF_A_KIND";
+        if (doblePar(cartas)) return "TWO_PAIR";
 
-		String tipoPar = evaluarTipoPar(hand, board);
-		if (!tipoPar.equals("NO_MADE_HAND"))
-			return tipoPar;
+        String tipoPar = par(hand, board);
+        if (!tipoPar.equals("NO_MADE_HAND")) return tipoPar;
 
-		if (contieneAs(hand))
-			return "ACE_HIGH";
+        if (hand.contains("A")) return "ACE_HIGH";
 
-		if (straightFlushDraw(cartas))
-			return "STR_FLUSH_OPEN_ENDED";
-		if (straightFlushGutshot(cartas))
-			return "STR_FLUSH_GUTSHOT";
-		if (flushDraw(cartas))
-			return "DRAW_FLUSH";
-		if (straightOpenEnded(cartas))
-			return "STRAIGHT_OPEN_ENDED";
-		if (straightGutshot(cartas))
-			return "STRAIGHT_GUTSHOT";
+        return "NO_MADE_HAND";
+    }
 
-		return "NO_MADE_HAND";
-	}
-
+	private List<String> evaluarDraws(String hand) {
+        List<String> cartas = new ArrayList<>(board);
+        cartas.add(hand.substring(0, 2));
+        cartas.add(hand.substring(2, 4));
+        
+        List<String> draws = new ArrayList<>();
+        
+        if (straightFlushDraw(cartas)) draws.add("STR_FLUSH_OPEN_ENDED");
+        if (straightFlushGutshot(cartas)) draws.add("STR_FLUSH_GUTSHOT");
+        if (flushDraw(cartas)) draws.add("DRAW_FLUSH");
+        if (straightOpenEnded(cartas)) draws.add("STRAIGHT_OPEN_ENDED");
+        if (straightGutshot(cartas)) draws.add("STRAIGHT_GUTSHOT");
+        
+        return draws;
+    }
+	
 	private boolean escaleraColor(List<String> cards) {
 		return color(cards) && escalera(cards);
 	}
@@ -159,12 +161,12 @@ public class AnalizadorRangos {
 		return rankCount.containsValue(3);
 	}
 
-	private boolean par(List<String> cards) {
+	private boolean doblePar(List<String> cards) {
 		Map<Character, Integer> rankCount = getRankCount(cards);
 		return Collections.frequency(rankCount.values(), 2) == 2;
 	}
 
-	private String evaluarTipoPar(String hand, List<String> board) {
+	private String par(String hand, List<String> board) {
 		int handValue1 = getRankValue(hand.charAt(0));
 		int handValue2 = getRankValue(hand.charAt(2));
 		List<Integer> boardValues = getBoardValues(board);
@@ -183,7 +185,7 @@ public class AnalizadorRangos {
 			} else {
 				return "WEAK_PAIR";
 			}
-		} else {//No hay pareja en la mano y verificamos si hay pareja en el board
+		} else {// No hay pareja en la mano y verificamos si hay pareja en el board
 			int handHighCount = 0;
 			int handLowCount = 0;
 
@@ -194,7 +196,7 @@ public class AnalizadorRangos {
 					handLowCount++;
 			}
 
-			if (handHighCount > 0) {//Carta mas alta de la mano
+			if (handHighCount > 0) {// Carta mas alta de la mano
 				if (handValue1 > highestBoardValue) {
 					return "OVER_PAIR";
 				} else if (handValue1 == highestBoardValue) {
@@ -204,7 +206,7 @@ public class AnalizadorRangos {
 				} else {
 					return "WEAK_PAIR";
 				}
-			} else if (handLowCount > 0) {//Segunda carta de la mano
+			} else if (handLowCount > 0) {// Segunda carta de la mano
 				if (handValue2 > highestBoardValue) {
 					return "OVER_PAIR";
 				} else if (handValue2 == highestBoardValue) {
@@ -220,24 +222,6 @@ public class AnalizadorRangos {
 				return "NO_MADE_HAND";
 			}
 		}
-	}
-
-	private int maxRank(List<Integer> boardValues) {
-		int maxValue = boardValues.get(0);
-		for (int value : boardValues) {
-			if (value > maxValue) {
-				maxValue = value;
-			}
-		}
-		return maxValue;
-	}
-
-	private List<Integer> getBoardValues(List<String> board) {
-		List<Integer> values = new ArrayList<>();
-		for (String card : board) {
-			values.add(getRankValue(card.charAt(0)));
-		}
-		return values;
 	}
 
 	private boolean straightFlushDraw(List<String> cards) {
@@ -269,6 +253,16 @@ public class AnalizadorRangos {
 		return false;
 	}
 
+	private Map<Character, List<Integer>> getSuitedRanks(List<String> cards) {
+		Map<Character, List<Integer>> suitedRanks = new HashMap<>();
+		for (String card : cards) {
+			char suit = card.charAt(1);
+			int rank = getRankValue(card.charAt(0));
+			suitedRanks.computeIfAbsent(suit, k -> new ArrayList<>()).add(rank);
+		}
+		return suitedRanks;
+	}
+	
 	private boolean flushDraw(List<String> cards) {
 		Map<Character, Integer> suitCount = getSuitCount(cards);
 		return suitCount.containsValue(4);
@@ -303,19 +297,23 @@ public class AnalizadorRangos {
 		}
 		return false;
 	}
-
-	private boolean contieneAs(String hand) {
-		return hand.contains("A");
+	
+	private int maxRank(List<Integer> boardValues) {
+		int maxValue = boardValues.get(0);
+		for (int value : boardValues) {
+			if (value > maxValue) {
+				maxValue = value;
+			}
+		}
+		return maxValue;
 	}
 
-	private Map<Character, List<Integer>> getSuitedRanks(List<String> cards) {
-		Map<Character, List<Integer>> suitedRanks = new HashMap<>();
-		for (String card : cards) {
-			char suit = card.charAt(1);
-			int rank = getRankValue(card.charAt(0));
-			suitedRanks.computeIfAbsent(suit, k -> new ArrayList<>()).add(rank);
+	private List<Integer> getBoardValues(List<String> board) {
+		List<Integer> values = new ArrayList<>();
+		for (String card : board) {
+			values.add(getRankValue(card.charAt(0)));
 		}
-		return suitedRanks;
+		return values;
 	}
 
 	private Map<Character, Integer> getRankCount(List<String> cards) {
