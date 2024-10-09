@@ -44,8 +44,6 @@ public class PanelInferior extends JPanel {
         campoPorcentaje = new JTextField("0.0%");
         campoPorcentaje.setEditable(true);
         campoPorcentaje.setPreferredSize(new Dimension(55, 20));
-		slider.setMajorTickSpacing(169);
-		slider.setMinorTickSpacing(84);
 		slider.setPaintLabels(false);
 
 		slider.addChangeListener(e -> {

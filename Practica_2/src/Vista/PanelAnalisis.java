@@ -107,9 +107,9 @@ public class PanelAnalisis extends JPanel {
 
 		final int anchoMaximoFinal = anchoMaximoEtiqueta;
 
-		for (Map.Entry<String, Double> entrada : probabilidades.entrySet()) {
-			String nombreMano = entrada.getKey();
-			Double probabilidad = entrada.getValue();
+		for (Map.Entry<String, Double> fila : probabilidades.entrySet()) {
+			String nombreMano = fila.getKey();
+			Double probabilidad = fila.getValue();
 			Integer conteo = conteoCombos.get(nombreMano);
 
 			JPanel panelMano = new JPanel();

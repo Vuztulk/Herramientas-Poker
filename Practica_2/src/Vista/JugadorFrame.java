@@ -44,8 +44,7 @@ public class JugadorFrame extends JFrame {
 		JPanel panelAnalisis = new PanelAnalisis(seleccionesGuardadas, controlador);
 		panelPestanas.addTab("Analisis", null, panelAnalisis, "Analisis de Rango");
 
-		PanelCuadricula panelCuadricula = new PanelCuadricula(
-				new String[] { "A", "K", "Q", "J", "T", "9", "8", "7", "6", "5", "4", "3", "2" }, this);
+		PanelCuadricula panelCuadricula = new PanelCuadricula(new String[] { "A", "K", "Q", "J", "T", "9", "8", "7", "6", "5", "4", "3", "2" }, this);
 		JPanel bordeCuadricula = new JPanel(new BorderLayout());
 		bordeCuadricula.setBorder(new EmptyBorder(10, 10, 10, 10));
 		bordeCuadricula.add(panelCuadricula, BorderLayout.CENTER);
@@ -66,8 +65,7 @@ public class JugadorFrame extends JFrame {
 	}
 
 	private PanelInferior crearPanelInferior(JTextField campoTextoJugador) {
-		return new PanelInferior(controlador, idJugador, campoTextoJugador, textoSelecciones, this, botonesRango,
-				cartasRanking, seleccionesGuardadas);
+		return new PanelInferior(controlador, idJugador, campoTextoJugador, textoSelecciones, this, botonesRango, cartasRanking, seleccionesGuardadas);
 	}
 
 	private void procesarRango(String rangoInput) {
