@@ -44,8 +44,8 @@ public class AnalizadorRangos {
 
 			String handType = evaluador.evaluarMejorMano(String.join(",", manoCompleta), board);
 
-			if (!usaCartaJugador(combo, handType, board)) { // Solo contamos los combos que tengan una carta de la mano del jugador involucrada
-				continue;
+			if (!usaCartaJugador(combo, handType, board) && !handType.equals("NO_MADE_HAND")) { // Solo contamos los combos que tengan una carta de la mano del jugador involucrada
+				handType = "NO_MADE_HAND";
 			}
 			handCombos.put(handType, handCombos.getOrDefault(handType, 0) + 1);
 			

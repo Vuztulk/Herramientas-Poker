@@ -21,20 +21,20 @@ public class EvaluadorManos {
 		if (trio(cartas))
 			return "THREE_OF_A_KIND";
 
-	    String tipoPar = par(extraerCartas(hand), board);
+		if (hayPar(extraerCartas(hand))) {
+			String tipoPar = par(extraerCartas(hand), board);
+			if (tipoPar.equals("TWO_PAIR")) {
+				if (!tipoPar.equals("WEAK_PAIR")) {
+					return "TWO_PAIR";
+				}
+			} else if (!tipoPar.equals("NO_MADE_HAND")) {
+				return tipoPar;
+			}
+		}
+		if (hand.contains("A"))
+			return "ACE_HIGH";
 
-	    if (tipoPar.equals("TWO_PAIR")) {
-	        if (doblePar(cartas) && !tipoPar.equals("WEAK_PAIR")) {
-	            return "TWO_PAIR";
-	        }
-	    } else if (!tipoPar.equals("NO_MADE_HAND")) {
-	        return tipoPar;
-	    }
-
-	    if (hand.contains("A"))
-	        return "ACE_HIGH";
-
-	    return "NO_MADE_HAND";
+		return "NO_MADE_HAND";
 	}
 
 	public List<String> evaluarDraws(String hand) {
@@ -107,56 +107,58 @@ public class EvaluadorManos {
 		List<String> manoCartas = new ArrayList<>(handCards);
 		manoCartas.removeAll(boardCards);
 
-		// Sort hand cards and board values in descending order
 		manoCartas.sort((a, b) -> Integer.compare(getRankValue(b.charAt(0)), getRankValue(a.charAt(0))));
 		boardValues.sort(Collections.reverseOrder());
 
 		int highestBoardValue = boardValues.get(0);
 		int secondHighestBoardValue = boardValues.size() > 1 ? boardValues.get(1) : 0;
 
-		if (manoCartas.size() == 2) {
-			int handValue1 = getRankValue(manoCartas.get(0).charAt(0));
-			int handValue2 = getRankValue(manoCartas.get(1).charAt(0));
+		int handValue1 = getRankValue(manoCartas.get(0).charAt(0));
+		int handValue2 = getRankValue(manoCartas.get(1).charAt(0));
 
-			// Pocket pair
-			if (handValue1 == handValue2) {
-				if (handValue1 > highestBoardValue) {
-					return "OVER_PAIR";
-				} else if (handValue1 < highestBoardValue && handValue1 > secondHighestBoardValue) {
-					return "PP_BELOW_TP";
-				} else if (handValue1 == secondHighestBoardValue) {
-					return "MIDDLE_PAIR";
-				} else {
-					return "WEAK_PAIR";
-				}
+		// Pocket pair
+		if (handValue1 == handValue2) {
+
+			if (handValue1 > highestBoardValue) {
+				return "OVER_PAIR";
+			} else if (handValue1 < highestBoardValue && handValue1 > secondHighestBoardValue) {
+				return "PP_BELOW_TP";
+			} else if (handValue1 == secondHighestBoardValue) {
+				return "MIDDLE_PAIR";
+			} else if (doblePar(handCards)) {
+				return "TWO_PAIR";
+			} else {
+				return "WEAK_PAIR";
 			}
-			// Non-paired hand
-			else {
-	            if (handValue1 == highestBoardValue || handValue2 == highestBoardValue) {
-	                return "TOP_PAIR";
-	            } else if (handValue1 == secondHighestBoardValue || handValue2 == secondHighestBoardValue) {
-	                return "MIDDLE_PAIR";
-	            } else if (Math.max(handValue1, handValue2) < secondHighestBoardValue) {
-	                return "WEAK_PAIR";
-	            } else {
-	                return "NO_MADE_HAND";
-	            }
-	        }
-		} else if (manoCartas.size() == 1) {
-	        int handValue = getRankValue(manoCartas.get(0).charAt(0));
-	        
-	        if (handValue == highestBoardValue) {
-	            return "TOP_PAIR";
-	        } else if (handValue == secondHighestBoardValue) {
-	            return "MIDDLE_PAIR";
-	        } else if (handValue > secondHighestBoardValue) {
-	            return "WEAK_PAIR";
-	        } else {
-	            return "NO_MADE_HAND";
-	        }
-	    }
+		} else {
+			if (handValue1 == highestBoardValue || handValue2 == highestBoardValue) {
+				return "TOP_PAIR";
+			} else if (handValue1 == secondHighestBoardValue || handValue2 == secondHighestBoardValue) {
+				return "MIDDLE_PAIR";
+			} else if (Math.max(handValue1, handValue2) < secondHighestBoardValue) {
+				return "WEAK_PAIR";
+			} else {
+				return "NO_MADE_HAND";
+			}
+		}
+	}
 
-		return "NO_MADE_HAND";
+	private boolean hayPar(List<String> hand) {
+
+		Map<Character, Integer> contadorRangos = new HashMap<>();
+
+		for (String carta : hand) {
+			char rango = carta.charAt(0);
+			contadorRangos.put(rango, contadorRangos.getOrDefault(rango, 0) + 1);
+		}
+
+		for (int cantidad : contadorRangos.values()) {
+			if (cantidad >= 2) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	private boolean flushDraw(List<String> cards) {
