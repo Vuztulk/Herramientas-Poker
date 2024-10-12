@@ -5,6 +5,7 @@ import java.util.*;
 public class EvaluadorManos {
 
 	public String evaluarMejorMano(String hand, List<String> board) {
+
 		List<String> cartas = extraerCartas(hand);
 
 		if (escaleraColor(cartas))
@@ -19,17 +20,21 @@ public class EvaluadorManos {
 			return "STRAIGHT";
 		if (trio(cartas))
 			return "THREE_OF_A_KIND";
-		if (doblePar(cartas))
-			return "TWO_PAIR";
 
-		String tipoPar = par(cartas, board);
-		if (!tipoPar.equals("NO_MADE_HAND"))
-			return tipoPar;
+	    String tipoPar = par(extraerCartas(hand), board);
 
-		if (hand.contains("A"))
-			return "ACE_HIGH";
+	    if (tipoPar.equals("TWO_PAIR")) {
+	        if (doblePar(cartas) && !tipoPar.equals("WEAK_PAIR")) {
+	            return "TWO_PAIR";
+	        }
+	    } else if (!tipoPar.equals("NO_MADE_HAND")) {
+	        return tipoPar;
+	    }
 
-		return "NO_MADE_HAND";
+	    if (hand.contains("A"))
+	        return "ACE_HIGH";
+
+	    return "NO_MADE_HAND";
 	}
 
 	public List<String> evaluarDraws(String hand) {
@@ -99,58 +104,59 @@ public class EvaluadorManos {
 	private String par(List<String> handCards, List<String> board) {
 		List<Integer> boardValues = getBoardValues(board);
 		List<String> boardCards = new ArrayList<>(board);
-		List<String> manoCartas = new ArrayList<>();
+		List<String> manoCartas = new ArrayList<>(handCards);
+		manoCartas.removeAll(boardCards);
 
-		for (String card : handCards) {
-			if (!boardCards.contains(card)) {
-				manoCartas.add(card);
-			}
-		}
+		// Sort hand cards and board values in descending order
+		manoCartas.sort((a, b) -> Integer.compare(getRankValue(b.charAt(0)), getRankValue(a.charAt(0))));
+		boardValues.sort(Collections.reverseOrder());
 
-		if (manoCartas.size() == 1) {
+		int highestBoardValue = boardValues.get(0);
+		int secondHighestBoardValue = boardValues.size() > 1 ? boardValues.get(1) : 0;
 
-			int handValue = getRankValue(manoCartas.get(0).charAt(0));
-			int highestBoardValue = maxRank(boardValues);
-			int secondHighestBoardValue = getSegundoMasAlto(boardValues);
-
-			if (handValue == highestBoardValue) {
-				return "TOP_PAIR";
-			} else if (handValue == secondHighestBoardValue) {
-				return "MIDDLE_PAIR";
-			} else {
-				return "NO_MADE_HAND";
-			}
-		} else if (manoCartas.size() == 2) {
+		if (manoCartas.size() == 2) {
 			int handValue1 = getRankValue(manoCartas.get(0).charAt(0));
 			int handValue2 = getRankValue(manoCartas.get(1).charAt(0));
 
-			int highestBoardValue = maxRank(boardValues);
-			int secondHighestBoardValue = getSegundoMasAlto(boardValues);
-
-			String rank = "NO_MADE_HAND";
-
-			if (handValue1 == handValue2) {// Tengo pareja en mano
+			// Pocket pair
+			if (handValue1 == handValue2) {
 				if (handValue1 > highestBoardValue) {
-					rank = "OVER_PAIR";
-				} else if (handValue1 > secondHighestBoardValue) {
-					rank = "PP_BELOW_TP";
+					return "OVER_PAIR";
+				} else if (handValue1 < highestBoardValue && handValue1 > secondHighestBoardValue) {
+					return "PP_BELOW_TP";
+				} else if (handValue1 == secondHighestBoardValue) {
+					return "MIDDLE_PAIR";
 				} else {
-					rank = "WEAK_PAIR";
-				}
-			} else {// No tengo pareja en mano
-				if (handValue1 == highestBoardValue || handValue2 == highestBoardValue) {
-					rank = "TOP_PAIR";
-				} else if (handValue1 == secondHighestBoardValue || handValue2 == secondHighestBoardValue) {
-					rank = "MIDDLE_PAIR";
-				} else {
-					rank = "WEAK_PAIR";
+					return "WEAK_PAIR";
 				}
 			}
+			// Non-paired hand
+			else {
+	            if (handValue1 == highestBoardValue || handValue2 == highestBoardValue) {
+	                return "TOP_PAIR";
+	            } else if (handValue1 == secondHighestBoardValue || handValue2 == secondHighestBoardValue) {
+	                return "MIDDLE_PAIR";
+	            } else if (Math.max(handValue1, handValue2) < secondHighestBoardValue) {
+	                return "WEAK_PAIR";
+	            } else {
+	                return "NO_MADE_HAND";
+	            }
+	        }
+		} else if (manoCartas.size() == 1) {
+	        int handValue = getRankValue(manoCartas.get(0).charAt(0));
+	        
+	        if (handValue == highestBoardValue) {
+	            return "TOP_PAIR";
+	        } else if (handValue == secondHighestBoardValue) {
+	            return "MIDDLE_PAIR";
+	        } else if (handValue > secondHighestBoardValue) {
+	            return "WEAK_PAIR";
+	        } else {
+	            return "NO_MADE_HAND";
+	        }
+	    }
 
-			return rank;
-		}
-		return null;
-
+		return "NO_MADE_HAND";
 	}
 
 	private boolean flushDraw(List<String> cards) {
@@ -224,16 +230,6 @@ public class EvaluadorManos {
 		return false;
 	}
 
-	private int maxRank(List<Integer> boardValues) {
-		int maxValue = boardValues.get(0);
-		for (int value : boardValues) {
-			if (value > maxValue) {
-				maxValue = value;
-			}
-		}
-		return maxValue;
-	}
-
 	private List<Integer> getBoardValues(List<String> board) {
 		List<Integer> values = new ArrayList<>();
 		for (String card : board) {
@@ -281,12 +277,6 @@ public class EvaluadorManos {
 		}
 
 		return cartas;
-	}
-
-	private int getSegundoMasAlto(List<Integer> values) {
-		List<Integer> sortedValues = new ArrayList<>(values);
-		sortedValues.sort((a, b) -> b - a);
-		return sortedValues.get(1);
 	}
 
 }
