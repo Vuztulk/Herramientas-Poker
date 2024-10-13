@@ -96,28 +96,24 @@ public class EvaluadorManos {
 	    Map<Character, Integer> rankCountMano = getRankCount(cartasMano);
 	    Map<Character, Integer> rankCountBoard = getRankCount(cartasBoard);
 	    
-	    List<Character> paresCombinadosManoBoard = new ArrayList<>();
+	    List<Character> paresCombinados = new ArrayList<>();
 	    
-	    // Buscar pares combinando mano y tablero
-	    for (char rankMano : rankCountMano.keySet()) {
+	    for (char rankMano : rankCountMano.keySet()) {//Pares combinando board y tablero
 	        if (rankCountBoard.containsKey(rankMano)) {
-	            paresCombinadosManoBoard.add(rankMano);
+	            paresCombinados.add(rankMano);
 	        }
 	    }
 	    
-	    // Verificar doble par
-	    if (paresCombinadosManoBoard.size() >= 2) {
-	        paresCombinadosManoBoard.sort((a, b) -> Character.compare(b, a));
+	    if (paresCombinados.size() >= 2) {//Doble par
+	        paresCombinados.sort((a, b) -> Character.compare(b, a));
 	        return "TWO_PAIR";
 	    }
 	    
-	    // Caso de pareja simple
-	    if (paresCombinadosManoBoard.size() == 1) {
-	        return especificarParSimple(paresCombinadosManoBoard.get(0), cartasBoard);
+	    if (paresCombinados.size() == 1) {//Pareja simple
+	        return especificarParSimple(paresCombinados.get(0), cartasBoard);
 	    }
 	    
-	    // Verificar si hay un par en la mano
-	    for (Map.Entry<Character, Integer> entry : rankCountMano.entrySet()) {
+	    for (Map.Entry<Character, Integer> entry : rankCountMano.entrySet()) {//Par simple
 	        if (entry.getValue() == 2) {
 	            return especificarParSimple(entry.getKey(), cartasBoard);
 	        }
@@ -127,25 +123,34 @@ public class EvaluadorManos {
 	}
 
 	private String especificarParSimple(char parValue, List<String> cartasBoard) {
-		List<Character> boardOrdenado = cartasBoard.stream().map(card -> card.charAt(0)).distinct()
-				.sorted((a, b) -> compararCartas(b, a)).toList();
+	    List<Character> boardOrdenado = new ArrayList<>();
+	    
+	    for (String carta : cartasBoard) {
+	        char valor = carta.charAt(0);
+	        if (!boardOrdenado.contains(valor)) {
+	            boardOrdenado.add(valor);
+	        }
+	    }
 
-		if (compararCartas(parValue, boardOrdenado.get(0)) > 0) {
-			return "OVER_PAIR";
-		} else if (parValue == boardOrdenado.get(0)) {
-			return "TOP_PAIR";
-		} else if (boardOrdenado.size() > 1 && compararCartas(parValue, boardOrdenado.get(1)) > 0) {
-			return "PP_BELOW_TP";
-		} else if (boardOrdenado.size() > 1 && parValue == boardOrdenado.get(1)) {
-			return "MIDDLE_PAIR";
-		} else {
-			return "WEAK_PAIR";
-		}
+	    Collections.sort(boardOrdenado, (a, b) -> compararCartas(b, a));
+
+	    if (compararCartas(parValue, boardOrdenado.get(0)) > 0) {
+	        return "OVER_PAIR";
+	    } else if (parValue == boardOrdenado.get(0)) {
+	        return "TOP_PAIR";
+	    } else if (boardOrdenado.size() > 1 && compararCartas(parValue, boardOrdenado.get(1)) > 0) {
+	        return "PP_BELOW_TP";
+	    } else if (boardOrdenado.size() > 1 && parValue == boardOrdenado.get(1)) {
+	        return "MIDDLE_PAIR";
+	    } else {
+	        return "WEAK_PAIR";
+	    }
 	}
 
 	private int compararCartas(char a, char b) {
-		return getRankValue(a) - getRankValue(b);
+	    return getRankValue(a) - getRankValue(b);
 	}
+
 
 	private boolean flushDraw(List<String> cards) {
 		return getSuitCount(cards).containsValue(4);
@@ -216,14 +221,6 @@ public class EvaluadorManos {
 		}
 
 		return false;
-	}
-
-	private List<Integer> getBoardValues(List<String> board) {
-		List<Integer> values = new ArrayList<>();
-		for (String card : board) {
-			values.add(getRankValue(card.charAt(0)));
-		}
-		return values;
 	}
 
 	private Map<Character, Integer> getRankCount(List<String> cards) {

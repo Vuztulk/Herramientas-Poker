@@ -9,8 +9,6 @@ public class AnalizadorRangos {
 	private int totalCombos;
 	private EvaluadorManos evaluador;
 
-	private static final char[] SUITS = { 'h', 'd', 'c', 's' };
-
 	public AnalizadorRangos(Set<String> rangos, List<String> board) {
 		this.rangos = rangos;
 		this.board = board;
