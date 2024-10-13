@@ -21,16 +21,11 @@ public class EvaluadorManos {
 		if (trio(cartas))
 			return "THREE_OF_A_KIND";
 
-		if (hayPar(extraerCartas(hand))) {
-			String tipoPar = par(extraerCartas(hand), board);
-			if (tipoPar.equals("TWO_PAIR")) {
-				if (!tipoPar.equals("WEAK_PAIR")) {
-					return "TWO_PAIR";
-				}
-			} else if (!tipoPar.equals("NO_MADE_HAND")) {
-				return tipoPar;
-			}
+		String resultadoPar = especificarPair(cartas, board);
+		if (!resultadoPar.equals("NO_MADE_HAND")) {
+			return resultadoPar;
 		}
+
 		if (hand.contains("A"))
 			return "ACE_HIGH";
 
@@ -96,69 +91,60 @@ public class EvaluadorManos {
 		return rankCount.containsValue(3);
 	}
 
-	private boolean doblePar(List<String> cards) {
-		Map<Character, Integer> rankCount = getRankCount(cards);
-		return Collections.frequency(rankCount.values(), 2) == 2;
+	private String especificarPair(List<String> cartasMano, List<String> cartasBoard) {
+		cartasMano.removeAll(cartasBoard);
+	    Map<Character, Integer> rankCountMano = getRankCount(cartasMano);
+	    Map<Character, Integer> rankCountBoard = getRankCount(cartasBoard);
+	    
+	    List<Character> paresCombinadosManoBoard = new ArrayList<>();
+	    
+	    // Buscar pares combinando mano y tablero
+	    for (char rankMano : rankCountMano.keySet()) {
+	        if (rankCountBoard.containsKey(rankMano)) {
+	            paresCombinadosManoBoard.add(rankMano);
+	        }
+	    }
+	    
+	    // Verificar doble par
+	    if (paresCombinadosManoBoard.size() >= 2) {
+	        paresCombinadosManoBoard.sort((a, b) -> Character.compare(b, a));
+	        return "TWO_PAIR";
+	    }
+	    
+	    // Caso de pareja simple
+	    if (paresCombinadosManoBoard.size() == 1) {
+	        return especificarParSimple(paresCombinadosManoBoard.get(0), cartasBoard);
+	    }
+	    
+	    // Verificar si hay un par en la mano
+	    for (Map.Entry<Character, Integer> entry : rankCountMano.entrySet()) {
+	        if (entry.getValue() == 2) {
+	            return especificarParSimple(entry.getKey(), cartasBoard);
+	        }
+	    }
+	    
+	    return "NO_MADE_HAND";
 	}
 
-	private String par(List<String> handCards, List<String> board) {
-		List<Integer> boardValues = getBoardValues(board);
-		List<String> boardCards = new ArrayList<>(board);
-		List<String> manoCartas = new ArrayList<>(handCards);
-		manoCartas.removeAll(boardCards);
+	private String especificarParSimple(char parValue, List<String> cartasBoard) {
+		List<Character> boardOrdenado = cartasBoard.stream().map(card -> card.charAt(0)).distinct()
+				.sorted((a, b) -> compararCartas(b, a)).toList();
 
-		manoCartas.sort((a, b) -> Integer.compare(getRankValue(b.charAt(0)), getRankValue(a.charAt(0))));
-		boardValues.sort(Collections.reverseOrder());
-
-		int highestBoardValue = boardValues.get(0);
-		int secondHighestBoardValue = boardValues.size() > 1 ? boardValues.get(1) : 0;
-
-		int handValue1 = getRankValue(manoCartas.get(0).charAt(0));
-		int handValue2 = getRankValue(manoCartas.get(1).charAt(0));
-
-		// Pocket pair
-		if (handValue1 == handValue2) {
-
-			if (handValue1 > highestBoardValue) {
-				return "OVER_PAIR";
-			} else if (handValue1 < highestBoardValue && handValue1 > secondHighestBoardValue) {
-				return "PP_BELOW_TP";
-			} else if (handValue1 == secondHighestBoardValue) {
-				return "MIDDLE_PAIR";
-			} else if (doblePar(handCards)) {
-				return "TWO_PAIR";
-			} else {
-				return "WEAK_PAIR";
-			}
+		if (compararCartas(parValue, boardOrdenado.get(0)) > 0) {
+			return "OVER_PAIR";
+		} else if (parValue == boardOrdenado.get(0)) {
+			return "TOP_PAIR";
+		} else if (boardOrdenado.size() > 1 && compararCartas(parValue, boardOrdenado.get(1)) > 0) {
+			return "PP_BELOW_TP";
+		} else if (boardOrdenado.size() > 1 && parValue == boardOrdenado.get(1)) {
+			return "MIDDLE_PAIR";
 		} else {
-			if (handValue1 == highestBoardValue || handValue2 == highestBoardValue) {
-				return "TOP_PAIR";
-			} else if (handValue1 == secondHighestBoardValue || handValue2 == secondHighestBoardValue) {
-				return "MIDDLE_PAIR";
-			} else if (Math.max(handValue1, handValue2) < secondHighestBoardValue) {
-				return "WEAK_PAIR";
-			} else {
-				return "NO_MADE_HAND";
-			}
+			return "WEAK_PAIR";
 		}
 	}
 
-	private boolean hayPar(List<String> hand) {
-
-		Map<Character, Integer> contadorRangos = new HashMap<>();
-
-		for (String carta : hand) {
-			char rango = carta.charAt(0);
-			contadorRangos.put(rango, contadorRangos.getOrDefault(rango, 0) + 1);
-		}
-
-		for (int cantidad : contadorRangos.values()) {
-			if (cantidad >= 2) {
-				return true;
-			}
-		}
-
-		return false;
+	private int compararCartas(char a, char b) {
+		return getRankValue(a) - getRankValue(b);
 	}
 
 	private boolean flushDraw(List<String> cards) {
