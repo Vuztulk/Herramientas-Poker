@@ -20,7 +20,7 @@ public class RangoCartas {
 	}
 
 //TRANSFORMA DE TEXTO A GRAFICO	
-	
+
 	private void procesarRango(String rangoInput) {
 		String[] partes = rangoInput.split(",");
 		for (String parte : partes) {
@@ -31,6 +31,13 @@ public class RangoCartas {
 				agregarRangoMayor(parte);
 			} else if (parte.contains("-")) {
 				agregarRangoIntervalo(parte);
+			} else if (parte.length() == 2) {
+				if (parte.charAt(0) == parte.charAt(1)) {
+					rangos.add(parte);
+				} else {
+					rangos.add(parte + "s");
+					rangos.add(parte + "o");
+				}
 			} else {
 				rangos.add(parte);
 			}
@@ -99,7 +106,6 @@ public class RangoCartas {
 			indiceSuperiorBajo = ordenCartas.indexOf(cartaSuperiorBaja);
 		}
 
-		
 		for (int i = indiceInferiorAlto; i <= indiceSuperiorAlto; i++) {
 			char cartaAlta = ordenCartas.charAt(i);
 
@@ -116,8 +122,7 @@ public class RangoCartas {
 					} else {
 						rangos.add(cartaAlta + String.valueOf(cartaBaja));
 					}
-				}
-				else {//Caso de que el intervalo sean de pares
+				} else {// Caso de que el intervalo sean de pares
 					rangos.add(cartaAlta + String.valueOf(cartaBaja));
 				}
 			}
@@ -127,184 +132,123 @@ public class RangoCartas {
 ////TRANSFORMA DE GRAFICO A TEXTO
 
 	public String obtenerAbreviacionRango(Set<String> cartas) {
-        StringBuilder resultado = new StringBuilder();
-        Set<String> cartasProcesadas = new HashSet<>();
+		StringBuilder resultado = new StringBuilder();
+		Set<String> cartasProcesadas = new HashSet<>();
 
-        procesarPares(cartas, cartasProcesadas, resultado);
-        procesarSuited(cartas, cartasProcesadas, resultado);
-        procesarOffsuited(cartas, cartasProcesadas, resultado);
+		procesarPares(cartas, cartasProcesadas, resultado);
+		procesarCombinaciones(cartas, cartasProcesadas, resultado, "s");
+		procesarCombinaciones(cartas, cartasProcesadas, resultado, "o");
 
-        if (resultado.length() > 0 && resultado.charAt(resultado.length() - 1) == ',') {
-            resultado.setLength(resultado.length() - 1);
-        }
+		if (resultado.length() > 0 && resultado.charAt(resultado.length() - 1) == ',') {
+			resultado.setLength(resultado.length() - 1);
+		}
 
-        return resultado.toString();
-    }
-
-	private void procesarPares(Set<String> cartas, Set<String> cartasProcesadas, StringBuilder resultado) {
-	    String rangoInicio = null;
-	    String rangoFin = null;
-	    boolean incluyeAA = false;
-
-	    for (int i = ordenCartas.length() - 1; i >= 0; i--) {
-	        String par = String.valueOf(ordenCartas.charAt(i)) + ordenCartas.charAt(i);
-
-	        if (cartas.contains(par)) {
-	            if (rangoInicio == null) {
-	                rangoInicio = par;
-	            }
-	            rangoFin = par;
-	            cartasProcesadas.add(par);
-
-	            if (par.equals("AA")) {
-	                incluyeAA = true;
-	            }
-	        } else if (rangoInicio != null) {
-	            agregarRango(resultado, rangoFin, rangoInicio, incluyeAA);
-	            rangoInicio = null;
-	            rangoFin = null;
-	            incluyeAA = false;
-	        }
-	    }
-
-	    if (rangoInicio != null) {
-	    	agregarRango(resultado, rangoFin, rangoInicio, incluyeAA);
-	    }
+		return resultado.toString();
 	}
 
-    private void procesarSuited(Set<String> cartas, Set<String> cartasProcesadas, StringBuilder resultado) {
-        for (int i = ordenCartas.length() - 1; i >= 1; i--) {
-            char cartaAlta = ordenCartas.charAt(i);
-            boolean filaCompleta = true;
-            String cartaMasBaja = null;
+	private void procesarPares(Set<String> cartas, Set<String> cartasProcesadas, StringBuilder resultado) {
+		String rangoInicio = null, rangoFin = null;
+		boolean incluyeAA = false;
 
-            for (int j = 0; j < i; j++) {
-                char cartaBaja = ordenCartas.charAt(j);
-                String combinacion = "" + cartaAlta + cartaBaja + "s";
+		for (int i = ordenCartas.length() - 1; i >= 0; i--) {
+			String par = String.valueOf(ordenCartas.charAt(i)) + ordenCartas.charAt(i);
 
-                if (!cartas.contains(combinacion)) {
-                    filaCompleta = false;
-                    break;
-                }
-                
-                if (cartaMasBaja == null) {
-                    cartaMasBaja = combinacion;
-                }
-            }
+			if (cartas.contains(par)) {
+				if (rangoInicio == null)
+					rangoInicio = par;
+				rangoFin = par;
+				cartasProcesadas.add(par);
+				if (par.equals("AA"))
+					incluyeAA = true;
+			} else if (rangoInicio != null) {
+				agregarRango(resultado, rangoFin, rangoInicio, incluyeAA);
+				rangoInicio = null;
+			}
+		}
 
-            if (filaCompleta && cartaMasBaja != null) {
-                resultado.append(cartaMasBaja).append("+,");
-                for (int j = 0; j < i; j++) {
-                    cartasProcesadas.add("" + cartaAlta + ordenCartas.charAt(j) + "s");
-                }
-            } else {
-                agregarRangoSuited(cartas, cartasProcesadas, resultado, cartaAlta);
-            }
-        }
-    }
+		if (rangoInicio != null)
+			agregarRango(resultado, rangoFin, rangoInicio, incluyeAA);
+	}
 
-    private void agregarRangoSuited(Set<String> cartas, Set<String> cartasProcesadas, StringBuilder resultado, char cartaAlta) {
-        String rangoInicio = null;
-        String rangoFin = null;
+	private void procesarCombinaciones(Set<String> cartas, Set<String> cartasProcesadas, StringBuilder resultado,
+			String tipo) {
 
-        for (int j = 0; j < ordenCartas.indexOf(cartaAlta); j++) {
-            char cartaBaja = ordenCartas.charAt(j);
-            String combinacion = "" + cartaAlta + cartaBaja + "s";
+		for (int i = ordenCartas.length() - 1; i >= 1; i--) {
+			char cartaAlta = ordenCartas.charAt(i);
+			boolean filaCompleta = true;
+			String cartaMasBaja = null;
 
-            if (cartas.contains(combinacion) && !cartasProcesadas.contains(combinacion)) {
-                if (rangoInicio == null) {
-                    rangoInicio = combinacion;
-                }
-                rangoFin = combinacion;
-                cartasProcesadas.add(combinacion);
-            } else if (rangoInicio != null) {
-                agregarRango(resultado, rangoInicio, rangoFin, false);
-                rangoInicio = null;
-                rangoFin = null;
-            }
-        }
+			for (int j = 0; j < i; j++) {
+				char cartaBaja = ordenCartas.charAt(j);
+				String combinacion = "" + cartaAlta + cartaBaja + tipo;
 
-        if (rangoInicio != null) {
-            agregarRango(resultado, rangoInicio, rangoFin, false);
-        }
-    }
+				if (cartas.contains(combinacion) && !cartasProcesadas.contains(combinacion)) {
+					if (cartaMasBaja == null)
+						cartaMasBaja = combinacion;
+				} else {
+					filaCompleta = false;
+				}
+			}
 
-    private void procesarOffsuited(Set<String> cartas, Set<String> cartasProcesadas, StringBuilder resultado) {
-        for (int i = ordenCartas.length() - 1; i > 0; i--) {
-            char cartaAlta = ordenCartas.charAt(i);
-            char cartaBajaLimite = ' ';
-            boolean columnaCompleta = true;
-            boolean encontradaAlguna = false;
+			if (filaCompleta && cartaMasBaja != null) {
+				resultado.append(cartaMasBaja).append("+,");
+			} else {
+				agregarRangoCombinacion(cartas, cartasProcesadas, resultado, cartaAlta, tipo);
+			}
+		}
+	}
 
-            for (int j = 0; j < i; j++) {
-                char cartaBaja = ordenCartas.charAt(j);
-                String combinacion = "" + cartaAlta + cartaBaja + "o";
+	private void agregarRangoCombinacion(Set<String> cartas, Set<String> cartasProcesadas, StringBuilder resultado,
+			char cartaAlta, String tipo) {
+		String rangoInicio = null, rangoFin = null;
 
-                if (cartas.contains(combinacion) && !cartasProcesadas.contains(combinacion)) {
-                    if (cartaBajaLimite == ' ') {
-                        cartaBajaLimite = cartaBaja;
-                    }
-                    encontradaAlguna = true;
-                } else {
-                    columnaCompleta = false;
-                }
-            }
+		for (int j = 0; j < ordenCartas.indexOf(cartaAlta); j++) {
+			char cartaBaja = ordenCartas.charAt(j);
+			String combinacion = "" + cartaAlta + cartaBaja + tipo;
 
-            if (columnaCompleta && encontradaAlguna) {
-                resultado.append(cartaAlta).append(cartaBajaLimite).append("o+,");
-                for (int j = 0; j < i; j++) {
-                    cartasProcesadas.add("" + cartaAlta + ordenCartas.charAt(j) + "o");
-                }
-            } else if (encontradaAlguna) {
-                agregarRangoOffsuited(cartas, cartasProcesadas, resultado, cartaAlta);
-            }
-        }
-    }
+			if (cartas.contains(combinacion) && !cartasProcesadas.contains(combinacion)) {
+				if (rangoInicio == null)
+					rangoInicio = combinacion;
+				rangoFin = combinacion;
+				cartasProcesadas.add(combinacion);
+			} else if (rangoInicio != null) {
+				agregarRango(resultado, rangoInicio, rangoFin, false);
+				rangoInicio = null;
+			}
+		}
 
-    private void agregarRangoOffsuited(Set<String> cartas, Set<String> cartasProcesadas, StringBuilder resultado, char cartaAlta) {
-        String rangoInicio = null;
-        String rangoFin = null;
+		if (rangoInicio != null)
+			agregarRango(resultado, rangoInicio, rangoFin, false);
+	}
 
-        for (int j = 0; j < ordenCartas.indexOf(cartaAlta); j++) {
-            char cartaBaja = ordenCartas.charAt(j);
-            String combinacion = "" + cartaAlta + cartaBaja + "o";
+	private void agregarRango(StringBuilder resultado, String rangoInicio, String rangoFin, boolean incluyeAA) {
+		if (incluyeAA && !rangoInicio.equals(rangoFin)) {
+			resultado.append(rangoInicio).append("+,");
+		} else if (rangoInicio.equals(rangoFin)) {
+			resultado.append(rangoInicio).append(",");
+		} else if (esRangoConsecutivoPares(rangoInicio, rangoFin)) {
+			resultado.append(rangoFin).append("-").append(rangoInicio).append(",");
+		} else if (esRangoConsecutivo(rangoInicio, rangoFin)) {
+			resultado.append(rangoFin).append("-").append(rangoInicio).append(",");
+		} else {
+			resultado.append(rangoFin).append("+,");
+		}
+	}
 
-            if (cartas.contains(combinacion) && !cartasProcesadas.contains(combinacion)) {
-                if (rangoInicio == null) {
-                    rangoInicio = combinacion;
-                }
-                rangoFin = combinacion;
-                cartasProcesadas.add(combinacion);
-            } else if (rangoInicio != null) {
-                agregarRango(resultado, rangoInicio, rangoFin, false);
-                rangoInicio = null;
-                rangoFin = null;
-            }
-        }
+	private boolean esRangoConsecutivo(String rangoInicio, String rangoFin) {
+		int indiceInicio = ordenCartas.indexOf(rangoInicio.charAt(1));
+		int indiceFin = ordenCartas.indexOf(rangoFin.charAt(1));
+		return indiceFin - indiceInicio != ordenCartas.indexOf(rangoFin.charAt(0)) - 1;
+	}
 
-        if (rangoInicio != null) {
-            agregarRango(resultado, rangoInicio, rangoFin, false);
-        }
-    }
-
-    private void agregarRango(StringBuilder resultado, String rangoInicio, String rangoFin, boolean incluyeAA) {
-        if (incluyeAA) {//Agrega selecciones de pares
-            resultado.append(rangoInicio).append("+,");
-        } else if (rangoInicio.equals(rangoFin)) {//Agrega selecciones unicas
-            resultado.append(rangoInicio).append(",");
-        } else if (esRangoConsecutivo(rangoInicio, rangoFin)) {//Agrega intervalos
-            resultado.append(rangoFin).append("-").append(rangoInicio).append(",");
-        } else {//Agrega rangos enteros
-            resultado.append(rangoFin).append("+,");
-        }
-    }
-
-    private boolean esRangoConsecutivo(String rangoInicio, String rangoFin) {
-        int indiceInicio = ordenCartas.indexOf(rangoInicio.charAt(1));
-        int indiceFin = ordenCartas.indexOf(rangoFin.charAt(1));
-
-        return (indiceFin - indiceInicio != ordenCartas.indexOf(rangoFin.charAt(0)) - 1);
-    }
+	private boolean esRangoConsecutivoPares(String rangoInicio, String rangoFin) {
+		int indiceInicio1 = ordenCartas.indexOf(rangoInicio.charAt(0));
+		int indiceInicio2 = ordenCartas.indexOf(rangoInicio.charAt(1));
+	    int indiceFin1 = ordenCartas.indexOf(rangoFin.charAt(0));
+	    int indiceFin2 = ordenCartas.indexOf(rangoFin.charAt(1));
+	    boolean es_par = indiceInicio1 == indiceInicio2 && indiceFin1 == indiceFin2;
+	    return es_par && indiceInicio1 != indiceFin1;
+	}
 
 	public Set<String> getRangos() {
 		return rangos;
