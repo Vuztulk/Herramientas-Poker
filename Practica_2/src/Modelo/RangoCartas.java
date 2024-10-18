@@ -163,6 +163,7 @@ public class RangoCartas {
 			} else if (rangoInicio != null) {
 				agregarRango(resultado, rangoFin, rangoInicio, incluyeAA);
 				rangoInicio = null;
+				incluyeAA = false;
 			}
 		}
 
