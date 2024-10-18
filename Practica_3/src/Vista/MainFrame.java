@@ -2,11 +2,17 @@ package Vista;
 
 import java.awt.CardLayout;
 import java.awt.EventQueue;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+
 import javax.swing.JFrame;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import Controlador.Controller;
 import Modelo.Model;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainFrame extends JFrame {
@@ -14,7 +20,6 @@ public class MainFrame extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private CardLayout cardLayout;
 	private Controller controller;
-	private List<String> mano;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -55,19 +60,66 @@ public class MainFrame extends JFrame {
 		cardLayout.show(getContentPane(), nombrePanel);
 	}
 
-	public List<String> mostrarMenuArchivos() {
-		JDialog dialog = new JDialog(this, "Seleccionar Archivos", true);
-		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+	public List<List<String>> mostrarMenuArchivos(String opcion) {
+        JDialog dialog = new JDialog(this, "Seleccionar Archivos", true);
+        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
-		MenuArchivos menuArchivos = new MenuArchivos(controller);
-		menuArchivos.setDialog(dialog);
-		dialog.add(menuArchivos);
-		dialog.pack();
-		dialog.setLocationRelativeTo(this);
-		dialog.setVisible(true);
+        MenuArchivos menuArchivos = new MenuArchivos(controller);
+        menuArchivos.setDialog(dialog);
+        dialog.add(menuArchivos);
+        dialog.pack();
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
 
-		this.mano = menuArchivos.getInfoArchivo();
-		return this.mano;
+        List<List<String>> resultado = new ArrayList<>();
+        String filePath = menuArchivos.getSelectedFilePath();
 
-	}
+        if (filePath != null) {
+            try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+                String line;
+                while ((line = br.readLine()) != null) {
+                    if (opcion.equals("Board")) {
+                        resultado.add(procesarBoard(line));
+                    } else if (opcion.equals("Jugadores")) {
+                        resultado.addAll(procesarJugadores(line));
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Error al leer el archivo: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+
+        return resultado;
+    }
+
+    private List<String> procesarBoard(String linea) {
+        List<String> cartas = new ArrayList<>();
+        for (int i = 0; i < linea.length(); i += 2) {
+            if (i + 2 <= linea.length()) {
+                cartas.add(linea.substring(i, i + 2));
+            }
+        }
+        return cartas;
+    }
+
+    private List<List<String>> procesarJugadores(String linea) {
+        List<List<String>> jugadores = new ArrayList<>();
+        String[] partes = linea.split(";");
+        
+        for (int i = 1; i < partes.length; i++) {
+            String mano = partes[i].substring(2);
+            
+            if (mano.length() == 4) {
+                List<String> manoJugador = new ArrayList<>();
+                manoJugador.add(mano.substring(0, 2));
+                manoJugador.add(mano.substring(2, 4));
+                jugadores.add(manoJugador);
+            }
+        }
+        
+        return jugadores;
+    }
+
+
 }

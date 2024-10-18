@@ -3,14 +3,9 @@ package Vista;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
-
 import Controlador.Controller;
 
 public class Mesa extends JPanel {
@@ -24,7 +19,8 @@ public class Mesa extends JPanel {
     private JButton botonJugadores;
     private JButton botonNext;
     
-    private List<String> manos;
+    private List<List<String>> cartas_board;
+    private List<List<String>> cartas_jugadores;
     private List<String> resultados;
     private List<List<String>> res_jugadores;
     private List<String> resultadosText;
@@ -35,7 +31,7 @@ public class Mesa extends JPanel {
     private JLabel[][] cartasJugadores = new JLabel[4][4];
     private JLabel[] cartasBoard = new JLabel[5];
 
-    private int indiceManoActual = 0;
+    private int fase = 0;
 
     private int[][] posicionesIniciales = { 
             { 1260, 200 }, // Jugador 1 (Derecha)
@@ -65,16 +61,13 @@ public class Mesa extends JPanel {
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         buttonPanel.setOpaque(false);
-        //buttonPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
         botonBoard = new JButton("Board");
         botonJugadores = new JButton("Jugadores ");
-        botonNext = new JButton("Next");
+        botonNext = new JButton("Comenzar / Next");
 
         buttonPanel.add(botonBoard);
-        buttonPanel.add(Box.createHorizontalStrut(5));
         buttonPanel.add(botonJugadores);
-        buttonPanel.add(Box.createHorizontalStrut(5));
         buttonPanel.add(botonNext);
 
         
@@ -121,24 +114,20 @@ public class Mesa extends JPanel {
         labelApartados.setForeground(Color.BLACK);
         labelApartados.setFont(new Font("Arial", Font.PLAIN, 20));
 
-        JRadioButton apartado1 = new JRadioButton("1");
-        JRadioButton apartado2 = new JRadioButton("2");
-        JRadioButton apartado3 = new JRadioButton("3");
+        JRadioButton apartado1 = new JRadioButton("Normal");
+        JRadioButton apartado2 = new JRadioButton("Omaha");
 
         apartado1.setFont(new Font("Arial", Font.PLAIN, 15));
         apartado2.setFont(new Font("Arial", Font.PLAIN, 15));
-        apartado3.setFont(new Font("Arial", Font.PLAIN, 15));
 
         ButtonGroup grupoApartados = new ButtonGroup();
         grupoApartados.add(apartado1);
         grupoApartados.add(apartado2);
-        grupoApartados.add(apartado3);
 
         apartadosPanel.add(labelApartados);
         apartadosPanel.add(Box.createHorizontalStrut(10));
         apartadosPanel.add(apartado1);
         apartadosPanel.add(apartado2);
-        apartadosPanel.add(apartado3);
 
         apartado1.setSelected(true);
 
@@ -148,8 +137,13 @@ public class Mesa extends JPanel {
     private void setupButtonListeners() {
     	botonBoard.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                manos = mainFrame.mostrarMenuArchivos();
-                
+            	cartas_board = mainFrame.mostrarMenuArchivos("Board");              
+            }
+        });
+    	
+    	botonJugadores.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+            	cartas_jugadores = mainFrame.mostrarMenuArchivos("Jugadores");      
             }
         });
 

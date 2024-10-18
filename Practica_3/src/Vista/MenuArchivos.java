@@ -76,16 +76,22 @@ public class MenuArchivos extends JPanel {
 	}
 
 	private void seleccionarArchivo() {
-		try {
-			JFileChooser fileChooser = new JFileChooser();//Aqui salta excepcion y ni si quiera el try catch es capaz de capturarla
-			int returnValue = fileChooser.showOpenDialog(this);
-			if (returnValue == JFileChooser.APPROVE_OPTION) {
-				archivoEntrada = fileChooser.getSelectedFile();
-				textField.setText(archivoEntrada.getAbsolutePath());
-			}
-		} catch (Exception e) {
+	    try {
+	        JFileChooser fileChooser = new JFileChooser();
+	        int returnValue = fileChooser.showOpenDialog(this);
+	        if (returnValue == JFileChooser.APPROVE_OPTION) {
+	            archivoEntrada = fileChooser.getSelectedFile();
+	            textField.setText(archivoEntrada.getAbsolutePath());
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        JOptionPane.showMessageDialog(this, "Error al seleccionar archivo: " + e.getMessage());
+	    }
+	}
 
-		}
+
+	public String getSelectedFilePath() {
+	    return archivoEntrada != null ? archivoEntrada.getAbsolutePath() : null;
 	}
 
 	public List<String> getInfoArchivo() {
