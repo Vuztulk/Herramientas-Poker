@@ -182,7 +182,7 @@ public class Mesa extends JPanel {
 						updateEmptyPlayerSlots(newPlayerCards);
 						playersGenerado = getEmptyPlayerSlots() > 0;
 					}
-					pintaCartasJugadores();
+					pintaCartasJugadores(2);
 					pintaCartasBoard();
 					actualizarTexto();
 
@@ -254,13 +254,12 @@ public class Mesa extends JPanel {
 		}
 	}
 
-	private void pintaCartasJugadores() {
-
+	private void pintaCartasJugadores(int num_cartas_jugadores) {
+		
 		for (int jugador = 0; jugador < 6; jugador++) {
 			List<String> cartasJugador = cartas_jugadores.get(jugador);
-			int numCartas = (fase == 0) ? 2 : 4; // 2 cartas en pre-flop, 4 en flop y siguientes
 
-			for (int i = 0; i < numCartas; i++) {
+			for (int i = 0; i < num_cartas_jugadores; i++) {
 				if (i < cartasJugador.size()) {
 					String carta = cartasJugador.get(i);
 					String imagePath = UtilidadesGUI.getCartaPath(carta);
