@@ -21,7 +21,7 @@ public class Mesa extends JPanel {
 	private JButton botonNext;
 	private JLabel labelBoardInicial;
 	private JLabel labelBoardCartas;
-	
+
 	private List<String> listaCartasBoard;
 	private List<List<String>> listaCartasJugadores;
 
@@ -33,16 +33,15 @@ public class Mesa extends JPanel {
 	private JLabel[] labelCartasBoard = new JLabel[5];
 	private JLabel[][] labelCartasJugadores = new JLabel[6][4];
 	private JLabel[] labelPorcentajes = new JLabel[6];
-	
+
 	private int fase = 0;
 
-	private int[][] posicionesIniciales = { 
-			{ 380, 340 }, //(Izquierda)
-			{ 650, 100 }, //(Izquierda arriba)
-			{ 650, 600 }, //(Izquierda abajo)
-			{ 1360, 340 }, //(Derecha)
-			{ 1050, 100 }, //(Derecha arriba)
-			{ 1050, 600 } //(Derecha abajo)
+	private int[][] posicionesIniciales = { { 80, 340 }, // (Izquierda)
+			{ 350, 100 }, // (Izquierda arriba)
+			{ 350, 600 }, // (Izquierda abajo)
+			{ 1060, 340 }, // (Derecha)
+			{ 750, 100 }, // (Derecha arriba)
+			{ 750, 600 } // (Derecha abajo)
 	};
 
 	private int[] desplazamientoX = { 30, 10, 10, 10 };
@@ -53,47 +52,54 @@ public class Mesa extends JPanel {
 		this.mainFrame = mainFrame;
 
 		setLayout(new BorderLayout());
-		setBorder(new EmptyBorder(10, 10, 10, 10));
+
+		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+		splitPane.setResizeWeight(0.1);
+
+		JPanel leftPanel = createLeftPanel();
+		splitPane.setLeftComponent(leftPanel);
+
+		JPanel rightPanel = new JPanel() {
+			protected void paintComponent(Graphics g) {
+				super.paintComponent(g);
+				g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+			}
+		};
+		rightPanel.setLayout(null);
+		splitPane.setRightComponent(rightPanel);
+
+		add(splitPane, BorderLayout.CENTER);
 
 		backgroundImage = new ImageIcon("src/Vista/Imagenes/Poker_Board.jpg").getImage();
 
+		funcionalidadBotones();
+	}
+
+	private JPanel createLeftPanel() {
+		JPanel leftPanel = new JPanel(new BorderLayout());
+		leftPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+
 		JPanel northPanel = new JPanel(new BorderLayout());
 		northPanel.setOpaque(false);
-		northPanel.setBorder(new EmptyBorder(0, 0, 10, 0));
 
 		JPanel apartadosPanel = createApartadosPanel();
 		northPanel.add(apartadosPanel, BorderLayout.NORTH);
 
 		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		buttonPanel.setOpaque(false);
-
-		botonBoard = new JButton("Board");
-		botonJugadores = new JButton("Jugadores ");
-		botonNext = new JButton("Comenzar / Next");
-
-		buttonPanel.add(botonBoard);
-		buttonPanel.add(botonJugadores);
-		buttonPanel.add(botonNext);
-
+		buttonPanel.add(botonBoard = new JButton("Board"));
+		buttonPanel.add(botonJugadores = new JButton("Jugadores"));
+		buttonPanel.add(botonNext = new JButton("Comenzar / Next"));
 		northPanel.add(buttonPanel, BorderLayout.CENTER);
 
 		JPanel boardPanel = new JPanel(new GridLayout(2, 1));
-		boardPanel.setOpaque(false);
-		boardPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 		labelBoardInicial = new JLabel("Board Inicial: ");
-		labelBoardInicial.setForeground(Color.BLACK);
 		labelBoardInicial.setFont(new Font("Arial", Font.PLAIN, 20));
-
 		labelBoardCartas = new JLabel();
-		labelBoardCartas.setForeground(Color.BLACK);
-		labelBoardCartas.setFont(new Font("Arial", Font.PLAIN, 20));
-
 		boardPanel.add(labelBoardInicial);
 		boardPanel.add(labelBoardCartas);
-
 		northPanel.add(boardPanel, BorderLayout.SOUTH);
 
-		add(northPanel, BorderLayout.NORTH);
+		leftPanel.add(northPanel, BorderLayout.NORTH);
 
 		textoSalida = new JTextArea();
 		textoSalida.setEditable(false);
@@ -103,17 +109,16 @@ public class Mesa extends JPanel {
 
 		JScrollPane scrollPane = new JScrollPane(textoSalida);
 		scrollPane.setPreferredSize(new Dimension(280, 500));
-		scrollPane.setBorder(new EmptyBorder(0, 10, 10, 10));
-		add(scrollPane, BorderLayout.WEST);
+		leftPanel.add(scrollPane, BorderLayout.CENTER);
 
-		funcionalidadBotones();
+		return leftPanel;
 	}
 
 	private JPanel createApartadosPanel() {
 		JPanel apartadosPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		apartadosPanel.setOpaque(false);
 
-		JLabel labelApartados = new JLabel(" Apartados:");
+		JLabel labelApartados = new JLabel("Apartados:");
 		labelApartados.setForeground(Color.BLACK);
 		labelApartados.setFont(new Font("Arial", Font.PLAIN, 20));
 
@@ -156,35 +161,7 @@ public class Mesa extends JPanel {
 				switch (fase) {
 
 				case 0: // Pre-flop
-					List<String> cartasUsadas = new ArrayList<>();
-
-					if (listaCartasBoard == null || listaCartasBoard.isEmpty()) {
-						listaCartasBoard = controller.generateRandomBoard();
-						boardGenerado = true;
-					} else {
-						boardGenerado = false;
-					}
-					cartasUsadas.addAll(listaCartasBoard);
-
-					if (listaCartasJugadores == null || listaCartasJugadores.isEmpty()) {
-						listaCartasJugadores = controller.generateRandomPlayerCards(cartasUsadas, 6);
-						playersGenerado = true;
-					} else {
-						for (List<String> playerCards : listaCartasJugadores) {
-							if (!playerCards.isEmpty()) {
-								cartasUsadas.addAll(playerCards);
-							}
-						}
-						List<List<String>> newPlayerCards = controller.generateRandomPlayerCards(cartasUsadas,getEmptyPlayerSlots());
-						updateEmptyPlayerSlots(newPlayerCards);
-						playersGenerado = getEmptyPlayerSlots() > 0;
-					}
-					
-					pintaCartasBoard();
-					pintaCartasJugadores(2);
-					actualizarTexto();
-
-					fase++;
+					preFlop();
 					break;
 
 				case 1: // Flop
@@ -210,6 +187,49 @@ public class Mesa extends JPanel {
 
 		});
 	}
+//
+
+	private void preFlop() {
+		List<String> cartasUsadas = new ArrayList<>();
+		gestionarBoard();
+		cartasUsadas.addAll(listaCartasBoard);
+		gestionarJugadores(cartasUsadas);
+		equity = controller.getEquity(listaCartasJugadores, listaCartasBoard);
+		actualizarGUI();
+		fase++;
+	}
+
+	private void gestionarBoard() {
+		if (listaCartasBoard == null || listaCartasBoard.isEmpty()) {
+			listaCartasBoard = controller.generateRandomBoard();
+			boardGenerado = true;
+		} else {
+			boardGenerado = false;
+		}
+	}
+
+	private void gestionarJugadores(List<String> cartasUsadas) {
+		if (listaCartasJugadores == null || listaCartasJugadores.isEmpty()) {
+			listaCartasJugadores = controller.generateRandomPlayerCards(cartasUsadas, 6);
+			playersGenerado = true;
+		} else {
+			for (List<String> playerCards : listaCartasJugadores) {
+				if (!playerCards.isEmpty()) {
+					cartasUsadas.addAll(playerCards);
+				}
+			}
+			List<List<String>> newPlayerCards = controller.generateRandomPlayerCards(cartasUsadas,
+					getEmptyPlayerSlots());
+			updateEmptyPlayerSlots(newPlayerCards);
+			playersGenerado = getEmptyPlayerSlots() > 0;
+		}
+	}
+
+	private void actualizarGUI() {
+		pintaCartasJugadores(2);
+		pintaCartasBoard(3);
+		actualizarTexto();
+	}
 
 	private void actualizarTexto() {
 		if (boardGenerado) {
@@ -218,7 +238,7 @@ public class Mesa extends JPanel {
 			labelBoardInicial.setText("Board Inicial (cargado):");
 		}
 		labelBoardCartas.setText(String.join(", ", listaCartasBoard));
-
+		labelBoardCartas.setFont(new Font("Arial", Font.PLAIN, 20));
 		StringBuilder playerCardsText = new StringBuilder();
 		if (playersGenerado) {
 			playerCardsText.append("Cartas de jugadores generadas:\n\n");
@@ -227,7 +247,8 @@ public class Mesa extends JPanel {
 		}
 
 		for (int i = 0; i < listaCartasJugadores.size(); i++) {
-			playerCardsText.append("Jugador ").append(i + 1).append(": ").append(String.join(", ", listaCartasJugadores.get(i))).append("\n");
+			playerCardsText.append("Jugador ").append(i + 1).append(": ")
+					.append(String.join(", ", listaCartasJugadores.get(i))).append("\n");
 		}
 		textoSalida.setText(playerCardsText.toString());
 	}
@@ -252,6 +273,8 @@ public class Mesa extends JPanel {
 	}
 
 	private void pintaCartasJugadores(int num_cartas_jugadores) {
+		JPanel rightPanel = (JPanel) ((JSplitPane) getComponent(0)).getRightComponent();
+		rightPanel.removeAll();
 
 		for (int jugador = 0; jugador < 6; jugador++) {
 			List<String> cartasJugador = listaCartasJugadores.get(jugador);
@@ -268,45 +291,57 @@ public class Mesa extends JPanel {
 					int y = posicionesIniciales[jugador][1] + (desplazamientoY[i]);
 
 					cartaLabel.setBounds(x, y, 70, 95);
-					add(cartaLabel);
+					rightPanel.add(cartaLabel);
 					labelCartasJugadores[jugador][i] = cartaLabel;
 				}
 			}
 
-			labelPorcentajes[jugador] = new JLabel(2 + "%");
-			labelPorcentajes[jugador].setFont(new Font("Arial", Font.BOLD, 20));
-			labelPorcentajes[jugador].setForeground(Color.RED);
+			String equityText = "N/A";
+			if (equity != null && jugador < equity.size() && !equity.get(jugador).isEmpty()) {
+				equityText = equity.get(jugador).get(0);
+			}
 
-	        int x = posicionesIniciales[jugador][0] - 40;
-	        int y = posicionesIniciales[jugador][1] + 50;
-	        labelPorcentajes[jugador].setBounds(x, y, 100, 20);
+			if (labelPorcentajes[jugador] == null) {
+				labelPorcentajes[jugador] = new JLabel(equityText);
+				labelPorcentajes[jugador].setFont(new Font("Arial", Font.BOLD, 20));
+				labelPorcentajes[jugador].setForeground(Color.RED);
+			} else {
+				labelPorcentajes[jugador].setText(equityText);
+			}
 
-	        add(labelPorcentajes[jugador]);
+			int x = posicionesIniciales[jugador][0] - 70;
+			int y = posicionesIniciales[jugador][1] + 50;
+			labelPorcentajes[jugador].setBounds(x, y, 100, 20);
+
+			rightPanel.add(labelPorcentajes[jugador]);
 		}
 
-		revalidate();
-		repaint();
+		rightPanel.revalidate();
+		rightPanel.repaint();
 	}
 
-	private void pintaCartasBoard() {
+	private void pintaCartasBoard(int numCartas) {
+		JPanel rightPanel = (JPanel) ((JSplitPane) getComponent(0)).getRightComponent();
 
-		for (int i = 0; i < Math.min(3, listaCartasBoard.size()); i++) {
-			String carta = listaCartasBoard.get(i);
-			String imagePath = UtilidadesGUI.getCartaPath(carta);
+		for (int i = 0; i < numCartas; i++) {
+			if (i < listaCartasBoard.size()) {
+				String carta = listaCartasBoard.get(i);
+				String imagePath = UtilidadesGUI.getCartaPath(carta);
 
-			ImageIcon icon = new ImageIcon(imagePath);
-			Image image = icon.getImage().getScaledInstance(70, 95, Image.SCALE_SMOOTH);
-			JLabel cartaLabel = new JLabel(new ImageIcon(image));
+				ImageIcon icon = new ImageIcon(imagePath);
+				Image image = icon.getImage().getScaledInstance(70, 95, Image.SCALE_SMOOTH);
+				JLabel cartaLabel = new JLabel(new ImageIcon(image));
 
-			int x = 720 + (i * 80);
+				int x = 420 + (i * 80);
 
-			cartaLabel.setBounds(x, 350, 70, 95);
-			add(cartaLabel);
-			labelCartasBoard[i] = cartaLabel;
+				cartaLabel.setBounds(x, 350, 70, 95);
+				rightPanel.add(cartaLabel);
+				labelCartasBoard[i] = cartaLabel;
+			}
 		}
 
-		revalidate();
-		repaint();
+		rightPanel.revalidate();
+		rightPanel.repaint();
 	}
 
 	protected void paintComponent(Graphics g) {

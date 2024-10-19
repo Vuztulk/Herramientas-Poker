@@ -6,8 +6,10 @@ import java.util.List;
 
 public class Model {
 
+	Equity equity;
+	
 	public Model() {
-
+		
 	}
 
 	private static final String[] SUITS = { "s", "h", "d", "c" };
@@ -43,5 +45,10 @@ public class Model {
 			}
 		}
 		return deck;
+	}
+	
+	public List<List<String>> getEquity(List<List<String>> listaCartasJugadores, List<String> listaCartasBoard) {
+		equity = new Equity(listaCartasJugadores, listaCartasBoard);
+		return equity.calculateEquity();	
 	}
 }
