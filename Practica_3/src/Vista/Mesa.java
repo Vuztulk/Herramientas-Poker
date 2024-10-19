@@ -19,21 +19,21 @@ public class Mesa extends JPanel {
 	private JButton botonBoard;
 	private JButton botonJugadores;
 	private JButton botonNext;
-
-	private List<String> cartas_board;
-	private List<List<String>> cartas_jugadores;
+	private JLabel labelBoardInicial;
+	private JLabel labelBoardCartas;
+	
+	private List<String> listaCartasBoard;
+	private List<List<String>> listaCartasJugadores;
 
 	private boolean boardGenerado = false;
 	private boolean playersGenerado = false;
 
 	private List<List<String>> equity;
 
-	private JLabel labelBoardInicial;
-	private JLabel labelBoardCartas;
-
-	private JLabel[][] cartasJugadores = new JLabel[6][4];
-	private JLabel[] cartasBoard = new JLabel[5];
-
+	private JLabel[] labelCartasBoard = new JLabel[5];
+	private JLabel[][] labelCartasJugadores = new JLabel[6][4];
+	private JLabel[] labelPorcentajes = new JLabel[6];
+	
 	private int fase = 0;
 
 	private int[][] posicionesIniciales = { 
@@ -140,13 +140,13 @@ public class Mesa extends JPanel {
 	private void funcionalidadBotones() {
 		botonBoard.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				cartas_board = new ArrayList<>(mainFrame.mostrarMenuArchivos("Board").get(0));
+				listaCartasBoard = new ArrayList<>(mainFrame.mostrarMenuArchivos("Board").get(0));
 			}
 		});
 
 		botonJugadores.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				cartas_jugadores = mainFrame.mostrarMenuArchivos("Jugadores");
+				listaCartasJugadores = mainFrame.mostrarMenuArchivos("Jugadores");
 			}
 		});
 
@@ -156,31 +156,32 @@ public class Mesa extends JPanel {
 				switch (fase) {
 
 				case 0: // Pre-flop
-					List<String> usedCards = new ArrayList<>();
+					List<String> cartasUsadas = new ArrayList<>();
 
-					if (cartas_board == null || cartas_board.isEmpty()) {
-						cartas_board = controller.generateRandomBoard();
+					if (listaCartasBoard == null || listaCartasBoard.isEmpty()) {
+						listaCartasBoard = controller.generateRandomBoard();
 						boardGenerado = true;
 					} else {
 						boardGenerado = false;
 					}
-					usedCards.addAll(cartas_board);
+					cartasUsadas.addAll(listaCartasBoard);
 
-					if (cartas_jugadores == null || cartas_jugadores.isEmpty()) {
-						cartas_jugadores = controller.generateRandomPlayerCards(usedCards, 6);
+					if (listaCartasJugadores == null || listaCartasJugadores.isEmpty()) {
+						listaCartasJugadores = controller.generateRandomPlayerCards(cartasUsadas, 6);
 						playersGenerado = true;
 					} else {
-						for (List<String> playerCards : cartas_jugadores) {
+						for (List<String> playerCards : listaCartasJugadores) {
 							if (!playerCards.isEmpty()) {
-								usedCards.addAll(playerCards);
+								cartasUsadas.addAll(playerCards);
 							}
 						}
-						List<List<String>> newPlayerCards = controller.generateRandomPlayerCards(usedCards,getEmptyPlayerSlots());
+						List<List<String>> newPlayerCards = controller.generateRandomPlayerCards(cartasUsadas,getEmptyPlayerSlots());
 						updateEmptyPlayerSlots(newPlayerCards);
 						playersGenerado = getEmptyPlayerSlots() > 0;
 					}
 					pintaCartasJugadores(2);
 					pintaCartasBoard();
+
 					actualizarTexto();
 
 					fase++;
@@ -216,7 +217,7 @@ public class Mesa extends JPanel {
 		} else {
 			labelBoardInicial.setText("Board Inicial (cargado):");
 		}
-		labelBoardCartas.setText(String.join(", ", cartas_board));
+		labelBoardCartas.setText(String.join(", ", listaCartasBoard));
 
 		StringBuilder playerCardsText = new StringBuilder();
 		if (playersGenerado) {
@@ -225,16 +226,15 @@ public class Mesa extends JPanel {
 			playerCardsText.append("Cartas de jugadores cargadas:\n\n");
 		}
 
-		for (int i = 0; i < cartas_jugadores.size(); i++) {
-			playerCardsText.append("Jugador ").append(i + 1).append(": ")
-					.append(String.join(", ", cartas_jugadores.get(i))).append("\n");
+		for (int i = 0; i < listaCartasJugadores.size(); i++) {
+			playerCardsText.append("Jugador ").append(i + 1).append(": ").append(String.join(", ", listaCartasJugadores.get(i))).append("\n");
 		}
 		textoSalida.setText(playerCardsText.toString());
 	}
 
 	private int getEmptyPlayerSlots() {
 		int emptySlots = 0;
-		for (List<String> playerCards : cartas_jugadores) {
+		for (List<String> playerCards : listaCartasJugadores) {
 			if (playerCards.isEmpty()) {
 				emptySlots++;
 			}
@@ -244,9 +244,9 @@ public class Mesa extends JPanel {
 
 	private void updateEmptyPlayerSlots(List<List<String>> newPlayerCards) {
 		int index = 0;
-		for (int i = 0; i < cartas_jugadores.size(); i++) {
-			if (cartas_jugadores.get(i).isEmpty()) {
-				cartas_jugadores.set(i, newPlayerCards.get(index++));
+		for (int i = 0; i < listaCartasJugadores.size(); i++) {
+			if (listaCartasJugadores.get(i).isEmpty()) {
+				listaCartasJugadores.set(i, newPlayerCards.get(index++));
 			}
 		}
 	}
@@ -254,7 +254,7 @@ public class Mesa extends JPanel {
 	private void pintaCartasJugadores(int num_cartas_jugadores) {
 
 		for (int jugador = 0; jugador < 6; jugador++) {
-			List<String> cartasJugador = cartas_jugadores.get(jugador);
+			List<String> cartasJugador = listaCartasJugadores.get(jugador);
 			for (int i = 0; i < num_cartas_jugadores; i++) {
 				if (i < cartasJugador.size()) {
 					String carta = cartasJugador.get(i);
@@ -264,27 +264,24 @@ public class Mesa extends JPanel {
 					Image image = icon.getImage().getScaledInstance(70, 95, Image.SCALE_SMOOTH);
 					JLabel cartaLabel = new JLabel(new ImageIcon(image));
 
-					// Coordenadas absolutas basadas en posicionesIniciales y desplazamiento
 					int x = posicionesIniciales[jugador][0] + (desplazamientoX[i]);
 					int y = posicionesIniciales[jugador][1] + (desplazamientoY[i]);
 
 					cartaLabel.setBounds(x, y, 70, 95);
 					add(cartaLabel);
-					cartasJugadores[jugador][i] = cartaLabel;
+					labelCartasJugadores[jugador][i] = cartaLabel;
 				}
 			}
 
-			// Añadir porcentaje de probabilidad (texto debajo de las cartas)
-	        /*JLabel porcentajeLabel = new JLabel(resultados.get(jugador) + "%");
-	        porcentajeLabel.setFont(new Font("Arial", Font.BOLD, 12));
-	        porcentajeLabel.setForeground(Color.BLACK);
+			labelPorcentajes[jugador] = new JLabel(2 + "%");
+			labelPorcentajes[jugador].setFont(new Font("Arial", Font.BOLD, 20));
+			labelPorcentajes[jugador].setForeground(Color.RED);
 
-	        // Posición del porcentaje: justo debajo de las cartas del jugador
-	        int xPorcentaje = posicionesIniciales[jugador][0]; // Alinear con las cartas
-	        int yPorcentaje = posicionesIniciales[jugador][1] + 100; // Debajo de las cartas
-	        porcentajeLabel.setBounds(xPorcentaje, yPorcentaje, 100, 20);
+	        int x = posicionesIniciales[jugador][0] - 40;
+	        int y = posicionesIniciales[jugador][1] + 50;
+	        labelPorcentajes[jugador].setBounds(x, y, 100, 20);
 
-	        add(porcentajeLabel);*/
+	        add(labelPorcentajes[jugador]);
 		}
 
 		revalidate();
@@ -293,8 +290,8 @@ public class Mesa extends JPanel {
 
 	private void pintaCartasBoard() {
 
-		for (int i = 0; i < Math.min(3, cartas_board.size()); i++) {
-			String carta = cartas_board.get(i);
+		for (int i = 0; i < Math.min(3, listaCartasBoard.size()); i++) {
+			String carta = listaCartasBoard.get(i);
 			String imagePath = UtilidadesGUI.getCartaPath(carta);
 
 			ImageIcon icon = new ImageIcon(imagePath);
@@ -305,7 +302,7 @@ public class Mesa extends JPanel {
 
 			cartaLabel.setBounds(x, 350, 70, 95);
 			add(cartaLabel);
-			cartasBoard[i] = cartaLabel;
+			labelCartasBoard[i] = cartaLabel;
 		}
 
 		revalidate();
