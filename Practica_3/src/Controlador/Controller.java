@@ -17,4 +17,12 @@ public class Controller {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	public List<String> generateRandomBoard() {
+        return modelo.generateRandomBoard();
+    }
+
+    public List<List<String>> generateRandomPlayerCards(List<String> usedCards, int numPlayers) {
+        return modelo.generateRandomPlayerCards(usedCards, numPlayers);
+    }
 }
