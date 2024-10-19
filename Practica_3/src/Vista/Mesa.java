@@ -179,9 +179,9 @@ public class Mesa extends JPanel {
 						updateEmptyPlayerSlots(newPlayerCards);
 						playersGenerado = getEmptyPlayerSlots() > 0;
 					}
-					pintaCartasJugadores(2);
+					
 					pintaCartasBoard();
-
+					pintaCartasJugadores(2);
 					actualizarTexto();
 
 					fase++;
