@@ -26,9 +26,7 @@ public class Mesa extends JPanel {
 	private boolean boardGenerado = false;
 	private boolean playersGenerado = false;
 
-	private List<String> resultados;
-	private List<List<String>> res_jugadores;
-	private List<String> resultadosText;
+	private List<List<String>> equity;
 
 	private JLabel labelBoardInicial;
 	private JLabel labelBoardCartas;
@@ -38,17 +36,17 @@ public class Mesa extends JPanel {
 
 	private int fase = 0;
 
-	private int[][] posicionesIniciales = { { 1260, 200 }, // Jugador 1
-			{ 300, 200 }, // Jugador 2
-			{ 700, 200 }, // Jugador 3
-			{ 500, 600 }, // Jugador 4
-			{ 700, 600 }, // Jugador 5
-			{ 750, 100 } // Jugador 6
-
+	private int[][] posicionesIniciales = { 
+			{ 380, 340 }, //(Izquierda)
+			{ 650, 100 }, //(Izquierda arriba)
+			{ 650, 600 }, //(Izquierda abajo)
+			{ 1360, 340 }, //(Derecha)
+			{ 1050, 100 }, //(Derecha arriba)
+			{ 1050, 600 } //(Derecha abajo)
 	};
 
-	private int[] desplazamientoX = { 0, 80, 80, 0 };
-	private int[] desplazamientoY = { 100, 0, 0, 100 };
+	private int[] desplazamientoX = { 30, 10, 10, 10 };
+	private int[] desplazamientoY = { 20, 0, 0, 0 };
 
 	public Mesa(Controller controller, MainFrame mainFrame) {
 		this.controller = controller;
@@ -177,8 +175,7 @@ public class Mesa extends JPanel {
 								usedCards.addAll(playerCards);
 							}
 						}
-						List<List<String>> newPlayerCards = controller.generateRandomPlayerCards(usedCards,
-								getEmptyPlayerSlots());
+						List<List<String>> newPlayerCards = controller.generateRandomPlayerCards(usedCards,getEmptyPlayerSlots());
 						updateEmptyPlayerSlots(newPlayerCards);
 						playersGenerado = getEmptyPlayerSlots() > 0;
 					}
@@ -255,10 +252,9 @@ public class Mesa extends JPanel {
 	}
 
 	private void pintaCartasJugadores(int num_cartas_jugadores) {
-		
+
 		for (int jugador = 0; jugador < 6; jugador++) {
 			List<String> cartasJugador = cartas_jugadores.get(jugador);
-
 			for (int i = 0; i < num_cartas_jugadores; i++) {
 				if (i < cartasJugador.size()) {
 					String carta = cartasJugador.get(i);
@@ -268,15 +264,31 @@ public class Mesa extends JPanel {
 					Image image = icon.getImage().getScaledInstance(70, 95, Image.SCALE_SMOOTH);
 					JLabel cartaLabel = new JLabel(new ImageIcon(image));
 
-					int x = posicionesIniciales[jugador][0] + (desplazamientoX[jugador % 2] * i);
-					int y = posicionesIniciales[jugador][1] + (desplazamientoY[jugador % 2] * i);
+					// Coordenadas absolutas basadas en posicionesIniciales y desplazamiento
+					int x = posicionesIniciales[jugador][0] + (desplazamientoX[i]);
+					int y = posicionesIniciales[jugador][1] + (desplazamientoY[i]);
 
 					cartaLabel.setBounds(x, y, 70, 95);
 					add(cartaLabel);
 					cartasJugadores[jugador][i] = cartaLabel;
 				}
 			}
+
+			// Añadir porcentaje de probabilidad (texto debajo de las cartas)
+	        /*JLabel porcentajeLabel = new JLabel(resultados.get(jugador) + "%");
+	        porcentajeLabel.setFont(new Font("Arial", Font.BOLD, 12));
+	        porcentajeLabel.setForeground(Color.BLACK);
+
+	        // Posición del porcentaje: justo debajo de las cartas del jugador
+	        int xPorcentaje = posicionesIniciales[jugador][0]; // Alinear con las cartas
+	        int yPorcentaje = posicionesIniciales[jugador][1] + 100; // Debajo de las cartas
+	        porcentajeLabel.setBounds(xPorcentaje, yPorcentaje, 100, 20);
+
+	        add(porcentajeLabel);*/
 		}
+
+		revalidate();
+		repaint();
 	}
 
 	private void pintaCartasBoard() {
@@ -290,9 +302,8 @@ public class Mesa extends JPanel {
 			JLabel cartaLabel = new JLabel(new ImageIcon(image));
 
 			int x = 720 + (i * 80);
-			int y = 350;
 
-			cartaLabel.setBounds(x, y, 70, 95);
+			cartaLabel.setBounds(x, 350, 70, 95);
 			add(cartaLabel);
 			cartasBoard[i] = cartaLabel;
 		}
