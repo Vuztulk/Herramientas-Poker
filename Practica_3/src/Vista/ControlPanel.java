@@ -13,6 +13,7 @@ public class ControlPanel extends JPanel {
     private JButton botonNext;
     private JLabel labelBoardInicial;
     private JLabel labelBoardCartas;
+    private JCheckBox[] playerCheckboxes;
     
     public ControlPanel(Mesa mesa) {
         this.mesa = mesa;
@@ -70,19 +71,46 @@ public class ControlPanel extends JPanel {
     }
     
     private JPanel createButtonPanel() {
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 10));
+        JPanel buttonPanel = new JPanel(new GridLayout(3, 1, 0, 5));
 
+        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 10));
         botonBoard = new JButton("Board");
         botonJugadores = new JButton("Jugadores");
         botonNext = new JButton("Comenzar");
 
-        buttonPanel.add(botonBoard);
-        buttonPanel.add(botonJugadores);
-        buttonPanel.add(botonNext);
+        panelBotones.add(botonBoard);
+        panelBotones.add(botonJugadores);
+        panelBotones.add(botonNext);
+
+        JPanel playerCheckboxPanel = createPlayerCheckboxes();
+
+        buttonPanel.add(panelBotones);
+        buttonPanel.add(playerCheckboxPanel);
 
         return buttonPanel;
     }
 
+    private JPanel createPlayerCheckboxes() {
+        JPanel checkboxPanel = new JPanel(new GridLayout(2, 3, 10, 5));
+        playerCheckboxes = new JCheckBox[6];
+
+        for (int i = 0; i < 6; i++) {
+            playerCheckboxes[i] = new JCheckBox("Jugador " + (i + 1));
+            playerCheckboxes[i].setFont(new Font("Arial", Font.PLAIN, 14));
+            playerCheckboxes[i].setSelected(true);
+            checkboxPanel.add(playerCheckboxes[i]);
+        }
+
+        return checkboxPanel;
+    }
+    
+    public boolean[] getJugadorCheckbox() {
+        boolean[] checkbox = new boolean[6];
+        for (int i = 0; i < 6; i++) {
+        	checkbox[i] = playerCheckboxes[i].isSelected();
+        }
+        return checkbox;
+    }
     
     private JPanel createBoardPanel() {
         JPanel boardPanel = new JPanel(new GridLayout(2, 1));
@@ -99,12 +127,15 @@ public class ControlPanel extends JPanel {
         botonJugadores.addActionListener(e -> mesa.loadPlayersFromFile());
         botonNext.addActionListener(e -> mesa.next());
     }
-
-    
+ 
     public void resetControls() {
         botonBoard.setEnabled(true);
         botonJugadores.setEnabled(true);
         botonNext.setText("Comenzar");
+        for (JCheckBox checkbox : playerCheckboxes) {
+            checkbox.setSelected(true);
+            checkbox.setEnabled(true);
+        }
     }
 
     public void updatePhaseLabel(int phase) {
@@ -118,5 +149,16 @@ public class ControlPanel extends JPanel {
         }
         labelBoardInicial.setText("Fase: " + phaseText);
         botonNext.setText(phase < 3 ? "Siguiente" : "Nueva mano");
+        
+        if (phase == 0) {
+            for (JCheckBox checkbox : playerCheckboxes) {
+                checkbox.setSelected(true);
+                checkbox.setEnabled(true);
+            }
+        } else {
+            for (JCheckBox checkbox : playerCheckboxes) {
+                checkbox.setEnabled(checkbox.isSelected());
+            }
+        }
     }
 }

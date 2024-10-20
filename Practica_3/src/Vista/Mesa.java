@@ -24,6 +24,7 @@ public class Mesa extends JPanel {
 	private List<String> boardCards;
 	private List<List<String>> playerCards;
 	private List<List<String>> equity;
+	private List<Boolean> activePlayers;
 
 	private boolean boardLoaded = false;
 	private boolean playersLoaded = false;
@@ -46,6 +47,11 @@ public class Mesa extends JPanel {
 		add(splitPane, BorderLayout.CENTER);
 
 		backgroundImage = new ImageIcon("src/Vista/Imagenes/Poker_Board.jpg").getImage();
+
+		activePlayers = new ArrayList<>();
+		for (int i = 0; i < 6; i++) {
+			activePlayers.add(true);
+		}
 	}
 
 	public BoardPanel getBoardPanel() {
@@ -113,6 +119,10 @@ public class Mesa extends JPanel {
 	}
 
 	public void next() {
+
+		if (currentPhase > 0) {
+			updateActivePlayers(controlPanel.getJugadorCheckbox());
+		}
 		switch (currentPhase) {
 		case 0:
 			preFlop();
@@ -135,12 +145,18 @@ public class Mesa extends JPanel {
 	}
 
 	private void preFlop() {
+
 		if (!boardLoaded || boardCards == null) {
 			boardCards = controller.generateRandomBoard();
 		}
 
 		if (!playersLoaded || playerCards == null) {
 			playerCards = new ArrayList<>();
+		}
+
+		activePlayers.clear();
+		for (int i = 0; i < 6; i++) {
+			activePlayers.add(true);
 		}
 
 		List<String> usedCards = new ArrayList<>(boardCards);
@@ -154,10 +170,10 @@ public class Mesa extends JPanel {
 			usedCards.addAll(newHand);
 		}
 
-		equity = controller.getEquity(playerCards, new ArrayList<>());
+		equity = controller.getEquity(playerCards, new ArrayList<>(), activePlayers);
 		boardPanel.updateBoard(new ArrayList<>());
 
-		playersPanel.updatePlayers(playerCards, equity);
+		playersPanel.updatePlayers(playerCards, equity, activePlayers);
 
 		updateCardInfo();
 
@@ -168,21 +184,21 @@ public class Mesa extends JPanel {
 	private void flop() {
 		List<String> flopCards = boardCards.subList(0, 3);
 		boardPanel.updateBoard(flopCards);
-		equity = controller.getEquity(playerCards, flopCards);
-		playersPanel.updatePlayers(playerCards, equity);
+		equity = controller.getEquity(playerCards, flopCards, activePlayers);
+		playersPanel.updatePlayers(playerCards, equity, activePlayers);
 	}
 
 	private void turn() {
 		List<String> turnCards = boardCards.subList(0, 4);
 		boardPanel.updateBoard(turnCards);
-		equity = controller.getEquity(playerCards, turnCards);
-		playersPanel.updatePlayers(playerCards, equity);
+		equity = controller.getEquity(playerCards, turnCards, activePlayers);
+		playersPanel.updatePlayers(playerCards, equity, activePlayers);
 	}
 
 	private void river() {
 		boardPanel.updateBoard(boardCards);
-		equity = controller.getEquity(playerCards, boardCards);
-		playersPanel.updatePlayers(playerCards, equity);
+		equity = controller.getEquity(playerCards, boardCards, activePlayers);
+		playersPanel.updatePlayers(playerCards, equity, activePlayers);
 	}
 
 	public void loadBoardFromFile() {
@@ -204,10 +220,17 @@ public class Mesa extends JPanel {
 		playerCards = null;
 		equity = null;
 		boardPanel.updateBoard(new ArrayList<>());
-		playersPanel.updatePlayers(new ArrayList<>(), new ArrayList<>());
+		playersPanel.updatePlayers(new ArrayList<>(), new ArrayList<>(), activePlayers);
+
+		activePlayers.clear();
+		for (int i = 0; i < 6; i++) {
+			activePlayers.add(true);
+		}
+
 		textoSalida.setText("");
 		controlPanel.updatePhaseLabel(-1);
 		controlPanel.resetControls();
+
 	}
 
 	private void updateGUI() {
@@ -227,8 +250,12 @@ public class Mesa extends JPanel {
 		}
 
 		for (int i = 0; i < playerCards.size(); i++) {
-			description.append("Jugador ").append(i + 1).append(": ").append(String.join(", ", playerCards.get(i)))
-					.append(" (Equity: ").append(equity.get(i).get(0)).append(")\n");
+			if (activePlayers.get(i)) {
+				description.append("Jugador ").append(i + 1).append(": ").append(String.join(", ", playerCards.get(i)))
+						.append(" (Equity: ").append(equity.get(i).get(0)).append(")\n");
+			} else {
+				description.append("Jugador ").append(i + 1).append(": Fold\n");
+			}
 		}
 		return description.toString();
 	}
@@ -257,6 +284,12 @@ public class Mesa extends JPanel {
 		}
 
 		textoSalida.setText(info.toString());
+	}
+
+	public void updateActivePlayers(boolean[] playerStates) {
+		for (int i = 0; i < playerStates.length; i++) {
+			activePlayers.set(i, playerStates[i]);
+		}
 	}
 
 	private String getPhaseString() {

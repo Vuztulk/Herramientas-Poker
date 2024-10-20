@@ -28,7 +28,7 @@ public class Controller {
         return modelo.generateRandomPlayerCards(usedCards, numPlayers);
     }
     
-    public List<List<String>> getEquity(List<List<String>> listaCartasJugadores, List<String> listaCartasBoard) {
-    	return modelo.getEquity(listaCartasJugadores, listaCartasBoard);
+    public List<List<String>> getEquity(List<List<String>> listaCartasJugadores, List<String> listaCartasBoard, List<Boolean> activePlayers) {
+    	return modelo.getEquity(listaCartasJugadores, listaCartasBoard, activePlayers);
 	}
 }
