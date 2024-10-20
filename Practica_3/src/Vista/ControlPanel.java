@@ -35,6 +35,12 @@ public class ControlPanel extends JPanel {
         initializeButtonListeners();
     }
     
+    public JButton getBotonBoard() { return botonBoard; }
+    public JButton getBotonJugadores() { return botonJugadores; }
+    public JButton getBotonNext() { return botonNext; }
+    public JLabel getLabelBoardInicial() { return labelBoardInicial; }
+    public JLabel getLabelBoardCartas() { return labelBoardCartas; }
+    
     private JPanel createApartadosPanel() {
         JPanel apartadosPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         apartadosPanel.setOpaque(false);
@@ -89,16 +95,11 @@ public class ControlPanel extends JPanel {
     }
     
     private void initializeButtonListeners() {
-        botonBoard.addActionListener(e -> mesa.getBoardPanel().generateBoard());
-        botonJugadores.addActionListener(e -> mesa.getPlayersPanel().generatePlayers());
+    	botonBoard.addActionListener(e -> mesa.loadBoardFromFile());
+        botonJugadores.addActionListener(e -> mesa.loadPlayersFromFile());
         botonNext.addActionListener(e -> mesa.next());
     }
-    
-    public JButton getBotonBoard() { return botonBoard; }
-    public JButton getBotonJugadores() { return botonJugadores; }
-    public JButton getBotonNext() { return botonNext; }
-    public JLabel getLabelBoardInicial() { return labelBoardInicial; }
-    public JLabel getLabelBoardCartas() { return labelBoardCartas; }
+
     
     public void resetControls() {
         botonBoard.setEnabled(true);
@@ -109,10 +110,10 @@ public class ControlPanel extends JPanel {
     public void updatePhaseLabel(int phase) {
         String phaseText;
         switch (phase) {
-            case 1: phaseText = "Pre-flop"; break;
-            case 2: phaseText = "Flop"; break;
-            case 3: phaseText = "Turn"; break;
-            case 4: phaseText = "River"; break;
+            case 0: phaseText = "Pre-flop"; break;
+            case 1: phaseText = "Flop"; break;
+            case 2: phaseText = "Turn"; break;
+            case 3: phaseText = "River"; break;
             default: phaseText = "Fin de la mano";
         }
         labelBoardInicial.setText("Fase: " + phaseText);

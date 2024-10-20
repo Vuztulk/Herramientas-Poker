@@ -18,7 +18,7 @@ public class Model {
 	public List<String> generateRandomBoard() {
 		List<String> deck = generateDeck();
 		Collections.shuffle(deck);
-		return deck.subList(0, 3);
+		return deck.subList(0, 5);
 	}
 
 	public List<List<String>> generateRandomPlayerCards(List<String> usedCards, int numPlayers) {

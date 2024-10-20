@@ -16,10 +16,6 @@ public class BoardPanel extends JPanel {
         setOpaque(false);
     }
     
-    public void generateBoard() {
-        // Si hay archivo leido entonces no genera aleatorio sino aleatorio
-    }
-    
     public void updateBoard(List<String> cards) {
         for (int i = 0; i < 5; i++) {
             if (i < cards.size()) {
