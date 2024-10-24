@@ -20,7 +20,7 @@ public class Mesa extends JPanel {
 	private PlayersPanel playersPanel;
 	private ControlPanel controlPanel;
 	private boolean type_game;
-	
+
 	private int currentPhase = 0;
 	private List<String> boardCards;
 	private List<List<String>> playerCards;
@@ -35,7 +35,7 @@ public class Mesa extends JPanel {
 		this.mainFrame = mainFrame;
 
 		setLayout(new BorderLayout());
-		
+
 		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		splitPane.setResizeWeight(0.1);
 
@@ -229,9 +229,8 @@ public class Mesa extends JPanel {
 
 			if (!validHands) {
 				JOptionPane.showMessageDialog(this,
-						"El archivo contiene manos con un número incorrecto de cartas para la modalidad seleccionada.\n"
-								+ "Se generaran manos aleatorias en su lugar",
-						"Error en el formato", JOptionPane.WARNING_MESSAGE);
+						"Numero incorrecto de cartas para la modalidad seleccionada\n"+ "Se generaran manos aleatorias en su lugar",
+						"Error en el formato de cartas", JOptionPane.WARNING_MESSAGE);
 				playerCards.clear();
 			}
 			playersLoaded = !playerCards.isEmpty();
@@ -269,14 +268,12 @@ public class Mesa extends JPanel {
 		description.append("Fase actual: ").append(getPhaseString()).append("\n\n");
 
 		if (currentPhase > 0) {
-			description.append("Cartas del Board: ")
-					.append(String.join(", ", boardCards.subList(0, Math.min(currentPhase + 2, 5)))).append("\n\n");
+			description.append("Cartas del Board: ").append(String.join(", ", boardCards.subList(0, Math.min(currentPhase + 2, 5)))).append("\n\n");
 		}
 
 		for (int i = 0; i < playerCards.size(); i++) {
 			if (activePlayers.get(i)) {
-				description.append("Jugador ").append(i + 1).append(": ").append(String.join(", ", playerCards.get(i)))
-						.append(" (Equity: ").append(equity.get(i).get(0)).append(")\n");
+				description.append("Jugador ").append(i + 1).append(": ").append(String.join(", ", playerCards.get(i))).append(" (Equity: ").append(equity.get(i).get(0)).append(")\n");
 			} else {
 				description.append("Jugador ").append(i + 1).append(": Fold\n");
 			}
@@ -293,8 +290,7 @@ public class Mesa extends JPanel {
 
 		info.append("\nJugadores:\n");
 		for (int i = 0; i < playerCards.size(); i++) {
-			info.append("Jugador ").append(i + 1).append(": ").append(String.join(", ", playerCards.get(i)))
-					.append("\n");
+			info.append("Jugador ").append(i + 1).append(": ").append(String.join(", ", playerCards.get(i))).append("\n");
 		}
 
 		textoSalida.setText(info.toString());
