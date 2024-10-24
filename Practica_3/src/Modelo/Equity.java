@@ -3,56 +3,53 @@ package Modelo;
 import java.util.*;
 
 public class Equity {
-    private List<List<String>> playerCards;
-    private List<String> boardCards;
-    private static final int SIMULATIONS = 10000;
+    private List<List<String>> cartasJugadores;
+    private List<String> cartasTablero;
+    private static final int SIMULACIONES = 2000;
 
-    public Equity(List<List<String>> playerCards, List<String> boardCards) {
-        this.playerCards = playerCards;
-        this.boardCards = boardCards;
+    public Equity(List<List<String>> cartasJugadores, List<String> cartasTablero) {
+        this.cartasJugadores = cartasJugadores;
+        this.cartasTablero = cartasTablero;
     }
 
     public List<List<String>> calculateEquity() {
-        int[] wins = new int[playerCards.size()];
-        int[] ties = new int[playerCards.size()];
+        double[] puntos = new double[cartasJugadores.size()];
 
-        for (int i = 0; i < SIMULATIONS; i++) {
+        for (int i = 0; i < SIMULACIONES; i++) {
             List<String> deck = generateDeck();
-            List<String> simulatedBoard = new ArrayList<>(boardCards);
+            List<String> tableroSimulado = new ArrayList<>(cartasTablero);
+
+            while (tableroSimulado.size() < 5) {
+                tableroSimulado.add(robarCarta(deck));
+            }
+
+            List<Integer> ganadores = evaluarManos(tableroSimulado);
+            double puntosJugador = 1.0 / ganadores.size();
             
-            while (simulatedBoard.size() < 5) {
-                simulatedBoard.add(drawCard(deck));
-            }
-
-            int winner = evaluateHands(simulatedBoard);
-            if (winner == -1) {
-                for (int j = 0; j < ties.length; j++) {
-                    ties[j]++;
-                }
-            } else {
-                wins[winner]++;
+            for (int ganador : ganadores) {
+                puntos[ganador] += puntosJugador;
             }
         }
 
-        List<List<String>> equity = new ArrayList<>();
-        for (int i = 0; i < playerCards.size(); i++) {
-            double equityPercentage = (wins[i] + (ties[i] / playerCards.size())) * 100.0 / SIMULATIONS;
-            equity.add(Arrays.asList(String.format("%.2f", equityPercentage) + "%"));
+        List<List<String>> equidad = new ArrayList<>();
+        for (int i = 0; i < cartasJugadores.size(); i++) {
+            double porcentajeEquidad = (puntos[i] * 100.0) / SIMULACIONES;
+            equidad.add(Arrays.asList(String.format("%.2f", porcentajeEquidad) + "%"));
         }
 
-        return equity;
+        return equidad;
     }
 
     private List<String> generateDeck() {
         List<String> deck = new ArrayList<>();
-        String[] suits = {"h", "d", "c", "s"};
-        String[] ranks = {"2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K", "A"};
+        String[] palos = {"h", "d", "c", "s"};
+        String[] rangos = {"2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K", "A"};
 
-        for (String suit : suits) {
-            for (String rank : ranks) {
-                String card = rank + suit;
-                if (!boardCards.contains(card) && !isCardUsedByPlayers(card)) {
-                    deck.add(card);
+        for (String palo : palos) {
+            for (String rango : rangos) {
+                String carta = rango + palo;
+                if (!cartasTablero.contains(carta) && !esCartaUsadaPorJugadores(carta)) {
+                    deck.add(carta);
                 }
             }
         }
@@ -60,63 +57,215 @@ public class Equity {
         return deck;
     }
 
-    private boolean isCardUsedByPlayers(String card) {
-        for (List<String> playerHand : playerCards) {
-            if (playerHand.contains(card)) {
+    private boolean esCartaUsadaPorJugadores(String carta) {
+        for (List<String> manoJugador : cartasJugadores) {
+            if (manoJugador.contains(carta)) {
                 return true;
             }
         }
         return false;
     }
 
-    private String drawCard(List<String> deck) {
+    private String robarCarta(List<String> deck) {
         return deck.remove(deck.size() - 1);
     }
 
-    private int evaluateHands(List<String> board) {
-        int bestHandValue = -1;
-        int winner = -1;
-        boolean tie = false;
+    private List<Integer> evaluarManos(List<String> tablero) {
+        List<Integer> ganadores = new ArrayList<>();
+        int[] mejorMano = null;
 
-        for (int i = 0; i < playerCards.size(); i++) {
-            List<String> hand = new ArrayList<>(playerCards.get(i));
-            hand.addAll(board);
-            int handValue = evaluateHand(hand);
-
-            if (handValue > bestHandValue) {
-                bestHandValue = handValue;
-                winner = i;
-                tie = false;
-            } else if (handValue == bestHandValue) {
-                tie = true;
+        for (int i = 0; i < cartasJugadores.size(); i++) {
+            List<String> mano = new ArrayList<>(cartasJugadores.get(i));
+            mano.addAll(tablero);
+            int[] valorMano = evaluarMano(mano);
+            
+            if (mejorMano == null || compararManos(valorMano, mejorMano) > 0) {
+                mejorMano = valorMano;
+                ganadores.clear();
+                ganadores.add(i);
+            } else if (compararManos(valorMano, mejorMano) == 0) {
+                ganadores.add(i);
             }
         }
 
-        return tie ? -1 : winner;
+        return ganadores;
     }
 
-    private int evaluateHand(List<String> hand) {
-        Map<Character, Integer> rankCount = new HashMap<>();
-        for (String card : hand) {
-            char rank = card.charAt(0);
-            rankCount.put(rank, rankCount.getOrDefault(rank, 0) + 1);
+    private int compararManos(int[] mano1, int[] mano2) {
+        for (int i = 0; i < mano1.length; i++) {
+            if (mano1[i] != mano2[i]) {
+                return Integer.compare(mano1[i], mano2[i]);
+            }
+        }
+        return 0;
+    }
+
+    private int[] evaluarMano(List<String> mano) {
+        Map<Integer, Integer> conteoRangos = new TreeMap<>(Collections.reverseOrder());
+        Map<Character, List<String>> cartasPorPalo = new HashMap<>();
+        
+        for (String carta : mano) {
+            char palo = carta.charAt(1);
+            cartasPorPalo.putIfAbsent(palo, new ArrayList<>());
+            cartasPorPalo.get(palo).add(carta);
+            
+            int valor = getRankValue(carta.charAt(0));
+            conteoRangos.put(valor, conteoRangos.getOrDefault(valor, 0) + 1);
+        }
+        
+        //resultado[0] es el tipo de mano, a igualdad de tipo de mano se comparan los valores de resultado[1-5]
+        int[] resultado = new int[6];
+
+        for (List<String> cartasPalo : cartasPorPalo.values()) {
+            if (cartasPalo.size() >= 5 && escalera(cartasPalo)) {
+                resultado[0] = 8;
+                List<Integer> valores = getRanks(cartasPalo);
+                Collections.sort(valores, Collections.reverseOrder());
+                for (int i = 0; i < 5; i++) {
+                    resultado[i + 1] = valores.get(i);
+                }
+                return resultado;
+            }
         }
 
-        int pairs = 0;
-        boolean hasThreeOfAKind = false;
-        boolean hasFourOfAKind = false;
-
-        for (int count : rankCount.values()) {
-            if (count == 2) pairs++;
-            if (count == 3) hasThreeOfAKind = true;
-            if (count == 4) hasFourOfAKind = true;
+        Map<Integer, List<Integer>> frecuencias = new HashMap<>();
+        for (Map.Entry<Integer, Integer> entry : conteoRangos.entrySet()) {
+            int valor = entry.getKey();
+            int frecuencia = entry.getValue();
+            frecuencias.putIfAbsent(frecuencia, new ArrayList<>());
+            frecuencias.get(frecuencia).add(valor);
         }
 
-        if (hasFourOfAKind) return 7;
-        if (hasThreeOfAKind && pairs == 1) return 6;
-        if (hasThreeOfAKind) return 5;
-        if (pairs == 2) return 4;
-        if (pairs == 1) return 3;
-        return 2; 
+        // Poker
+        if (frecuencias.containsKey(4)) {
+            resultado[0] = 7;
+            resultado[1] = frecuencias.get(4).get(0);
+            // Kicker más alto
+            for (int valor : conteoRangos.keySet()) {
+                if (conteoRangos.get(valor) != 4) {
+                    resultado[2] = valor;
+                    break;
+                }
+            }
+            return resultado;
+        }
+
+        // Full
+        if (frecuencias.containsKey(3) && frecuencias.containsKey(2)) {
+            resultado[0] = 6;
+            resultado[1] = frecuencias.get(3).get(0);
+            resultado[2] = Collections.max(frecuencias.get(2));
+            return resultado;
+        }
+
+        // Escalera
+        if (escalera(mano)) {
+            resultado[0] = 5;
+            List<Integer> valores = getRanks(mano);
+            Collections.sort(valores, Collections.reverseOrder());
+            for (int i = 0; i < 5; i++) {
+                resultado[i + 1] = valores.get(i);
+            }
+            return resultado;
+        }
+
+        // Trio
+        if (frecuencias.containsKey(3)) {
+            resultado[0] = 4;
+            resultado[1] = frecuencias.get(3).get(0);
+            int count = 2;
+            for (int valor : conteoRangos.keySet()) {
+                if (conteoRangos.get(valor) != 3) {
+                    resultado[count++] = valor;
+                    if (count > 3) break;
+                }
+            }
+            return resultado;
+        }
+
+        // Doble Pareja
+        if (frecuencias.containsKey(2) && frecuencias.get(2).size() >= 2) {
+            resultado[0] = 3;
+            List<Integer> pares = frecuencias.get(2);
+            Collections.sort(pares, Collections.reverseOrder());
+            resultado[1] = pares.get(0);
+            resultado[2] = pares.get(1);
+            for (int valor : conteoRangos.keySet()) {
+                if (conteoRangos.get(valor) == 1) {
+                    resultado[3] = valor;
+                    break;
+                }
+            }
+            return resultado;
+        }
+
+        // Pareja
+        if (frecuencias.containsKey(2)) {
+            resultado[0] = 2;
+            resultado[1] = frecuencias.get(2).get(0);
+            int count = 2;
+            for (int valor : conteoRangos.keySet()) {
+                if (conteoRangos.get(valor) == 1) {
+                    resultado[count++] = valor;
+                    if (count > 4) break;
+                }
+            }
+            return resultado;
+        }
+
+        // Carta Alta
+        resultado[0] = 1;
+        int count = 1;
+        for (int valor : conteoRangos.keySet()) {
+            resultado[count++] = valor;
+            if (count > 5) break;
+        }
+        return resultado;
+    }
+
+    public boolean escalera(List<String> cards) {
+        List<Integer> ranks = getRanks(cards);
+        Collections.sort(ranks);
+
+        int count = 1;
+        int prev = ranks.get(0);
+
+        for (int i = 1; i < ranks.size(); i++) {
+            int current = ranks.get(i);
+            if (current == prev + 1) {
+                count++;
+                if (count == 5) {
+                    return true;
+                }
+            } else if (current != prev) {
+                count = 1;
+            }
+            prev = current;
+        }
+
+        return false;
+    }
+
+    private List<Integer> getRanks(List<String> cards) {
+        List<Integer> ranks = new ArrayList<>();
+        for (String card : cards) {
+            int value = getRankValue(card.charAt(0));
+            ranks.add(value);
+            if (value == 14) {
+                ranks.add(1);
+            }
+        }
+        return ranks;
+    }
+
+    private int getRankValue(char rank) {
+        switch (rank) {
+            case 'T': return 10;
+            case 'J': return 11;
+            case 'Q': return 12;
+            case 'K': return 13;
+            case 'A': return 14;
+            default: return Character.getNumericValue(rank);
+        }
     }
 }

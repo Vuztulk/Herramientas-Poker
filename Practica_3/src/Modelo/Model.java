@@ -55,7 +55,6 @@ public class Model {
         equity = new Equity(activePlayerCards, listaCartasBoard);
         List<List<String>> activeEquities = equity.calculateEquity();
 
-        // Reinsert folded players with 0% equity
         List<List<String>> allEquities = new ArrayList<>();
         int activeIndex = 0;
         for (int i = 0; i < listaCartasJugadores.size(); i++) {

@@ -71,7 +71,7 @@ public class PlayersPanel extends JPanel {
         equityLabels[player].setVisible(isActive);
     }
 
-    private void updateFoldLabel(int player, boolean hasFolded) {
+    private void updateFoldLabel(int player, boolean fold) {
         if (foldLabels[player] == null) {
             foldLabels[player] = new JLabel("FOLD");
             foldLabels[player].setFont(new Font("Arial", Font.BOLD, 24));
@@ -81,6 +81,6 @@ public class PlayersPanel extends JPanel {
             foldLabels[player].setBounds(x, y, 100, 30);
             rightPanel.add(foldLabels[player]);
         }
-        foldLabels[player].setVisible(hasFolded);
+        foldLabels[player].setVisible(fold);
     }
 }

@@ -22,7 +22,7 @@ public class MenuJugadores extends JFrame {
         panelJugador.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         add(panelJugador, BorderLayout.WEST);
 
-        JPanel panelControl = crearPanelControl();
+        /*JPanel panelControl = crearPanelControl();
         panelControl.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         add(panelControl, BorderLayout.EAST);
 
@@ -30,7 +30,7 @@ public class MenuJugadores extends JFrame {
         areaSalida.setBorder(BorderFactory.createTitledBorder("Salida"));
         JScrollPane scrollPane = new JScrollPane(areaSalida);
         scrollPane.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        add(scrollPane, BorderLayout.SOUTH);
+        add(scrollPane, BorderLayout.SOUTH);*/
 
         pack();
         setLocationRelativeTo(null);

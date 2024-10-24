@@ -275,12 +275,12 @@ public class Mesa extends JPanel {
 		}
 
 		if (playersLoaded) {
-			info.append("\nAlgunos jugadores fueron cargados del archivo.");
+			info.append("\nAlgunos jugadores fueron cargados del archivo");
 			if (playerCards.size() > 6) {
-				info.append("\nSe generaron aleatoriamente los jugadores restantes.");
+				info.append("\nSe generaron aleatoriamente los jugadores restantes");
 			}
 		} else {
-			info.append("\nTodos los jugadores fueron generados aleatoriamente.");
+			info.append("\nTodos los jugadores fueron generados aleatoriamente");
 		}
 
 		textoSalida.setText(info.toString());
