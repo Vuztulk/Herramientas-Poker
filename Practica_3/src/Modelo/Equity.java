@@ -5,11 +5,14 @@ import java.util.*;
 public class Equity {
     private List<List<String>> cartasJugadores;
     private List<String> cartasTablero;
-    private static final int SIMULACIONES = 2000;
+    private boolean type_game;
+    private int SIMULACIONES = 2000;
 
-    public Equity(List<List<String>> cartasJugadores, List<String> cartasTablero) {
+    public Equity(List<List<String>> cartasJugadores, List<String> cartasTablero, boolean type_game) {
         this.cartasJugadores = cartasJugadores;
         this.cartasTablero = cartasTablero;
+        this.type_game = type_game;
+        SIMULACIONES = type_game ? 2000000 : 100000;
     }
 
     public List<List<String>> calculateEquity() {
@@ -39,7 +42,7 @@ public class Equity {
 
         return equidad;
     }
-
+    
     private List<String> generateDeck() {
         List<String> deck = new ArrayList<>();
         String[] palos = {"h", "d", "c", "s"};
@@ -75,15 +78,22 @@ public class Equity {
         int[] mejorMano = null;
 
         for (int i = 0; i < cartasJugadores.size(); i++) {
-            List<String> mano = new ArrayList<>(cartasJugadores.get(i));
-            mano.addAll(tablero);
-            int[] valorMano = evaluarMano(mano);
+            int[] mejorManoJugador = null;
+            List<String> manoJugador = cartasJugadores.get(i);
+
+            if (type_game) {
+                List<String> mano = new ArrayList<>(manoJugador);
+                mano.addAll(tablero);
+                mejorManoJugador = evaluarMano(mano);
+            } else {
+                mejorManoJugador = evaluarMejorManoOmaha(manoJugador, tablero);
+            }
             
-            if (mejorMano == null || compararManos(valorMano, mejorMano) > 0) {
-                mejorMano = valorMano;
+            if (mejorMano == null || compararManos(mejorManoJugador, mejorMano) > 0) {
+                mejorMano = mejorManoJugador;
                 ganadores.clear();
                 ganadores.add(i);
-            } else if (compararManos(valorMano, mejorMano) == 0) {
+            } else if (compararManos(mejorManoJugador, mejorMano) == 0) {
                 ganadores.add(i);
             }
         }
@@ -91,6 +101,55 @@ public class Equity {
         return ganadores;
     }
 
+    private int[] evaluarMejorManoOmaha(List<String> manoJugador, List<String> tablero) {
+        int[] mejorMano = null;
+        List<List<String>> combinacionesMano = obtenerCombinacionesDeDos(manoJugador);
+        List<List<String>> combinacionesTablero = obtenerCombinacionesDeTres(tablero);
+
+        for (List<String> manoPlayer : combinacionesMano) {
+            for (List<String> board : combinacionesTablero) {
+                List<String> manoCompleta = new ArrayList<>(manoPlayer);
+                manoCompleta.addAll(board);
+                
+                int[] valorManoActual = evaluarMano(manoCompleta);
+                if (mejorMano == null || compararManos(valorManoActual, mejorMano) > 0) {
+                    mejorMano = valorManoActual;
+                }
+            }
+        }
+        
+        return mejorMano;
+    }
+    
+    private List<List<String>> obtenerCombinacionesDeDos(List<String> cartas) {
+        List<List<String>> combinaciones = new ArrayList<>();
+        for (int i = 0; i < cartas.size() - 1; i++) {
+            for (int j = i + 1; j < cartas.size(); j++) {
+                List<String> combinacion = new ArrayList<>();
+                combinacion.add(cartas.get(i));
+                combinacion.add(cartas.get(j));
+                combinaciones.add(combinacion);
+            }
+        }
+        return combinaciones;
+    }
+
+    private List<List<String>> obtenerCombinacionesDeTres(List<String> cartas) {
+        List<List<String>> combinaciones = new ArrayList<>();
+        for (int i = 0; i < cartas.size() - 2; i++) {
+            for (int j = i + 1; j < cartas.size() - 1; j++) {
+                for (int k = j + 1; k < cartas.size(); k++) {
+                    List<String> combinacion = new ArrayList<>();
+                    combinacion.add(cartas.get(i));
+                    combinacion.add(cartas.get(j));
+                    combinacion.add(cartas.get(k));
+                    combinaciones.add(combinacion);
+                }
+            }
+        }
+        return combinaciones;
+    }
+    
     private int compararManos(int[] mano1, int[] mano2) {
         for (int i = 0; i < mano1.length; i++) {
             if (mano1[i] != mano2[i]) {

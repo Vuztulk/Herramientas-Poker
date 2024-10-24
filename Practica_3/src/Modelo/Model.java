@@ -20,17 +20,26 @@ public class Model {
         return deck.subList(0, 5);
     }
 
-    public List<List<String>> generateRandomPlayerCards(List<String> usedCards, int numPlayers) {
+    public List<List<String>> generateRandomPlayerCards(List<String> usedCards, int num_cards) {
         List<String> deck = generateDeck();
         deck.removeAll(usedCards);
         Collections.shuffle(deck);
         List<List<String>> playerCards = new ArrayList<>();
-        for (int i = 0; i < numPlayers; i++) {
+        
+        for (int i = 0; i < 6; i++) {
             List<String> playerHand = new ArrayList<>();
-            playerHand.add(deck.remove(0));
-            playerHand.add(deck.remove(0));
+            
+            for (int j = 0; j < num_cards; j++) {
+                if (!deck.isEmpty()) {
+                    playerHand.add(deck.remove(0));
+                } else {
+                    throw new IllegalStateException("No hay suficientes cartas en el mazo para generar todas las manos");
+                }
+            }
+            
             playerCards.add(playerHand);
         }
+        
         return playerCards;
     }
 
@@ -44,7 +53,7 @@ public class Model {
         return deck;
     }
     
-    public List<List<String>> getEquity(List<List<String>> listaCartasJugadores, List<String> listaCartasBoard, List<Boolean> activePlayers) {
+    public List<List<String>> getEquity(List<List<String>> listaCartasJugadores, List<String> listaCartasBoard, List<Boolean> activePlayers, boolean type_game) {
         List<List<String>> activePlayerCards = new ArrayList<>();
         for (int i = 0; i < listaCartasJugadores.size(); i++) {
             if (activePlayers.get(i)) {
@@ -52,7 +61,7 @@ public class Model {
             }
         }
 
-        equity = new Equity(activePlayerCards, listaCartasBoard);
+        equity = new Equity(activePlayerCards, listaCartasBoard, type_game);
         List<List<String>> activeEquities = equity.calculateEquity();
 
         List<List<String>> allEquities = new ArrayList<>();

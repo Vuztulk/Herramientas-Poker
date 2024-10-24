@@ -19,7 +19,8 @@ public class Mesa extends JPanel {
 	private BoardPanel boardPanel;
 	private PlayersPanel playersPanel;
 	private ControlPanel controlPanel;
-
+	private boolean type_game;
+	
 	private int currentPhase = 0;
 	private List<String> boardCards;
 	private List<List<String>> playerCards;
@@ -34,7 +35,7 @@ public class Mesa extends JPanel {
 		this.mainFrame = mainFrame;
 
 		setLayout(new BorderLayout());
-
+		
 		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		splitPane.setResizeWeight(0.1);
 
@@ -125,6 +126,7 @@ public class Mesa extends JPanel {
 		}
 		switch (currentPhase) {
 		case 0:
+			type_game = controlPanel.isNormalSelected() ? true : false;
 			preFlop();
 			break;
 		case 1:
@@ -145,7 +147,6 @@ public class Mesa extends JPanel {
 	}
 
 	private void preFlop() {
-
 		if (!boardLoaded || boardCards == null) {
 			boardCards = controller.generateRandomBoard();
 		}
@@ -164,17 +165,28 @@ public class Mesa extends JPanel {
 			usedCards.addAll(playerHand);
 		}
 
+		int numCards = controlPanel.isOmahaSelected() ? 4 : 2;
+
 		while (playerCards.size() < 6) {
-			List<String> newHand = controller.generateRandomPlayerCards(usedCards, 1).get(0);
+			List<String> newHand = controller.generateRandomPlayerCards(usedCards, numCards).get(0);
 			playerCards.add(newHand);
 			usedCards.addAll(newHand);
 		}
 
-		equity = controller.getEquity(playerCards, new ArrayList<>(), activePlayers);
+		if (playersLoaded) {
+			for (int i = 0; i < playerCards.size(); i++) {
+				List<String> hand = playerCards.get(i);
+				if (hand.size() != numCards) {
+					List<String> newHand = controller.generateRandomPlayerCards(usedCards, numCards).get(0);
+					playerCards.set(i, newHand);
+					usedCards.addAll(newHand);
+				}
+			}
+		}
+
+		equity = controller.getEquity(playerCards, new ArrayList<>(), activePlayers, type_game);
 		boardPanel.updateBoard(new ArrayList<>());
-
-		playersPanel.updatePlayers(playerCards, equity, activePlayers);
-
+		playersPanel.updatePlayers(playerCards, equity, activePlayers, type_game);
 		updateCardInfo();
 
 		boardLoaded = false;
@@ -184,21 +196,21 @@ public class Mesa extends JPanel {
 	private void flop() {
 		List<String> flopCards = boardCards.subList(0, 3);
 		boardPanel.updateBoard(flopCards);
-		equity = controller.getEquity(playerCards, flopCards, activePlayers);
-		playersPanel.updatePlayers(playerCards, equity, activePlayers);
+		equity = controller.getEquity(playerCards, flopCards, activePlayers, type_game);
+		playersPanel.updatePlayers(playerCards, equity, activePlayers, type_game);
 	}
 
 	private void turn() {
 		List<String> turnCards = boardCards.subList(0, 4);
 		boardPanel.updateBoard(turnCards);
-		equity = controller.getEquity(playerCards, turnCards, activePlayers);
-		playersPanel.updatePlayers(playerCards, equity, activePlayers);
+		equity = controller.getEquity(playerCards, turnCards, activePlayers, type_game);
+		playersPanel.updatePlayers(playerCards, equity, activePlayers, type_game);
 	}
 
 	private void river() {
 		boardPanel.updateBoard(boardCards);
-		equity = controller.getEquity(playerCards, boardCards, activePlayers);
-		playersPanel.updatePlayers(playerCards, equity, activePlayers);
+		equity = controller.getEquity(playerCards, boardCards, activePlayers, type_game);
+		playersPanel.updatePlayers(playerCards, equity, activePlayers, type_game);
 	}
 
 	public void loadBoardFromFile() {
@@ -211,7 +223,19 @@ public class Mesa extends JPanel {
 
 	public void loadPlayersFromFile() {
 		playerCards = mainFrame.mostrarMenuArchivos("Jugadores");
-		playersLoaded = !playerCards.isEmpty();
+		if (!playerCards.isEmpty()) {
+			int expectedCards = controlPanel.isOmahaSelected() ? 4 : 2;
+			boolean validHands = playerCards.stream().allMatch(hand -> hand.size() == expectedCards);
+
+			if (!validHands) {
+				JOptionPane.showMessageDialog(this,
+						"El archivo contiene manos con un número incorrecto de cartas para la modalidad seleccionada.\n"
+								+ "Se generaran manos aleatorias en su lugar",
+						"Error en el formato", JOptionPane.WARNING_MESSAGE);
+				playerCards.clear();
+			}
+			playersLoaded = !playerCards.isEmpty();
+		}
 	}
 
 	private void resetGame() {
@@ -220,7 +244,7 @@ public class Mesa extends JPanel {
 		playerCards = null;
 		equity = null;
 		boardPanel.updateBoard(new ArrayList<>());
-		playersPanel.updatePlayers(new ArrayList<>(), new ArrayList<>(), activePlayers);
+		playersPanel.updatePlayers(new ArrayList<>(), new ArrayList<>(), activePlayers, type_game);
 
 		activePlayers.clear();
 		for (int i = 0; i < 6; i++) {
@@ -262,7 +286,6 @@ public class Mesa extends JPanel {
 
 	private void updateCardInfo() {
 		StringBuilder info = new StringBuilder();
-		info.append("Board: ").append(boardLoaded ? "cargado del archivo" : "generado aleatoriamente").append("\n");
 
 		if (currentPhase > 0) {
 			info.append(String.join(", ", boardCards.subList(0, Math.min(currentPhase + 2, 5)))).append("\n");
@@ -272,15 +295,6 @@ public class Mesa extends JPanel {
 		for (int i = 0; i < playerCards.size(); i++) {
 			info.append("Jugador ").append(i + 1).append(": ").append(String.join(", ", playerCards.get(i)))
 					.append("\n");
-		}
-
-		if (playersLoaded) {
-			info.append("\nAlgunos jugadores fueron cargados del archivo");
-			if (playerCards.size() > 6) {
-				info.append("\nSe generaron aleatoriamente los jugadores restantes");
-			}
-		} else {
-			info.append("\nTodos los jugadores fueron generados aleatoriamente");
 		}
 
 		textoSalida.setText(info.toString());

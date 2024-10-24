@@ -1,10 +1,6 @@
 package Controlador;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-
-import Modelo.Equity;
 import Modelo.Model;
 
 public class Controller {
@@ -28,7 +24,7 @@ public class Controller {
         return modelo.generateRandomPlayerCards(usedCards, numPlayers);
     }
     
-    public List<List<String>> getEquity(List<List<String>> listaCartasJugadores, List<String> listaCartasBoard, List<Boolean> activePlayers) {
-    	return modelo.getEquity(listaCartasJugadores, listaCartasBoard, activePlayers);
+    public List<List<String>> getEquity(List<List<String>> listaCartasJugadores, List<String> listaCartasBoard, List<Boolean> activePlayers, boolean type_game) {
+    	return modelo.getEquity(listaCartasJugadores, listaCartasBoard, activePlayers, type_game);
 	}
 }
