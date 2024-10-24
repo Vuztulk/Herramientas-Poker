@@ -14,6 +14,8 @@ public class ControlPanel extends JPanel {
     private JLabel labelBoardInicial;
     private JLabel labelBoardCartas;
     private JCheckBox[] playerCheckboxes;
+    private JRadioButton boton_normal;
+    private JRadioButton boton_omaha;
     
     public ControlPanel(Mesa mesa) {
         this.mesa = mesa;
@@ -49,25 +51,41 @@ public class ControlPanel extends JPanel {
         JLabel labelApartados = new JLabel("Apartados:");
         labelApartados.setForeground(Color.BLACK);
         labelApartados.setFont(new Font("Arial", Font.PLAIN, 20));
+        
+        boton_normal = new JRadioButton("Normal");
+        boton_omaha = new JRadioButton("Omaha");
 
-        JRadioButton apartado1 = new JRadioButton("Normal");
-        JRadioButton apartado2 = new JRadioButton("Omaha");
-
-        apartado1.setFont(new Font("Arial", Font.PLAIN, 15));
-        apartado2.setFont(new Font("Arial", Font.PLAIN, 15));
+        boton_normal.setFont(new Font("Arial", Font.PLAIN, 15));
+        boton_omaha.setFont(new Font("Arial", Font.PLAIN, 15));
 
         ButtonGroup grupoApartados = new ButtonGroup();
-        grupoApartados.add(apartado1);
-        grupoApartados.add(apartado2);
+        grupoApartados.add(boton_normal);
+        grupoApartados.add(boton_omaha);
 
         apartadosPanel.add(labelApartados);
         apartadosPanel.add(Box.createHorizontalStrut(10));
-        apartadosPanel.add(apartado1);
-        apartadosPanel.add(apartado2);
+        apartadosPanel.add(boton_normal);
+        apartadosPanel.add(boton_omaha);
 
-        apartado1.setSelected(true);
+        boton_normal.setSelected(true);
 
         return apartadosPanel;
+    }
+    
+    public boolean isNormalSelected() {
+        return boton_normal.isSelected();
+    }
+    
+    public boolean isOmahaSelected() {
+        return boton_omaha.isSelected();
+    }
+    
+    public void setNormalSelected() {
+        boton_normal.setSelected(true);
+    }
+    
+    public void setOmahaSelected() {
+        boton_omaha.setSelected(true);
     }
     
     private JPanel createButtonPanel() {
