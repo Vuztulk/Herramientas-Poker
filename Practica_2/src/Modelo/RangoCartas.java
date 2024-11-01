@@ -4,8 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class RangoCartas {
-	private Set<String> rangos;// Los rangos internamente se guardan sin + ni -, sino todas las cartas que
-								// participan en la seleccion
+	private Set<String> rangos;// Los rangos internamente se guardan sin + ni -, sino todas las cartas que participan en la seleccion
 	private double porcentaje;
 	private static final String ordenCartas = "23456789TJQKA";
 

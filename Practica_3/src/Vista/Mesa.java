@@ -24,7 +24,7 @@ public class Mesa extends JPanel {
 	private int currentPhase = 0;
 	private List<String> boardCards;
 	private List<List<String>> playerCards;
-	private List<List<String>> equity;
+	private List<String> equity;
 	private List<Boolean> activePlayers;
 
 	private boolean boardLoaded = false;
@@ -273,7 +273,7 @@ public class Mesa extends JPanel {
 
 		for (int i = 0; i < playerCards.size(); i++) {
 			if (activePlayers.get(i)) {
-				description.append("Jugador ").append(i + 1).append(": ").append(String.join(", ", playerCards.get(i))).append(" (Equity: ").append(equity.get(i).get(0)).append(")\n");
+				description.append("Jugador ").append(i + 1).append(": ").append(String.join(", ", playerCards.get(i))).append(" (Equity: ").append(equity.get(i)).append(")\n");
 			} else {
 				description.append("Jugador ").append(i + 1).append(": Fold\n");
 			}

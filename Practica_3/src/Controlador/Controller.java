@@ -11,11 +11,6 @@ public class Controller {
 		this.modelo = modelo;
 	}
 
-	public List<String> leerYProcesarArchivo(String absolutePath) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	public List<String> generateRandomBoard() {
         return modelo.generateRandomBoard();
     }
@@ -24,7 +19,7 @@ public class Controller {
         return modelo.generateRandomPlayerCards(usedCards, numPlayers);
     }
     
-    public List<List<String>> getEquity(List<List<String>> listaCartasJugadores, List<String> listaCartasBoard, List<Boolean> activePlayers, boolean type_game) {
+    public List<String> getEquity(List<List<String>> listaCartasJugadores, List<String> listaCartasBoard, List<Boolean> activePlayers, boolean type_game) {
     	return modelo.getEquity(listaCartasJugadores, listaCartasBoard, activePlayers, type_game);
 	}
 }

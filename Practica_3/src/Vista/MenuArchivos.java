@@ -60,7 +60,6 @@ public class MenuArchivos extends JPanel {
 	private void leerArchivoEntrada() {
 		if (archivoEntrada != null) {
 			try {
-				this.contenidoArchivo = controller.leerYProcesarArchivo(archivoEntrada.getAbsolutePath());
 				JOptionPane.showMessageDialog(this, "Archivo leido correctamente");
 
 				if (dialog != null) {

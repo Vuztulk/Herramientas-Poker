@@ -12,10 +12,10 @@ public class Equity {
         this.cartasJugadores = cartasJugadores;
         this.cartasTablero = cartasTablero;
         this.type_game = type_game;
-        SIMULACIONES = type_game ? 2000 : 100000;
+        SIMULACIONES = type_game ? 2000000 : 100000;
     }
 
-    public List<List<String>> calculateEquity() {
+    public List<String> calculateEquity() {
         double[] puntos = new double[cartasJugadores.size()];
 
         for (int i = 0; i < SIMULACIONES; i++) {
@@ -28,19 +28,19 @@ public class Equity {
 
             List<Integer> ganadores = evaluarManos(tableroSimulado);
             double puntosJugador = 1.0 / ganadores.size();
-            
+
             for (int ganador : ganadores) {
                 puntos[ganador] += puntosJugador;
             }
         }
 
-        List<List<String>> equidad = new ArrayList<>();
+        List<String> equity = new ArrayList<>();
         for (int i = 0; i < cartasJugadores.size(); i++) {
-            double porcentajeEquidad = (puntos[i] * 100.0) / SIMULACIONES;
-            equidad.add(Arrays.asList(String.format("%.2f", porcentajeEquidad) + "%"));
+            double porcentajeJugador = (puntos[i] * 100.0) / SIMULACIONES;
+            equity.add(String.format("%.3f", porcentajeJugador) + "%");
         }
 
-        return equidad;
+        return equity;
     }
     
     private List<String> generateDeck() {
@@ -126,18 +126,36 @@ public class Equity {
         //resultado[0] es el tipo de mano, a igualdad de tipo de mano se comparan los valores de resultado[1-5]
         int[] resultado = new int[6];
 
+        // Escalera real
         for (List<String> cartasPalo : cartasPorPalo.values()) {
-            if (cartasPalo.size() >= 5 && escalera(cartasPalo)) {
-                resultado[0] = 8;
+            if (cartasPalo.size() >= 5) {
                 List<Integer> valores = getRanks(cartasPalo);
-                Collections.sort(valores, Collections.reverseOrder());
-                for (int i = 0; i < 5; i++) {
-                    resultado[i + 1] = valores.get(i);
+                if (valores.containsAll(Arrays.asList(14, 13, 12, 11, 10))) {
+                    resultado[0] = 10;
+                    resultado[1] = 14;
+                    resultado[2] = 13;
+                    resultado[3] = 12;
+                    resultado[4] = 11;
+                    resultado[5] = 10;
+                    return resultado;
                 }
-                return resultado;
             }
         }
-
+        
+        // Escalera de color
+        for (List<String> cartasPalo : cartasPorPalo.values()) {
+            if (cartasPalo.size() >= 5) {
+                List<Integer> valoresEscalera = obtenerValoresEscaleraMasAlta(cartasPalo);
+                if (!valoresEscalera.isEmpty()) {
+                    resultado[0] = 9;
+                    for (int i = 0; i < 5; i++) {
+                        resultado[i + 1] = valoresEscalera.get(i);
+                    }
+                    return resultado;
+                }
+            }
+        }
+        
         Map<Integer, List<Integer>> frecuencias = new HashMap<>();
         for (Map.Entry<Integer, Integer> entry : conteoRangos.entrySet()) {
             int valor = entry.getKey();
@@ -148,9 +166,9 @@ public class Equity {
 
         // Poker
         if (frecuencias.containsKey(4)) {
-            resultado[0] = 7;
+            resultado[0] = 8;
             resultado[1] = frecuencias.get(4).get(0);
-            // Kicker más alto
+            // Kicker maa alto
             for (int valor : conteoRangos.keySet()) {
                 if (conteoRangos.get(valor) != 4) {
                     resultado[2] = valor;
@@ -159,13 +177,26 @@ public class Equity {
             }
             return resultado;
         }
-
-        // Full
+        
+        // Full house
         if (frecuencias.containsKey(3) && frecuencias.containsKey(2)) {
-            resultado[0] = 6;
+            resultado[0] = 7;
             resultado[1] = frecuencias.get(3).get(0);
             resultado[2] = Collections.max(frecuencias.get(2));
             return resultado;
+        }
+        
+        // Color
+        for (List<String> cartasPalo : cartasPorPalo.values()) {
+            if (cartasPalo.size() >= 5) {
+                resultado[0] = 6;
+                List<Integer> valores = getRanks(cartasPalo);
+                Collections.sort(valores, Collections.reverseOrder());
+                for (int i = 0; i < 5; i++) {
+                    resultado[i + 1] = valores.get(i);
+                }
+                return resultado;
+            }
         }
 
         // Escalera
@@ -193,7 +224,7 @@ public class Equity {
             return resultado;
         }
 
-        // Doble Pareja
+        // Doble pareja
         if (frecuencias.containsKey(2) && frecuencias.get(2).size() >= 2) {
             resultado[0] = 3;
             List<Integer> pares = frecuencias.get(2);
@@ -223,7 +254,7 @@ public class Equity {
             return resultado;
         }
 
-        // Carta Alta
+        // Carta alta
         resultado[0] = 1;
         int count = 1;
         for (int valor : conteoRangos.keySet()) {
@@ -233,6 +264,33 @@ public class Equity {
         return resultado;
     }
 
+    private List<Integer> obtenerValoresEscaleraMasAlta(List<String> cartasPalo) {
+        List<Integer> valores = getRanks(cartasPalo);
+        Collections.sort(valores);
+        List<Integer> mejorEscalera = new ArrayList<>();
+        
+        int count = 1;
+        List<Integer> escaleraActual = new ArrayList<>();
+        escaleraActual.add(valores.get(0));
+        
+        for (int i = 1; i < valores.size(); i++) {
+            if (valores.get(i) == valores.get(i-1) + 1) {
+                count++;
+                escaleraActual.add(valores.get(i));
+                if (count >= 5) {
+                    mejorEscalera = new ArrayList<>(escaleraActual.subList(escaleraActual.size() - 5, escaleraActual.size()));
+                }
+            } else if (valores.get(i) != valores.get(i-1)) {
+                count = 1;
+                escaleraActual.clear();
+                escaleraActual.add(valores.get(i));
+            }
+        }
+        
+        Collections.sort(mejorEscalera, Collections.reverseOrder());
+        return mejorEscalera;
+    }
+    
     public boolean escalera(List<String> cards) {
         List<Integer> ranks = getRanks(cards);
         Collections.sort(ranks);
