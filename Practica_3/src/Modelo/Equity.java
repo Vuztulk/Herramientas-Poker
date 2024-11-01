@@ -102,14 +102,81 @@ public class Equity {
     }
     
     private int compararManos(int[] mano1, int[] mano2) {
-        for (int i = 0; i < mano1.length; i++) {
-            if (mano1[i] != mano2[i]) {
-                return Integer.compare(mano1[i], mano2[i]);
-            }
+        if (mano1[0] != mano2[0]) {
+            return Integer.compare(mano1[0], mano2[0]);
         }
-        return 0;
+        
+        switch (mano1[0]) {
+            case 10: // Escalera Real
+                return 0;
+                
+            case 9: // Escalera de Color
+            case 5: // Escalera
+                return Integer.compare(mano1[1], mano2[1]);
+                
+            case 8:  // Poker
+                if (mano1[1] != mano2[1]) {
+                    return Integer.compare(mano1[1], mano2[1]);
+                }
+                return Integer.compare(mano1[2], mano2[2]);
+                
+            case 7:  // Full House
+                if (mano1[1] != mano2[1]) {
+                    return Integer.compare(mano1[1], mano2[1]);
+                }
+                return Integer.compare(mano1[2], mano2[2]);
+                
+            case 6:  // Color
+                for (int i = 1; i <= 5; i++) {
+                    if (mano1[i] != mano2[i]) {
+                        return Integer.compare(mano1[i], mano2[i]);
+                    }
+                }
+                return 0;
+                
+            case 4:  // Trio
+                if (mano1[1] != mano2[1]) {
+                    return Integer.compare(mano1[1], mano2[1]);
+                }
+                for (int i = 2; i <= 3; i++) {
+                    if (mano1[i] != mano2[i]) {
+                        return Integer.compare(mano1[i], mano2[i]);
+                    }
+                }
+                return 0;
+                
+            case 3:  // Doble Pareja
+                if (mano1[1] != mano2[1]) {
+                    return Integer.compare(mano1[1], mano2[1]);
+                }
+                if (mano1[2] != mano2[2]) {
+                    return Integer.compare(mano1[2], mano2[2]);
+                }
+                return Integer.compare(mano1[3], mano2[3]);
+                
+            case 2:  // Pareja
+                if (mano1[1] != mano2[1]) {
+                    return Integer.compare(mano1[1], mano2[1]);
+                }
+                for (int i = 2; i <= 4; i++) {
+                    if (mano1[i] != mano2[i]) {
+                        return Integer.compare(mano1[i], mano2[i]);
+                    }
+                }
+                return 0;
+                
+            case 1:  // Carta Alta
+                for (int i = 1; i <= 5; i++) {
+                    if (mano1[i] != mano2[i]) {
+                        return Integer.compare(mano1[i], mano2[i]);
+                    }
+                }
+                return 0;
+                
+            default:
+                return 0;
+        }
     }
-
     private int[] evaluarMano(List<String> mano) {
         Map<Integer, Integer> conteoRangos = new TreeMap<>(Collections.reverseOrder());
         Map<Character, List<String>> cartasPorPalo = new HashMap<>();
