@@ -57,64 +57,70 @@ public class MainFrame extends JFrame {
 	}
 
 	public List<List<String>> mostrarMenuArchivos(String opcion) {
-		JDialog dialog = new JDialog(this, "Seleccionar Archivos", true);
-		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+	    JDialog dialog = new JDialog(this, "Seleccionar Archivos", true);
+	    dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
-		MenuArchivos menuArchivos = new MenuArchivos(controller);
-		menuArchivos.setDialog(dialog);
-		dialog.add(menuArchivos);
-		dialog.pack();
-		dialog.setLocationRelativeTo(this);
-		dialog.setVisible(true);
+	    MenuArchivos menuArchivos = new MenuArchivos(controller);
+	    menuArchivos.setDialog(dialog);
+	    dialog.add(menuArchivos);
+	    dialog.pack();
+	    dialog.setLocationRelativeTo(this);
+	    dialog.setVisible(true);
 
-		List<List<String>> resultado = new ArrayList<>();
-		String filePath = menuArchivos.getSelectedFilePath();
+	    List<List<String>> resultado = new ArrayList<>();
+	    String filePath = menuArchivos.getSelectedFilePath();
 
-		if (filePath != null) {
-			try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
-				String line;
-				while ((line = br.readLine()) != null) {
-					if (opcion.equals("Board")) {
-						resultado.add(procesarBoard(line));
-					} else if (opcion.equals("Jugadores")) {
-						resultado.addAll(procesarJugadores(line));
-					}
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-				JOptionPane.showMessageDialog(this, "Error al leer el archivo: " + e.getMessage(), "Error",JOptionPane.ERROR_MESSAGE);
-			}
-		}
+	    if (filePath != null) {
+	        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+	            String line;
+	            while ((line = br.readLine()) != null) {
+	                if (opcion.equals("Board")) {
+	                    resultado.add(procesarBoard(line));
+	                } else if (opcion.equals("Jugadores")) {
+	                    resultado.addAll(procesarJugadores(line));
+	                }
+	            }
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	            JOptionPane.showMessageDialog(this, "Error al leer el archivo: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+	        }
+	    }
 
-		return resultado;
+	    return resultado;
 	}
 
 	private List<String> procesarBoard(String linea) {
-		List<String> cartas = new ArrayList<>();
-		for (int i = 0; i < linea.length(); i += 2) {
-			if (i + 2 <= linea.length()) {
-				cartas.add(linea.substring(i, i + 2));
-			}
-		}
-		return cartas;
+	    List<String> cartas = new ArrayList<>();
+	    for (int i = 0; i < linea.length(); i += 2) {
+	        if (i + 2 <= linea.length()) {
+	            cartas.add(linea.substring(i, i + 2));
+	        }
+	    }
+	    return cartas;
 	}
 
 	private List<List<String>> procesarJugadores(String linea) {
-		List<List<String>> jugadores = new ArrayList<>();
-		String[] partes = linea.split(";");
+	    List<List<String>> jugadores = new ArrayList<>();
+	    String[] partes = linea.split(";");
 
-		for (int i = 1; i < partes.length; i++) {
-			String mano = partes[i].substring(2);
+	    for (int i = 1; i < partes.length; i++) {
+	        String mano = partes[i].substring(2);
 
-			if (mano.length() == 4) {
-				List<String> manoJugador = new ArrayList<>();
-				manoJugador.add(mano.substring(0, 2));
-				manoJugador.add(mano.substring(2, 4));
-				jugadores.add(manoJugador);
-			}
-		}
+	        if (mano.length() == 4 || mano.length() == 8) {
+	            List<String> manoJugador = new ArrayList<>();
 
-		return jugadores;
+	            for (int j = 0; j < mano.length(); j += 2) {
+	                manoJugador.add(mano.substring(j, j + 2));
+	            }
+
+	            jugadores.add(manoJugador);
+	        } else {
+	            System.out.println("Error: longitud de mano no válida para jugador " + i);
+	        }
+	    }
+
+	    return jugadores;
 	}
+
 
 }

@@ -3,9 +3,7 @@ package Vista;
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-
 import Controlador.Controller;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -225,11 +223,19 @@ public class Mesa extends JPanel {
 		playerCards = mainFrame.mostrarMenuArchivos("Jugadores");
 		if (!playerCards.isEmpty()) {
 			int expectedCards = controlPanel.isOmahaSelected() ? 4 : 2;
-			boolean validHands = playerCards.stream().allMatch(hand -> hand.size() == expectedCards);
+			boolean validHands = true;
+
+			for (List<String> hand : playerCards) {
+				if (hand.size() != expectedCards) {
+					validHands = false;
+					break;
+				}
+			}
 
 			if (!validHands) {
 				JOptionPane.showMessageDialog(this,
-						"Numero incorrecto de cartas para la modalidad seleccionada\n"+ "Se generaran manos aleatorias en su lugar",
+						"Numero incorrecto de cartas para la modalidad seleccionada\n"
+								+ "Se generaran manos aleatorias en su lugar",
 						"Error en el formato de cartas", JOptionPane.WARNING_MESSAGE);
 				playerCards.clear();
 			}
@@ -268,12 +274,14 @@ public class Mesa extends JPanel {
 		description.append("Fase actual: ").append(getPhaseString()).append("\n\n");
 
 		if (currentPhase > 0) {
-			description.append("Cartas del Board: ").append(String.join(", ", boardCards.subList(0, Math.min(currentPhase + 2, 5)))).append("\n\n");
+			description.append("Cartas del Board: ")
+					.append(String.join(", ", boardCards.subList(0, Math.min(currentPhase + 2, 5)))).append("\n\n");
 		}
 
 		for (int i = 0; i < playerCards.size(); i++) {
 			if (activePlayers.get(i)) {
-				description.append("Jugador ").append(i + 1).append(": ").append(String.join(", ", playerCards.get(i))).append(" (Equity: ").append(equity.get(i)).append(")\n");
+				description.append("Jugador ").append(i + 1).append(": ").append(String.join(", ", playerCards.get(i)))
+						.append(" (Equity: ").append(equity.get(i)).append(")\n");
 			} else {
 				description.append("Jugador ").append(i + 1).append(": Fold\n");
 			}
@@ -290,7 +298,8 @@ public class Mesa extends JPanel {
 
 		info.append("\nJugadores:\n");
 		for (int i = 0; i < playerCards.size(); i++) {
-			info.append("Jugador ").append(i + 1).append(": ").append(String.join(", ", playerCards.get(i))).append("\n");
+			info.append("Jugador ").append(i + 1).append(": ").append(String.join(", ", playerCards.get(i)))
+					.append("\n");
 		}
 
 		textoSalida.setText(info.toString());
