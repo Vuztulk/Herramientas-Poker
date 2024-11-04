@@ -88,12 +88,19 @@ public class Equity {
             } else {
                 mejorManoJugador = evaluarMejorManoOmaha(manoJugador, tablero);
             }
-            
-            if (mejorMano == null || compararManos(mejorManoJugador, mejorMano) > 0) {
+
+            if (mejorMano == null) {
+                mejorMano = mejorManoJugador;
+                ganadores.add(i);
+                continue;
+            }
+
+            int resultadoComparacion = compararManos(mejorManoJugador, mejorMano);
+            if (resultadoComparacion > 0) {
                 mejorMano = mejorManoJugador;
                 ganadores.clear();
                 ganadores.add(i);
-            } else if (compararManos(mejorManoJugador, mejorMano) == 0) {
+            } else if (resultadoComparacion == 0) {
                 ganadores.add(i);
             }
         }
@@ -246,10 +253,14 @@ public class Equity {
         }
         
         // Full house
-        if (frecuencias.containsKey(3) && frecuencias.containsKey(2)) {
+        if (frecuencias.containsKey(3) && (frecuencias.containsKey(2) || frecuencias.get(3).size() > 1)) {
             resultado[0] = 7;
             resultado[1] = frecuencias.get(3).get(0);
-            resultado[2] = Collections.max(frecuencias.get(2));
+            if (frecuencias.containsKey(2)) {
+                resultado[2] = Collections.max(frecuencias.get(2)); 
+            } else {
+                resultado[2] = frecuencias.get(3).get(1); 
+            }
             return resultado;
         }
         
@@ -269,10 +280,9 @@ public class Equity {
         // Escalera
         if (escalera(mano)) {
             resultado[0] = 5;
-            List<Integer> valores = getRanks(mano);
-            Collections.sort(valores, Collections.reverseOrder());
+            List<Integer> valoresEscalera = obtenerValoresEscaleraMasAlta(mano);
             for (int i = 0; i < 5; i++) {
-                resultado[i + 1] = valores.get(i);
+                resultado[i + 1] = valoresEscalera.get(i);
             }
             return resultado;
         }
