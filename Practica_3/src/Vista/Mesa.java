@@ -65,10 +65,6 @@ public class Mesa extends JPanel {
 		return controlPanel;
 	}
 
-	public Controller getController() {
-		return controller;
-	}
-
 	public MainFrame getMainFrame() {
 		return mainFrame;
 	}
