@@ -5,19 +5,24 @@ import java.util.*;
 public class Equity {
     private List<List<String>> cartasJugadores;
     private List<String> cartasTablero;
+    private List<String> deadCards;
     private boolean type_game;
     private int SIMULACIONES;
 
-    public Equity(List<List<String>> cartasJugadores, List<String> cartasTablero, boolean type_game) {
+    public Equity(List<List<String>> cartasJugadores, List<String> cartasTablero, List<String> deadCards, boolean type_game) {
         this.cartasJugadores = cartasJugadores;
         this.cartasTablero = cartasTablero;
+        this.deadCards = deadCards;
         this.type_game = type_game;
         SIMULACIONES = type_game ? 2000000 : 100000;
     }
 
     public List<String> calculateEquity() {
         double[] puntos = new double[cartasJugadores.size()];
-
+        
+        if(cartasTablero.size() == 5)
+        	SIMULACIONES = 1;
+        
         for (int i = 0; i < SIMULACIONES; i++) {
             List<String> deck = generateDeck();
             List<String> tableroSimulado = new ArrayList<>(cartasTablero);
@@ -51,7 +56,7 @@ public class Equity {
         for (String palo : palos) {
             for (String rango : rangos) {
                 String carta = rango + palo;
-                if (!cartasTablero.contains(carta) && !esCartaUsadaPorJugadores(carta)) {
+                if (!cartasTablero.contains(carta) && !esCartaUsadaPorJugadores(carta) && !deadCards.contains(carta)) {
                     deck.add(carta);
                 }
             }

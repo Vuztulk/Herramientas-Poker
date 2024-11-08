@@ -54,24 +54,34 @@ public class Model {
 		return deck;
 	}
 
-	public List<String> getEquity(List<List<String>> listaCartasJugadores, List<String> listaCartasBoard, List<Boolean> activePlayers, boolean type_game) {
+	public List<String> getEquity(List<List<String>> listaCartasJugadores, List<String> listaCartasBoard,
+			List<Boolean> activePlayers, boolean type_game) {
 
 		List<List<String>> activePlayerCards = new ArrayList<>();
+		List<List<String>> foldedPlayerCards = new ArrayList<>();
+
 		for (int i = 0; i < listaCartasJugadores.size(); i++) {
 			if (activePlayers.get(i)) {
 				activePlayerCards.add(listaCartasJugadores.get(i));
+			} else {
+				foldedPlayerCards.add(listaCartasJugadores.get(i));
 			}
 		}
 
-		equity = new Equity(activePlayerCards, listaCartasBoard, type_game);
+		List<String> deadCards = new ArrayList<>();
+		for (List<String> foldedHand : foldedPlayerCards) {
+			deadCards.addAll(foldedHand);
+		}
+
+		equity = new Equity(activePlayerCards, listaCartasBoard, deadCards, type_game);
 		List<String> activeEquities = equity.calculateEquity();
 
 		List<String> equitys = new ArrayList<>();
-		int activeIndex = 0;
+		int active = 0;
 		for (int i = 0; i < listaCartasJugadores.size(); i++) {
 			if (activePlayers.get(i)) {
-				equitys.add(activeEquities.get(activeIndex));
-				activeIndex++;
+				equitys.add(activeEquities.get(active));
+				active++;
 			} else {
 				equitys.add("0.00");
 			}
