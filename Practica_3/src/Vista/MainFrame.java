@@ -115,7 +115,7 @@ public class MainFrame extends JFrame {
 
 	            jugadores.add(manoJugador);
 	        } else {
-	            System.out.println("Error: longitud de mano no válida para jugador " + i);
+	            System.out.println("Error: longitud de mano no valida para jugador " + i);
 	        }
 	    }
 

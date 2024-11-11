@@ -20,7 +20,7 @@ public class Equity {
     public List<String> calculateEquity() {
         double[] puntos = new double[cartasJugadores.size()];
         
-        if(cartasTablero.size() == 5)
+        if(cartasTablero.size() == 5) //Si es la fase de river solo se calcula quien gana
         	SIMULACIONES = 1;
         
         for (int i = 0; i < SIMULACIONES; i++) {
